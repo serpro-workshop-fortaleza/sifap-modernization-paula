@@ -57,6 +57,8 @@ As 5 duplas trabalham em paralelo, cada uma responsável por 3 programas Natural
 
 O código legado está em [`legacy-sifap/`](legacy-sifap/) (compartilhado pelo kit).
 
+A massa de dados sintética do legado está em [`legacy-seed-data/`](legacy-seed-data/): 500 beneficiários, 2000 pagamentos, 200 registros de auditoria e 6 programas sociais, nos mesmos arquivos de largura fixa carregados no Adabas do laboratório. Os arquivos `.dat` são reproduzíveis por `generate_seed.py`, e os `layout-*.txt` descrevem cada campo — inclusive os decimais compactados, que exigem decodificação antes de qualquer carga no PostgreSQL.
+
 O laboratório compartilhado do Azure é operado fora deste repositório. Participantes não recebem material de implantação ou administração; use o visualizador somente leitura descrito em [`docs/legacy-system-access.md`](../docs/legacy-system-access.md).
 
 ---
