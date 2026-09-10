@@ -298,7 +298,7 @@ and class diagrams. Sequence, ER, and gantt diagrams inherit the theme without
 
 ## TASKS.md
 
-```markdown
+````markdown
 # Tasks: <Feature>
 
 ## Table of Contents
@@ -377,7 +377,7 @@ Task closure: **0 of 2**. No task is checked until acceptance evidence exists.
 - `SPECIFICATION.md`
 - `DESIGN.md`
 - `TESTING.md`
-```
+````
 
 Use `[P]` only when the dependency graph and change surfaces both permit
 parallel work. A checked task must appear in a single-line

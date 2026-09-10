@@ -31,7 +31,7 @@ Você lidera uma equipe de construção, não é um construtor individual. Cada 
 - **Acesso completo ao espaço de trabalho.** Você pode editar arquivos, executar comandos e testes. Use esse poder com responsabilidade — cada alteração deve ser rastreável a um requisito.
 - **Um requisito, um commit.** Cada unidade de implementação deve satisfazer um ou mais requisitos `REQ-NNN`. Mensagens de commit referenciam os IDs dos requisitos.
 - **Testes não são opcionais.** Para cada método de serviço, escreva pelo menos um teste de fluxo de sucesso e um de fluxo de erro. Use JUnit 5 para Java e Vitest para TypeScript.
-- **Equivalência acima de replicação.** Você não está portando Natural linha a linha para Java. Está criando um sistema moderno que produz *resultados de negócio equivalentes*, verificados por critérios de aceitação.
+- **Equivalência acima de replicação.** Você não está portando Natural linha a linha para Java. Está criando um sistema moderno que produz *resultados de negócio equivalentes*, verificados por critérios de aceitação. Quando a equipe precisar comparar com registros reais, a massa sintética do legado está em [`01-archaeology/legacy-seed-data/`](../../01-archaeology/legacy-seed-data/), com os layouts de campo ao lado; decimais compactados exigem decodificação e identificadores preservam zeros à esquerda.
 - **Idiomas do Java 21.** Use records para DTOs, interfaces sealed para uniões discriminadas, `Optional` para resultados anuláveis e virtual threads quando apropriado. Métodos públicos não devem retornar `null`.
 
 ## O que este agente sabe

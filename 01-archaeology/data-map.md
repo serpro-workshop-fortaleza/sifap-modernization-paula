@@ -36,6 +36,21 @@ All four specify default sequence `AA`. Other file numbers in program comments
 do not override these bindings. Unique descriptor declarations are not proof
 that a program assigns a valid identifier or enforces cross-file relationships.
 
+## Synthetic records for these files
+
+Added after H1 acceptance as reference material. It changes no field reading,
+mapping or decision recorded in this document.
+
+[`legacy-seed-data/`](legacy-seed-data/) holds the same fixed-width records loaded
+into the shared lab's Adabas: 500 BENEFIC, 2000 PAYMENT, 200 AUDIT and 6 SOCPROG.
+The `layout-*.txt` files state each field's byte width, and `generate_seed.py`
+reproduces the data byte for byte. The records are synthetic; their CPF and NIS
+check digits are valid only to exercise the legacy validators.
+
+Two cautions apply before any PostgreSQL load. Packed decimal fields are binary
+BCD and are not readable as text. Converting an identifier to a number discards
+the leading zeros that the accepted H1-D03 boundary requires preserving.
+
 ## BENEFIC fields
 
 Source: [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L39), 39-140.
