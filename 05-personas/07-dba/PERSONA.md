@@ -12,7 +12,7 @@
 | **Dupla** | Dupla 4 — Qualidade (com QA Engineer) |
 | **Estágios ativos** | Estágio 1 (mapeamento de DDMs), Estágio 2 (modelo lógico + ADR), Estágio 3 (lidera o schema), Estágio 4 (valida a integridade) |
 | **Artefatos produzidos** | Mapa de DDMs para entidades relacionais, ADR de banco de dados, migrações Flyway, índices, dados iniciais de teste |
-| **Artefatos consumidos** | DDMs do Adabas (Estágio 1), contextos delimitados (Software Architect), requisitos EARS (Requirements Engineer) |
+| **Artefatos consumidos** | DDMs do Adabas e [massa de dados do legado](../../01-archaeology/legacy-seed-data/) (Estágio 1), contextos delimitados (Software Architect), requisitos EARS (Requirements Engineer) |
 | **Entrega para** | Developer — migrações prontas para JPA; DevOps Engineer — schema estável para Terraform |
 
 ---
@@ -42,7 +42,7 @@ flowchart LR
 |---|---|---|
 | **1 — Arqueologia** | Ler os quatro DDMs, mapear campos MU/PE para possíveis entidades relacionais e identificar campos-chave | Mapa de DDMs para entidades relacionais |
 | **2 — Especificação** | Projetar o modelo lógico de dados e escrever o ADR do PostgreSQL (referência ADR 002) | Modelo de dados + ADR 002 |
-| **3 — Implementação** | Escrever migrações Flyway, definir índices, criar dados iniciais de teste e responder a dúvidas sobre JPA/Hibernate | Schema PostgreSQL + dados iniciais |
+| **3 — Implementação** | Escrever migrações Flyway, definir índices, carregar os dados de teste a partir da [massa do legado](../../01-archaeology/legacy-seed-data/) e responder a dúvidas sobre JPA/Hibernate | Schema PostgreSQL + dados iniciais |
 | **4 — Evolução** | Verificar se os PRs do Copilot Agent alteram o schema com segurança (nova migração, nunca edições retroativas) | Integridade do schema preservada |
 
 ## Responsabilidade principal
@@ -114,6 +114,7 @@ Traduzir o modelo do Adabas necessário ao escopo selecionado para um schema rel
 | Situação | O que fazer |
 |---|---|
 | Formato de DDM desconhecido | Abra `01-archaeology/legacy-sifap/adabas-ddms/`; os comentários ajudam a explicar cada campo |
+| O sistema moderno não retorna nenhum beneficiário | Criar o schema não carrega dados. Use a [massa do legado](../../01-archaeology/legacy-seed-data/) e decodifique os decimais compactados antes da carga |
 | Migração quebrada | Nunca edite uma migração existente. Crie uma nova: `V5__fix_xxx.sql` |
 | Dúvida sobre qual índice criar | Para um campo usado em `WHERE` ou `JOIN` em uma tabela com mais de 100.000 linhas, crie o índice |
 | PostgreSQL indisponível | Verifique se o Docker está em execução: `docker ps \| grep postgres` |

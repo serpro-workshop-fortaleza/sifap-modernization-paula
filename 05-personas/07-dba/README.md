@@ -56,6 +56,8 @@ Todos os artefatos ativos ficam no diretório `.github/` da raiz do repositório
 
 No Estágio 1, o DBA lê o DDM `BENEFIC.ddm` e mapeia os campos necessários à feature para possíveis tabelas relacionadas. No Estágio 3, escreve a migração Flyway correspondente, define índices somente quando as consultas confirmadas os justificam e prepara os dados necessários aos testes de integração do QA Engineer.
 
+Esses dados não precisam ser inventados: a [massa do legado](../../01-archaeology/legacy-seed-data/) traz os mesmos registros carregados no Adabas do laboratório, o que permite comparar o sistema moderno com o legado registro a registro.
+
 ## Referências
 
 - [PostgreSQL Documentation](https://www.postgresql.org/docs/)

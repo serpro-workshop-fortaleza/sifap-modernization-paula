@@ -240,6 +240,7 @@ Todo commit que implementa um comportamento da especificação deve incluir `Imp
 | O frontend mostra "Failed to load" | O backend está em execução? Teste com `curl http://localhost:8080/actuator/health` |
 | O teste com Testcontainers falha | O Docker Desktop deve estar em execução. Alternativa: um teste unitário com Mockito |
 | A migração falha na inicialização | Nunca edite uma migração existente. Crie uma nova (`V5__`, `V6__`...) |
+| A consulta não retorna nenhum beneficiário | Criar o schema não carrega dados. Use [`01-archaeology/legacy-seed-data/`](../01-archaeology/legacy-seed-data/) e decodifique os decimais compactados antes da carga |
 | Erro de import no `mvn test-compile` | Verifique se o pacote segue `domain/` → `application/` → `infrastructure/` |
 | A Swagger UI não aparece | Tente `http://localhost:8080/swagger-ui/index.html` |
 

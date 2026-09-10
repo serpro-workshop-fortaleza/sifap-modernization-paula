@@ -12,7 +12,7 @@
 | **Dupla** | Dupla 4 — Qualidade (com DBA) |
 | **Estágios ativos** | Estágio 1 (cenários críticos), Estágio 2 (critérios de aceitação), Estágio 3 (colabora nos testes), Estágio 4 (valida a cobertura) |
 | **Artefatos produzidos** | Suíte de testes (JUnit 5 + Testcontainers + Vitest), estratégia de testes, critérios de aceitação por REQ-ID, pipeline de CI verde |
-| **Artefatos consumidos** | Requisitos EARS com REQ-IDs (Requirements Engineer), código testável (Developer), dados iniciais (DBA) |
+| **Artefatos consumidos** | Requisitos EARS com REQ-IDs (Requirements Engineer), código testável (Developer), dados iniciais (DBA) carregados a partir da [massa do legado](../../01-archaeology/legacy-seed-data/) |
 | **Entrega para** | DevOps Engineer — CI confiável; time inteiro — pipeline verde |
 
 ---
@@ -42,7 +42,7 @@ flowchart LR
 |---|---|---|
 | **1 — Arqueologia** | Identificar cenários críticos nos programas Natural atribuídos | Cenários críticos por programa |
 | **2 — Especificação** | Validar se todos os requisitos EARS são testáveis e propor critérios de aceitação concretos | Critérios de teste por REQ-ID |
-| **3 — Implementação** | Escrever testes unitários e de integração para o comportamento priorizado; manter a CI verde | Suíte de testes + pipeline verde |
+| **3 — Implementação** | Escrever testes unitários e de integração para o comportamento priorizado, comparando os resultados com os registros reais da [massa do legado](../../01-archaeology/legacy-seed-data/); manter a CI verde | Suíte de testes + pipeline verde |
 | **4 — Evolução** | Exigir que os PRs do Copilot Agent incluam testes e validar a cobertura dos novos cenários | Cobertura alinhada à feature |
 
 ## Responsabilidade principal
