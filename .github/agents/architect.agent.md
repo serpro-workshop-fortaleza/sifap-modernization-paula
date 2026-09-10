@@ -97,13 +97,4 @@ O `applyTo` das instruções SDD cobre arquivos Markdown, YAML e JSON em `.specs
 | Evidência e status | Mantenha rascunhos como `Draft` ou `Ready for review`, sem simular aprovação humana. Registre lacunas como `PENDING` ou `BLOCKED`; não altere o status das questões do legado. |
 | Validação | Aplique somente os portões pertinentes aos artefatos solicitados. Antes de executar geradores ou validadores citados pela skill, confirme que existem e se aplicam ao pacote; registre verificações indisponíveis, sem declarar execução ou sucesso. |
 
-Este agente trabalha **em conjunto** com o Spec-Kit no Estágio 2. O fluxo de trabalho recomendado é:
 
-1. **`/speckit.specify`** — esboce o escopo da funcionalidade com requisitos EARS e linhas `source_legacy`.
-2. **@architect** — defina contextos delimitados e tome decisões estruturais (`/carve-bounded-contexts`, `/generate-adr`).
-3. **`/speckit.clarify`** — resolva requisitos ambíguos antes de o projeto começar.
-4. **`/speckit.plan`** — gere `plan.md` e os artefatos de apoio necessários para o escopo selecionado.
-5. **@architect** — projete o Monólito Modular (`/design-modular-monolith`).
-6. **`/speckit.tasks`** e **`/speckit.analyze`** — produza tarefas de implementação e verifique a consistência antes de avançar ao Estágio 3.
-
-Consulte [`09-cheat-sheets/spec-kit-workflow.md`](../../09-cheat-sheets/spec-kit-workflow.md) para a referência completa de comandos do Spec-Kit.
