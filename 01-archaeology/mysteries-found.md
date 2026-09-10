@@ -1,56 +1,73 @@
-# Registro de Questões em Aberto — Estágio 1
+# Open questions - Stage 1
 
-> **Trilha:** [Kit do Time](../README.md) › [Estágio 1](README.md) › **Questões em Aberto**
+> **Trail:** [Team kit](../README.md) > [Stage 1](README.md) > **Open questions**
 
-**Registro rastreável das incertezas do Estágio 1.** Cada entrada documenta uma pergunta sem resposta, com evidência, hipótese marcada como não confirmada e responsável pela validação.
+**Questions for human validation, with evidence and explicitly unconfirmed hypotheses.**
 
-| Campo | Valor |
-|---|---|
-| **Público-alvo** | Todas as duplas |
-| **Pré-requisitos** | Ler os programas atribuídos |
-| **Estágio** | Estágio 1 — Arqueologia |
-| **Resultado esperado** | Perguntas sem conclusão, com evidência e responsável identificado |
+Date: 2026-09-10. Team: [To be filled by the team]. No answer or human approval
+has been recorded by this reading pass. Proposed owners below identify areas;
+the team still needs to assign named people.
 
-> [!IMPORTANT]
-> Uma pergunta só vira regra de negócio, requisito ou conclusão depois de validação humana explícita e com a evidência preservada como `path:line`. Este registro não é uma resposta e não substitui essa validação.
+## Canonical-ID boundary
 
----
+The [canonical checklist](mysteries-checklist.md) provides four-ID ranges per
+pair, but does not enumerate the individual question-to-ID mapping. The local
+`BONUS-Qnn` keys below therefore do not claim a canonical assignment, replace
+the denominator of 20, or report any mystery as solved. The facilitator/team
+must validate the mapping to `SIFAP-M-01` through `SIFAP-M-20` explicitly.
 
-## Registro
+## Question register
 
-Use uma linha por mistério. Preencha com o **ID canônico** da sua dupla (`SIFAP-M-01` … `SIFAP-M-20` — veja o [checklist](mysteries-checklist.md)) ou `BONUS` para achados fora da lista.
-
-| ID | Questão em aberto | Evidência (`path:line`) | Impacto | Hipótese (não confirmada) | Pessoa/área responsável | Status |
+| Local key | Open question | Evidence (path and physical line) | Impact | Unconfirmed hypothesis | Proposed validation owner | Status |
 |---|---|---|---|---|---|---|
-| `SIFAP-M-__` | <!-- preencher: uma pergunta real terminada em ponto de interrogação --> | <!-- preencher: path:line --> | <!-- preencher: o que quebra na migração para Java --> | <!-- preencher: não confirmada --> | <!-- preencher --> | <!-- preencher: aberta / aguardando validação humana / fechada após validação humana --> |
-| `SIFAP-M-__` | <!-- preencher --> | <!-- preencher: path:line --> | <!-- preencher --> | <!-- preencher: não confirmada --> | <!-- preencher --> | <!-- preencher --> |
-| `SIFAP-M-__` | <!-- preencher --> | <!-- preencher: path:line --> | <!-- preencher --> | <!-- preencher: não confirmada --> | <!-- preencher --> | <!-- preencher --> |
-| `SIFAP-M-__` | <!-- preencher --> | <!-- preencher: path:line --> | <!-- preencher --> | <!-- preencher: não confirmada --> | <!-- preencher --> | <!-- preencher --> |
+| BONUS-Q01 | Which CPF implementation governs conflicting check-digit and all-zero results? | [CADBENEF.NSP](legacy-sifap/natural-programs/CADBENEF.NSP#L152), 152-168, 344-413; [VALBENEF.NSN](legacy-sifap/natural-programs/VALBENEF.NSN#L237), 237-245; [SUBVALCP.NSN](legacy-sifap/natural-programs/SUBVALCP.NSN#L56), 56-78 | Registration/query acceptance may diverge | Unconfirmed: legacy copies may preserve different exception policies | Registration owner + QA | Awaiting human validation |
+| BONUS-Q02 | What authorizes suspension above 75, and which status should updates at 75 or below preserve? | [CADBENEF.NSP](legacy-sifap/natural-programs/CADBENEF.NSP#L241), 241-252, 306-318 | Existing eligibility/status could change | Unconfirmed: a historical review policy may be incomplete in the update path | Benefits owner | Awaiting human validation |
+| BONUS-Q03 | Which address length is intended across input, storage and display? | [CADBENEF.NSP](legacy-sifap/natural-programs/CADBENEF.NSP#L58), 58; [assignment](legacy-sifap/natural-programs/CADBENEF.NSP#L276), 276-281; [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L58), 58-62 | Loss or inconsistent display of address text | Unconfirmed: the screen may have retained a wider legacy field | Registration owner + DBA | Awaiting human validation |
+| BONUS-Q04 | Is the dependent limit three, five, six, or the ten declared slots? | [CADDEPEN.NSP](legacy-sifap/natural-programs/CADDEPEN.NSP#L117), 117-120, 191-194; [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L87); [2012 RN-004](legacy-sifap/legacy-docs/BUSINESS-RULES-2012.md#L78), 78-82 | Different accepted family sizes | Unconfirmed: a business limit may differ from storage capacity and boundary implementation | Benefits owner + DBA | Awaiting human validation |
+| BONUS-Q05 | Which relationship-code vocabulary is valid? | [CADDEPEN.NSP](legacy-sifap/natural-programs/CADDEPEN.NSP#L152), 152-156; [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L91), 91-92 | Incorrect interpretation of existing dependents | Unconfirmed: code and DDM may represent different revisions | Benefits owner | Awaiting human validation |
+| BONUS-Q06 | Which dependent attributes should be persisted and initialized, including document, sex, status and disability? | [CADDEPEN.NSP](legacy-sifap/natural-programs/CADDEPEN.NSP#L122), 122-129, 191-203; [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L87), 87-94 | Captured data and active counts may disagree | Unconfirmed: some screen fields or state initialization may belong to a missing process | Registration owner + DBA | Awaiting human validation |
+| BONUS-Q07 | What is the provenance of .347215 and the relation between local K, DDM FACTOR-K and later adjustment? | [CADPROG.NSP](legacy-sifap/natural-programs/CADPROG.NSP#L124), 124-139; [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L262); [SOCPROG.ddm](legacy-sifap/adabas-ddms/SOCPROG.ddm#L47), 47-52 | Monetary equivalence and parameter ownership | Unconfirmed: the identifiers may describe different historical factors | Program/benefits owner | Awaiting human validation |
+| BONUS-Q08 | Which reference date and century convention should eligibility and payment reprocessing use? | [BATCHPGT.NSP](legacy-sifap/natural-programs/BATCHPGT.NSP#L339), 339-348; [VALELEG.NSN](legacy-sifap/natural-programs/VALELEG.NSN#L68), 68-97; [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L225), 225-252 | Age-based decisions differ by execution path | Unconfirmed: historical YY dates and current-year recalculation may require explicit separate rules | Benefits owner + QA | Awaiting human validation |
+| BONUS-Q09 | What calendar checks are intended for non-leap February and future dates within the current year? | [VALBENEF.NSN](legacy-sifap/natural-programs/VALBENEF.NSN#L104); [date helper](legacy-sifap/natural-programs/VALBENEF.NSN#L302), 302-313 | Birth-date acceptance | Unconfirmed: the fixed month table may not express the intended calendar policy | Registration owner + QA | Awaiting human validation |
+| BONUS-Q10 | What authorizes the region-99 early-success path and which checks may it bypass? | [VALELEG.NSN](legacy-sifap/natural-programs/VALELEG.NSN#L114), 114-128; [2012 section 4.2](legacy-sifap/legacy-docs/BUSINESS-RULES-2012.md#L199), 199-205 | Eligibility and control exceptions | Unconfirmed: a special business case or historical test path may exist | Benefits owner + control owner | Awaiting human validation |
+| BONUS-Q11 | Is the income ceiling per household or per person? | [VALELEG.NSN](legacy-sifap/natural-programs/VALELEG.NSN#L174), 174-180; [SOCPROG.ddm](legacy-sifap/adabas-ddms/SOCPROG.ddm#L56); [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L78), 78-80 | Eligibility thresholds | Unconfirmed: source may use a different income measure from the field label | Program owner | Awaiting human validation |
+| BONUS-Q12 | What is the complete eligibility-code grammar and how should its NIS lookup obtain a valid record context? | [VALELEG.NSN](legacy-sifap/natural-programs/VALELEG.NSN#L224), 224-267; [SOCPROG.ddm](legacy-sifap/adabas-ddms/SOCPROG.ddm#L65) | Optional eligibility checks and runtime compatibility | Unconfirmed: only part of the intended grammar may be implemented | Program owner + Natural specialist | Awaiting human validation |
+| BONUS-Q13 | Which component owns payment calculation, identifiers and storage when callee and caller both write? | [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L309), 309-328; [BATCHPGT.NSP](legacy-sifap/natural-programs/BATCHPGT.NSP#L381), 381-489; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L34) | Duplicate writes, zero/unassigned identifiers and return-code handling | Unconfirmed: conversion to a subprogram may have left persistence and local calculation active | Payments owner + DBA | Awaiting human validation |
+| BONUS-Q14 | How are committed payments reconciled with work-file failure and same-period restart? | [BATCHPGT.NSP](legacy-sifap/natural-programs/BATCHPGT.NSP#L488), 488-502, 572-582; [SIFAPJ01.jcl](legacy-sifap/natural-programs/SIFAPJ01.jcl#L24), 24-33 | Missing/duplicated bank transmission on restart | Unconfirmed: operational recovery may rely on an external reconciliation step | Operations + payments owner | Awaiting human validation |
+| BONUS-Q15 | What factor applies above the final income ceiling when no branch assigns one? | [BATCHPGT.NSP](legacy-sifap/natural-programs/BATCHPGT.NSP#L585), 585-592; [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L347), 347-354 | High-income calculation and state dependence | Unconfirmed: an upstream domain bound or explicit fallback may be missing | Benefits owner + QA | Awaiting human validation |
+| BONUS-Q16 | Should the thirteenth payment use age factor, active-month proportion or another rule? | [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L271), 271-293; [2012 section 2.1](legacy-sifap/legacy-docs/BUSINESS-RULES-2012.md#L129), 129-136 | December monetary equivalence | Unconfirmed: the formula comment may be historical rather than current | Benefits owner | Awaiting human validation |
+| BONUS-Q17 | Should a later non-court deduction cap earlier court amounts, and should net be recomputed after deduction updates? | [CALCDSCT.NSP](legacy-sifap/natural-programs/CALCDSCT.NSP#L127), 127-188; [2012 RN-021/023](legacy-sifap/legacy-docs/BUSINESS-RULES-2012.md#L156), 156-174 | Order-sensitive deductions and inconsistent stored totals | Unconfirmed: the intended exemption/priority may not match a running-total cap | Payments/legal owner + QA | Awaiting human validation |
+| BONUS-Q18 | How do three-character DDM deduction codes map to one-character local processing? | [CALCDSCT.NSP](legacy-sifap/natural-programs/CALCDSCT.NSP#L125), 125-167; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L51); [SOCPROG.ddm](legacy-sifap/adabas-ddms/SOCPROG.ddm#L78) | Misclassified or ignored deduction types | Unconfirmed: a mapping layer or legacy encoding may be absent | Payments owner + DBA | Awaiting human validation |
+| BONUS-Q19 | Should correction accumulate multiple months, and what indices cover years outside 2010-2012? | [CALCCORR.NSP](legacy-sifap/natural-programs/CALCCORR.NSP#L86), 86-128, 229-239; [2008 section 3.3.2](legacy-sifap/legacy-docs/TECHNICAL-MANUAL-SIFAP-2008.md#L309), 309-322 | Incorrect correction scope or missing indices | Unconfirmed: a historical table/update process may be incomplete | Calculation owner | Awaiting human validation |
+| BONUS-Q20 | Does CPF ordering justify ending correction at the first period above the requested end? | [CALCCORR.NSP](legacy-sifap/natural-programs/CALCCORR.NSP#L174), 174-188; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L35), 35-38, 127-128 | Eligible records may depend on within-CPF order | Unconfirmed: chronological order may have been assumed without the composite descriptor | DBA + QA | Awaiting human validation |
+| BONUS-Q21 | What commits the final correction audit and keeps it consistent with the already committed payment? | [CALCCORR.NSP](legacy-sifap/natural-programs/CALCCORR.NSP#L204), 204-226; [CCAUDIT.NSC](legacy-sifap/natural-programs/CCAUDIT.NSC#L57), 57-58, 98 | Audit durability and transaction consistency | Unconfirmed: a caller/session commit may have been assumed | DBA + audit owner | Awaiting human validation |
+| BONUS-Q22 | Why is parsed bank identity not used in the successful reconciliation update? | [BATCHCON.NSP](legacy-sifap/natural-programs/BATCHCON.NSP#L140), 140-147, 204-212; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L72) | Bank attribution and alpha formatting | Unconfirmed: only one bank may have been supported operationally | Bank integration owner | Awaiting human validation |
+| BONUS-Q23 | Should unknown return codes count as reconciled and allow a successful job return? | [BATCHCON.NSP](legacy-sifap/natural-programs/BATCHCON.NSP#L201), 201-235, 290-294 | Unhandled bank outcomes can be hidden by counters | Unconfirmed: unknown codes may need a separate exception category | Bank integration owner + operations | Awaiting human validation |
+| BONUS-Q24 | Which audit action meanings and query-recording policy govern CO, CN and DV across writers and reports? | [CONSBENF.NSP](legacy-sifap/natural-programs/CONSBENF.NSP#L168), 168-179; [BATCHCON.NSP](legacy-sifap/natural-programs/BATCHCON.NSP#L311), 311-343; [RELAUDIT.NSP](legacy-sifap/natural-programs/RELAUDIT.NSP#L163), 163-182; [AUDIT.ddm](legacy-sifap/adabas-ddms/AUDIT.ddm#L39), 39-49, 134-140 | Audit interpretation and completeness | Unconfirmed: multiple generations of action codes may coexist | Audit/control owner | Awaiting human validation |
+| BONUS-Q25 | What makes consultation history the latest twelve payments rather than the first twelve in CPF order? | [CONSBENF.NSP](legacy-sifap/natural-programs/CONSBENF.NSP#L264), 264-288; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L35), 35-38, 127-128 | Misleading history ordering | Unconfirmed: within-CPF chronological order may have been assumed | Query owner + DBA | Awaiting human validation |
+| BONUS-Q26 | Which CPF mask should apply consistently to leading-zero identifiers, screens and reports? | [CONSBENF.NSP](legacy-sifap/natural-programs/CONSBENF.NSP#L298), 298-311; [RELPGT.NSP](legacy-sifap/natural-programs/RELPGT.NSP#L163), 163-167 | Inconsistent personal-data disclosure | Unconfirmed: differing historical display policies may need one approved rule | Privacy/audit owner | Awaiting human validation |
+| BONUS-Q27 | Are program subtotals complete when records are read in period order? | [RELPGT.NSP](legacy-sifap/natural-programs/RELPGT.NSP#L123), 123-149; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L129), 129-130 | Split or misleading totals | Unconfirmed: the report may assume contiguous program groups not guaranteed by the selected descriptor | Reporting owner + DBA | Awaiting human validation |
+| BONUS-Q28 | Who authorizes unconditional exclusion of deletion events, including explicit EX searches? | [RELAUDIT.NSP](legacy-sifap/natural-programs/RELAUDIT.NSP#L130), 130-141; [AUDIT.ddm](legacy-sifap/adabas-ddms/AUDIT.ddm#L138), 138-140 | Audit report completeness | Unconfirmed: a historical control policy or workaround may exist | Audit/control owner | Awaiting human validation |
+| BONUS-Q29 | Should the date histogram use all events or the filtered report population? | [RELAUDIT.NSP](legacy-sifap/natural-programs/RELAUDIT.NSP#L136), 136-157, 256-266 | Totals from different populations may be compared incorrectly | Unconfirmed: histogram and detail may intentionally answer different questions | Reporting/audit owner | Awaiting human validation |
+| BONUS-Q30 | Which special prefixes may erase prior CPF/RG errors, and why does NIS validation still follow? | [VALDOCS.NSP](legacy-sifap/natural-programs/VALDOCS.NSP#L58), 58-65, 98-116, 228-241 | Validation exemptions | Unconfirmed: exemptions may be document-specific rather than universal | Document/benefits owner | Awaiting human validation |
+| BONUS-Q31 | What validates CTPS/voter ID and persists IND-DOCS-OK for eligibility? | [VALDOCS.NSP](legacy-sifap/natural-programs/VALDOCS.NSP#L67), 67-125; [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L83); [VALELEG.NSN](legacy-sifap/natural-programs/VALELEG.NSN#L196) | Validation result may not reach stored eligibility input | Unconfirmed: a manual or external approval flow may exist | Registration/document owner | Awaiting human validation |
+| BONUS-Q32 | Does fixed-width padding satisfy the first/last-name test for a single-word name? | [VALBENEF.NSN](legacy-sifap/natural-programs/VALBENEF.NSN#L18); [helper](legacy-sifap/natural-programs/VALBENEF.NSN#L316), 316-331 | Name validation and user acceptance | Unconfirmed: the original check may rely on string semantics not yet characterized | Registration owner + QA | Awaiting human validation |
+| BONUS-Q33 | Which rounding/truncation semantics govern calculation versus region, status and grand totals? | [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L264), 264-266; [BATCHREL.NSP](legacy-sifap/natural-programs/BATCHREL.NSP#L165), 165-198; [2012 RN-014](legacy-sifap/legacy-docs/BUSINESS-RULES-2012.md#L127) | Financial reconciliation | Unconfirmed: integer and packed assignments may change the effect of the rounding expression | Finance owner + Natural specialist | Awaiting human validation |
+| BONUS-Q34 | Which region vocabulary governs calculations and where should unknown/missing/special regions appear in reports? | [LDASIFAP.NSL](legacy-sifap/natural-programs/LDASIFAP.NSL#L34), 34-46; [BATCHREL.NSP](legacy-sifap/natural-programs/BATCHREL.NSP#L141), 141-163; [SOCPROG.ddm](legacy-sifap/adabas-ddms/SOCPROG.ddm#L84), 84-91 | Wrong regional factors or classification | Unconfirmed: state-index and macroregion schemes may have been conflated | Benefits/reporting owner | Awaiting human validation |
+| BONUS-Q35 | Which payment status and type vocabularies apply to stored data and displayed labels? | [BATCHCON.NSP](legacy-sifap/natural-programs/BATCHCON.NSP#L204), 204-227; [RELPGT.NSP](legacy-sifap/natural-programs/RELPGT.NSP#L170), 170-195; [PAYMENT.ddm](legacy-sifap/adabas-ddms/PAYMENT.ddm#L60), 60-80 | Incorrect lifecycle or payment-category translation | Unconfirmed: historical data revisions may require explicit mappings | Payments owner + DBA | Awaiting human validation |
+| BONUS-Q36 | Which extract is authoritative for legal-representative fields present in DDM but absent in the supplied FDT? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L139), 139-140; [FDT](legacy-sifap/adabas-ddms/FDT-150-BENEFICIARY.txt#L81), 81-95 | Schema coverage and extraction fidelity | Unconfirmed: one listing may omit later physical changes | DBA | Awaiting human validation |
+| BONUS-Q37 | Which processes populate the remaining control, biometric, death/block, correlation and audit-profile fields? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L103), 103-140; [AUDIT.ddm](legacy-sifap/adabas-ddms/AUDIT.ddm#L74), 74-94; [CCAUDIT.NSC](legacy-sifap/natural-programs/CCAUDIT.NSC#L82), 82-98 | Unmapped data ownership and missing controls | Unconfirmed: the supplied corpus may exclude external writers or operational procedures | DBA + control/integration owners | Awaiting human validation |
+| BONUS-Q38 | Do the documented historical audit partitions exist and belong in requested reports? | [AUDIT.ddm](legacy-sifap/adabas-ddms/AUDIT.ddm#L142), 142-145; [RELAUDIT.NSP](legacy-sifap/natural-programs/RELAUDIT.NSP#L111), 111-123 | Historical audit completeness | Unconfirmed: FNR 153 alone may represent only part of the intended history | DBA + audit owner | Awaiting human validation |
+| BONUS-Q39 | What sends job-failure notifications, parameterizes the period and reconciles RC 4/8 with the documented successor condition? | [SIFAPJ01.jcl](legacy-sifap/natural-programs/SIFAPJ01.jcl#L13), 13-33, 69-93; [SIFAPJ02.jcl](legacy-sifap/natural-programs/SIFAPJ02.jcl#L13), 13-21 | Scheduling and operational recovery | Unconfirmed: scheduler or operations tooling outside the supplied JCL may supply these functions | Operations owner | Awaiting human validation |
+| BONUS-Q40 | What implements hyperexit 03 and the phonetic/derived-key semantics needed outside the supplied source? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L144), 144-153; [FDT](legacy-sifap/adabas-ddms/FDT-150-BENEFICIARY.txt#L89), 89-95 | Derived-query equivalence | Unconfirmed: database-level extensions may require a separately supplied implementation | Adabas DBA | Awaiting human validation |
+| BONUS-Q41 | How should DDM decimal lengths, Natural formats and physical packed-byte lengths be reconciled? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L78), 78-80; [FDT](legacy-sifap/adabas-ddms/FDT-150-BENEFICIARY.txt#L44), 44-46; [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L60), 60-68 | Precision, range and overflow behavior | Unconfirmed: notation conventions or reconstructed listings may differ | Natural specialist + DBA | Awaiting human validation |
 
-### Achados adicionais (bônus)
+## Validation record requirements
 
-Achados legítimos fora dos 20 mistérios canônicos. Contam no debrief, **não** mudam o denominador e **não** substituem um mistério canônico que ficou faltando.
+- [ ] Assign named human owners to the proposed areas.
+- [ ] Map eligible questions to canonical IDs with the facilitator; do not invent a score.
+- [ ] Record the decision, decision-maker, date and supporting evidence before changing a status.
+- [ ] Keep unanswered questions out of approved requirements and implementation assumptions.
 
-| ID | Questão em aberto | Evidência (`path:line`) | Impacto | Hipótese (não confirmada) | Pessoa/área responsável | Status |
-|---|---|---|---|---|---|---|
-| `BONUS` | <!-- preencher --> | <!-- preencher: path:line --> | <!-- preencher --> | <!-- preencher: não confirmada --> | <!-- preencher --> | <!-- preencher --> |
-
----
-
-## Regras de integridade
-
-- Registre apenas questões em aberto; não escreva uma resposta no catálogo.
-- Mantenha a evidência no formato `path:line` para preservar a rastreabilidade.
-- Marque toda hipótese explicitamente como **não confirmada**.
-- Só a pessoa responsável pode dar a validação humana e mudar o status.
-- Sem evidência humana, a questão continua em aberto.
-
----
-
-### Continue lendo
-
-| Anterior | Próximo |
-|---|---|
-| [Checklist de Questões em Aberto](mysteries-checklist.md)<br/><sub>Verificação de rastreabilidade.</sub> | [Relatório de Descoberta](discovery-report.md)<br/><sub>Consolidação final do estágio.</sub> |
-
-<sub>[Voltar ao índice do kit](../README.md)</sub>
+Related: [Rule candidates](business-rules-catalog.md), [data map](data-map.md),
+[dependency map](dependency-map.md), [discovery report](discovery-report.md).
