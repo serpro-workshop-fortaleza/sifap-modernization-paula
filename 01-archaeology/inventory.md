@@ -12,12 +12,13 @@
 | Stage | Stage 1 - Archaeology, step 1 |
 | Inspected directory | [01-archaeology/legacy-sifap/](legacy-sifap/) |
 | Evidence | File and directory names, extensions, placement, and file sizes in bytes |
-| Prerequisite | The team confirmed that it had not started reading individual legacy files |
+| Measurement status | Rechecked against filesystem metadata on 2026-09-10 (UTC) |
+| Prerequisite | No individual-file reading before kickoff, assumed from the prompt; explicit team confirmation was not collected in this run |
 
 > [!NOTE]
 > This is the first analysis and will be revised during subsequent file reading.
-> No legacy file content was opened, including documentation, programs, DDMs,
-> or JCL. No legacy files were modified. Evidence therefore cites paths and
+> During this kickoff, no legacy file content was opened, including documentation,
+> programs, DDMs, or JCL. No legacy files were modified. Evidence therefore cites paths and
 > metadata, not source lines. Probable purposes and reading priorities are
 > hypotheses, not confirmed behavior or dependencies.
 
@@ -63,6 +64,9 @@ general file-format conventions only; contents were not checked.
 | `.md` | 8 | Markdown documentation |
 | `.txt` | 1 | Plain-text file; its specific format is unverified |
 | **Total** | **40** | **10 distinct extensions** |
+
+No `.cpy`, `.map`, `.NSM`, or `.NSD` files were found. These zero counts describe
+filenames only, not whether corresponding capabilities exist in the system.
 
 The 25 files in `natural-programs/` comprise **22 Natural source/data/copycode
 members, 2 JCL files, and 1 Markdown file**. Thus, the 24 non-documentation files
@@ -206,7 +210,7 @@ find 01-archaeology/legacy-sifap -type l -print
 - [x] At least three naming patterns are counted; 12 repeated groups are listed.
 - [x] Exactly three unusual items have paths, measured evidence, and follow-up actions.
 - [x] The proposed reading order is justified and explicitly provisional.
-- [x] Legacy contents remain unread and unmodified.
+- [x] No legacy file contents were opened or modified during this kickoff.
 
 ### Continue reading
 
