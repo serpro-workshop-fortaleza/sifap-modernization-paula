@@ -34,7 +34,7 @@ No início da Etapa 2, depois que a dupla ler os programas Natural atribuídos (
 - Lerei `.specify/memory/constitution.md` e listarei as restrições relacionadas à funcionalidade
 - Lerei cada arquivo legado citado antes de redigir qualquer requisito
 - Refinarei histórias brutas com a habilidade [`user-story-refine`](../skills/user-story-refine/SKILL.md) (INVEST e fatias verticais)
-- Classificarei cada requisito por padrão EARS com a habilidade [`ears-validate`](../skills/ears-validate/SKILL.md)
+- Classificarei cada requisito por padrão EARS com a habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md)
 - Atribuirei REQ-IDs exclusivos no formato `REQ-<DOMAIN>-NNN`
 - Anexarei uma linha `source_legacy:` a cada requisito
 - Escreverei critérios de aceitação Dado/Quando/Então e marcarei os itens fora do escopo
@@ -99,7 +99,7 @@ Abra cada arquivo `.NSP`, `.NSN`, `.ddm` ou `.txt` citado e confirme o comportam
 Aplique a habilidade [`user-story-refine`](../skills/user-story-refine/SKILL.md): INVEST, um resultado por história e fatias verticais.
 
 **Etapa 5: formalize em EARS.**
-Use os padrões da habilidade [`ears-validate`](../skills/ears-validate/SKILL.md). Use exatamente um padrão por requisito. Divida qualquer "e" oculto em requisitos separados.
+Use os padrões da habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md). Use exatamente um padrão por requisito. Divida qualquer "e" oculto em requisitos separados.
 
 **Etapa 6: atribua REQ-IDs e rastreabilidade.**
 Atribua a cada requisito um `REQ-<DOMAIN>-NNN` exclusivo. Coloque a linha `source_legacy:` diretamente abaixo do REQ-ID e adicione critérios de aceitação Dado/Quando/Então.

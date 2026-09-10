@@ -89,7 +89,7 @@ describe('ArchiveButton', () => {
 
 ## Rastreabilidade de REQ-ID
 
-Todo teste que verifica um requisito nomeia seu REQ-ID em um comentário inline. Isso alimenta o relatório não bloqueante `spec-traceability` (consulte [`requirements.instructions.md`](requirements.instructions.md)), que lista REQ-IDs ainda não referenciados por testes.
+Todo teste que verifica um requisito nomeia seu REQ-ID em um comentário inline. Isso alimenta o relatório não bloqueante `spec-traceability` (consulte [`sdd-artifacts.instructions.md`](sdd-artifacts.instructions.md)), que lista REQ-IDs ainda não referenciados por testes.
 
 ## Metas de cobertura
 

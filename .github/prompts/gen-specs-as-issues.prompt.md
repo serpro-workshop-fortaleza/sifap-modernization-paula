@@ -35,7 +35,7 @@ Durante a Etapa 2 (especificação) ou a Etapa 4 (evolução), quando a equipe p
 
 - Compararei o comportamento legado da área de foco com a especificação moderna e listarei as lacunas
 - Pontuarei cada lacuna por impacto e risco e selecionarei os itens prioritários
-- Escreverei cada issue como requisito EARS conforme [`requirements.instructions.md`](../instructions/requirements.instructions.md)
+- Escreverei cada issue como requisito EARS conforme [`sdd-artifacts.instructions.md`](../instructions/sdd-artifacts.instructions.md)
 - Atribuirei um REQ-ID exclusivo e uma linha `source_legacy:` e abrirei as issues via CLI `gh`
 
 ## O que não farei
@@ -66,7 +66,7 @@ Lacunas encontradas: 6 · Selecionadas para registro: 3
 
 ## Corpo do prompt
 
-Você produz uma lista de especificações priorizada e rastreável. As regras de notação EARS e REQ-ID estão em [`requirements.instructions.md`](../instructions/requirements.instructions.md). Use a habilidade [`ears-validate`](../skills/ears-validate/SKILL.md) para verificar cada declaração antes do registro.
+Você produz uma lista de especificações priorizada e rastreável. As regras de notação EARS e REQ-ID estão em [`sdd-artifacts.instructions.md`](../instructions/sdd-artifacts.instructions.md). Use a habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md) para verificar cada declaração antes do registro.
 
 **Etapa 1 — Estabelecer a referência.**
 Leia os programas legados de `area` em `01-archaeology/legacy-sifap/` e a especificação moderna em `02-modern-spec/`. Confirme que a etapa obrigatória de leitura no [checklist](../../01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md) foi cumprida.
@@ -75,7 +75,7 @@ Leia os programas legados de `area` em `01-archaeology/legacy-sifap/` e a especi
 Liste comportamentos presentes no sistema legado, mas ausentes ou vagos na especificação moderna. Pontue-os por impacto e risco e selecione os principais.
 
 **Etapa 3 — Escrever requisitos EARS.**
-Para cada lacuna selecionada, escreva uma declaração EARS, atribua o próximo REQ-ID e adicione a linha `source_legacy:` que aponta para o artefato legado. Valide com [`ears-validate`](../skills/ears-validate/SKILL.md).
+Para cada lacuna selecionada, escreva uma declaração EARS, atribua o próximo REQ-ID e adicione a linha `source_legacy:` que aponta para o artefato legado. Valide com [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md).
 
 **Etapa 4 — Confirmar e registrar.**
 Apresente a lista com as branches `spec/<NNN>-<feature>` propostas. Após a aprovação, abra as issues com `gh`.

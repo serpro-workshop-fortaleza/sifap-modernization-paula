@@ -5,7 +5,7 @@ applyTo: "01-archaeology/legacy-sifap/**,**/*.NSP,**/*.nsp,**/*.NSN,**/*.nsn,**/
 
 # Código legado Natural/Adabas — Guia de leitura
 
-Este arquivo é ativado quando você abre programas Natural, DDMs Adabas, JCL, copycodes ou qualquer arquivo no diretório `01-archaeology/legacy-sifap/`. Ele ensina a ler código legado do SIFAP (Sistema de Fiscalização e Administração de Pagamentos): estrutura de programas Natural, dependências CALLNAT e INCLUDE, FDTs Adabas, nomenclatura legada, padrões batch, decimais compactados e estratégia de primeira leitura. Ele **não** decide limites de módulos modernos nem mapeamentos JPA, que pertencem a [`modular-monolith.instructions.md`](modular-monolith.instructions.md), e não escreve requisitos EARS nem registros de rastreabilidade, que pertencem a [`requirements.instructions.md`](requirements.instructions.md).
+Este arquivo é ativado quando você abre programas Natural, DDMs Adabas, JCL, copycodes ou qualquer arquivo no diretório `01-archaeology/legacy-sifap/`. Ele ensina a ler código legado do SIFAP (Sistema de Fiscalização e Administração de Pagamentos): estrutura de programas Natural, dependências CALLNAT e INCLUDE, FDTs Adabas, nomenclatura legada, padrões batch, decimais compactados e estratégia de primeira leitura. Ele **não** decide limites de módulos modernos nem mapeamentos JPA, que pertencem a [`modular-monolith.instructions.md`](modular-monolith.instructions.md), e não escreve requisitos EARS nem registros de rastreabilidade, que pertencem a [`sdd-artifacts.instructions.md`](sdd-artifacts.instructions.md).
 
 ## Estrutura de programas Natural
 

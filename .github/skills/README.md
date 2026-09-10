@@ -13,7 +13,7 @@ Todas as 42 habilidades, agrupadas pelo que fazem. Cada habilidade aparece em ap
 
 | Habilidade | Descrição |
 | --- | --- |
-| [`ears-validate`](ears-validate/) | Use ao validar requisitos em relação aos padrões da notação EARS. Os gatilhos incluem "EARS", "revisão de requisitos", "qualidade de requisitos", "declaração com a palavra-chave shall" e "REQ-ID". |
+| [`sdd-requirements-engineer`](sdd-requirements-engineer/) | Use ao validar requisitos em relação aos padrões da notação EARS. Os gatilhos incluem "EARS", "revisão de requisitos", "qualidade de requisitos", "declaração com a palavra-chave shall" e "REQ-ID". |
 | [`user-story-refine`](user-story-refine/) | Use ao refinar itens da lista priorizada, dividir épicos ou validar critérios INVEST. Os gatilhos incluem "refinar história", "dividir épico", "critérios de aceitação", "história de usuário" e "INVEST". |
 | [`adr-draft`](adr-draft/) | Use ao elaborar Registros de Decisão de Arquitetura (Architecture Decision Records), avaliar alternativas ou documentar compromissos técnicos. Os gatilhos incluem "ADR", "decisão de arquitetura", "compromisso técnico", "escolher entre" e "por que escolhemos". |
 | [`capability-map`](capability-map/) | Use ao mapear capacidades de negócio, identificar sobreposições ou lacunas na empresa ou alinhar investimentos de TI a resultados de negócio. Os gatilhos incluem "mapa de capacidades", "capacidade de negócio", "mapa de domínio" e "arquitetura corporativa". |

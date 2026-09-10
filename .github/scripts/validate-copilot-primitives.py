@@ -786,17 +786,18 @@ PROMPT_REQUIRED_SECTIONS = [
 # Habilidades: comparação sem diferenciar maiúsculas de minúsculas, pois habilidades
 # nativas usam caixa de frase, enquanto algumas importações usam caixa de título.
 SKILL_REQUIRED_SECTIONS = [
-    ("Quando usar", {"Quando usar", "Quando invocar"}),
-    ("Modelo de saída", {"Modelo de saída"}),
-    ("Critérios de qualidade", {"Critério de qualidade", "Critérios de qualidade"}),
+    ("Quando usar", {"Quando usar", "Quando invocar", "When to Use", "When to Invoke"}),
+    ("Modelo de saída", {"Modelo de saída", "Output Template"}),
+    ("Critérios de qualidade", {"Critério de qualidade", "Critérios de qualidade", "Quality Gate"}),
 ]
 
 # Instruções: somente presença, com correspondência exata do título.
 INSTRUCTION_REQUIRED_SECTIONS = [
-    ("Convenções", {"Convenções"}),
-    ("Faça / Não faça", {"Faça / Não faça"}),
+    ("Convenções", {"Convenções", "Conventions"}),
+    ("Faça / Não faça", {"Faça / Não faça", "Do / Don't"}),
     ("Lista de verificação antes de abrir uma PR", {
         "Lista de verificação antes de abrir uma PR",
+        "PR Checklist",
     }),
 ]
 

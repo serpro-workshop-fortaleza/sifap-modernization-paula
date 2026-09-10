@@ -41,7 +41,7 @@ Os [metadados de idioma](language.json) da branch identificam sua edição. O va
 
 ### Conteúdo e precisão
 
-- [ ] **Cite a fonte autoritativa de cada convenção**; não a repita a partir do resumo em `copilot-instructions.md`. Os nomes de branches vêm de [`../00-GIT-WORKFLOW.md`](../00-GIT-WORKFLOW.md); as regras de leitura do legado, de [`instructions/natural-adabas.instructions.md`](instructions/natural-adabas.instructions.md); EARS e `source_legacy`, de [`skills/ears-validate/SKILL.md`](skills/ears-validate/SKILL.md).
+- [ ] **Cite a fonte autoritativa de cada convenção**; não a repita a partir do resumo em `copilot-instructions.md`. Os nomes de branches vêm de [`../00-GIT-WORKFLOW.md`](../00-GIT-WORKFLOW.md); as regras de leitura do legado, de [`instructions/natural-adabas.instructions.md`](instructions/natural-adabas.instructions.md); EARS, de [`skills/sdd-requirements-engineer/SKILL.md`](skills/sdd-requirements-engineer/SKILL.md); `source_legacy`, de [`copilot-instructions.md`](copilot-instructions.md).
 - [ ] **Prefixos de branch** (tabela autoritativa em [`../00-GIT-WORKFLOW.md`](../00-GIT-WORKFLOW.md)): `spec/<NNN>-<feature>`, `impl/<NNN>-<feature>`, `infra/<component>`, `docs/<topic>` e `agent/<issue-NN>`, todos criados a partir de `develop`. Nunca transforme `impl/` em `spec/` (falha nº 1).
 - [ ] **Nunca invente fatos sobre o SIFAP.** Uma primitiva ensina *como descobrir* o comportamento legado; nunca declara qual é uma regra de negócio. O corpus em `01-archaeology/legacy-sifap/` possui 24 membros Natural (12 `.NSP`, 5 `.NSN`, 2 `.NSC`, 2 `.NSA`, 1 `.NSL`, 2 `.jcl`), 4 DDMs `.ddm` e 1 listagem FDT `.txt`. Não existe arquivo `.NSD`.
 - [ ] **Somente a cadeia de ferramentas aprovada.** Nunca recomende, instale nem migre para Cursor, Windsurf, Codex, Cline, Continue, Aider, Codeium, Tabnine, IntelliJ, Eclipse ou Neovim; VS Code com GitHub Copilot é o único editor e assistente aprovado.
@@ -119,6 +119,11 @@ Um hook `preToolUse` bloqueia uma chamada de ferramenta ao escrever este objeto 
 ## Seções obrigatórias do corpo
 
 A estrutura das seções é verificada por `scripts/validate-copilot-primitives.py`. Use estes títulos, na ordem indicada.
+
+For English skills, the equivalent headings are `When to Use` or `When to Invoke`,
+`Output Template`, and `Quality Gate`. English scoped instructions use
+`Conventions`, `Do / Don't`, and `PR Checklist`. The validator accepts these
+explicit equivalents without making any required section optional.
 
 | Primitiva | Seções `##` obrigatórias, na ordem |
 |---|---|
@@ -339,7 +344,7 @@ Arquivo plano `hooks/<name>.json`, com o script referenciado em `hooks/<name>/` 
 - Essa configuração desativa `MD025` e `MD040`, entre outras. Não confunda os dois portões: "exatamente um H1" reprova no validador de primitivas, nunca no markdownlint; "todo bloco cercado declara uma linguagem" é uma convenção de revisão, não uma falha de lint.
 - Todo erro recorrente recebe uma proteção nomeada no código ou na CI e, quando altera uma decisão durável, um ADR. Postmortems do facilitador e materiais de resposta permanecem fora deste repositório público.
 
-Implementações de referência para copiar: [`agents/archaeologist.agent.md`](agents/archaeologist.agent.md), [`prompts/stage-archaeologist-extract-business-rules.prompt.md`](prompts/stage-archaeologist-extract-business-rules.prompt.md), [`skills/ears-validate/SKILL.md`](skills/ears-validate/SKILL.md) e [`instructions/modular-monolith.instructions.md`](instructions/modular-monolith.instructions.md).
+Implementações de referência para copiar: [`agents/archaeologist.agent.md`](agents/archaeologist.agent.md), [`prompts/stage-archaeologist-extract-business-rules.prompt.md`](prompts/stage-archaeologist-extract-business-rules.prompt.md), [`skills/sdd-requirements-engineer/SKILL.md`](skills/sdd-requirements-engineer/SKILL.md) e [`instructions/modular-monolith.instructions.md`](instructions/modular-monolith.instructions.md).
 
 ## Lista de verificação de autoria
 

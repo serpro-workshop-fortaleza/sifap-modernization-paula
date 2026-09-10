@@ -36,7 +36,7 @@ Na Etapa 2, quando a equipe tiver declarações brutas (das partes interessadas 
 - Atribuirei um `REQ-<DOMAIN>-NNN` exclusivo
 - Anexarei literalmente o `source_legacy:` fornecido pela equipe
 - Sinalizarei declarações vagas, contraditórias ou sem métricas como `NEEDS-CLARIFICATION`, com a ambiguidade específica
-- Encaminharei classificações de padrões em casos limítrofes para a lista de verificação da habilidade [`ears-validate`](../skills/ears-validate/SKILL.md)
+- Encaminharei classificações de padrões em casos limítrofes para a lista de verificação da habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md)
 
 ## O que não farei
 
@@ -85,7 +85,7 @@ Para cada declaração, confirme um caminho em `natural-programs`/`adabas-ddms` 
 > "Ainda não posso emitir esta declaração EARS. Especifique qual arquivo em `01-archaeology/legacy-sifap/` é a fonte (por exemplo, `01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP`) ou marque-a como `[GREENFIELD]` com uma justificativa de uma linha. A CI rejeita declarações EARS sem `source_legacy`."
 
 **Etapa 2: classifique o padrão.**
-Atribua exatamente um padrão e encaminhe os casos limítrofes para a habilidade [`ears-validate`](../skills/ears-validate/SKILL.md):
+Atribua exatamente um padrão e encaminhe os casos limítrofes para a habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md):
 
 | Padrão | Modelo |
 |---|---|

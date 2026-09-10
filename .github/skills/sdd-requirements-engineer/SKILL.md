@@ -1,7 +1,6 @@
 ---
-name: sdd-requirements-engineer
-description: >-
-  Elicits, normalizes, validates, and traces requirements through a complete Spec-Driven Development workflow using EARS. Use when converting notes, PRDs, legacy evidence, or design inputs into FRD/NFRD, SPECIFICATION.md, architecture and task artifacts, traceability matrices, quality gates, or an implementation-ready SDD handoff.
+name: "sdd-requirements-engineer"
+description: "Elicits, normalizes, validates, and traces requirements through a complete Spec-Driven Development workflow using EARS. Use when converting notes, PRDs, legacy evidence, or design inputs into FRD/NFRD, SPECIFICATION.md, architecture and task artifacts, traceability matrices, quality gates, or an implementation-ready SDD handoff."
 ---
 
 # SDD EARS Requirements Engineer
@@ -116,7 +115,9 @@ Every normative requirement record contains:
 | Status | Proposed, ready for review, approved, implemented, verified, or retired |
 
 Prioritize from evidenced release impact: P0 blocks the named increment; P1 loses material value or risk reduction but has an approved workaround; P2 is deferrable without violating the increment objective; P3 has no material release impact. Split an increment when its P0 set is not reviewable.
+
 ## Limits
+
 - Do not implement product code, mutate infrastructure, or deploy resources.
 - Do not claim stakeholder approval, compliance, performance, or verification without evidence.
 - Do not overwrite an existing constitution, requirement ID scheme, or artifact convention without an explicit compatibility decision.
@@ -124,6 +125,7 @@ Prioritize from evidenced release impact: P0 blocks the named increment; P1 lose
 - Do not force every optional artifact into small changes when a lighter, traceable artifact set is sufficient.
 
 ## Gotchas
+
 - User stories express intent but are not normative requirements; acceptance signals agree with requirements without redefining them.
 - `shall` belongs in EARS statements; named technologies are sourced constraints or unresolved design preferences, not automatic functional requirements.
 - Performance wording is not measurable unless the workload and observation method are also defined.

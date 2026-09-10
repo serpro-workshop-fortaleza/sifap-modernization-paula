@@ -146,7 +146,7 @@ as part of this kickoff.
    the `CALC*` filenames; [PDAVALID.NSA](legacy-sifap/natural-programs/PDAVALID.NSA)
    shares `VAL` with the `VAL*` and `SUBVAL*` names. Treat these as navigation
    hints only. Read actual declarations and calls before recording an edge.
-4. **Reorder programs using verified dependencies.** Continue through the
+4. **Reorder programs using verified dependencies.** Proceed through the
    confirmed batch members and the remaining `CAD*`, `CAL*`, `CONS*`, `REL*`,
    `SUB*`, and `VAL*` groups. Use
    [/map-dependencies](../.github/prompts/stage-archaeologist-map-dependencies.prompt.md)

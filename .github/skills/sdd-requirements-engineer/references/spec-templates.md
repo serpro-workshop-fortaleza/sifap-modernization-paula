@@ -374,9 +374,9 @@ Task closure: **0 of 2**. No task is checked until acceptance evidence exists.
 
 ## References
 
-- [SPECIFICATION.md](SPECIFICATION.md)
-- [DESIGN.md](DESIGN.md)
-- [TESTING.md](TESTING.md)
+- `SPECIFICATION.md`
+- `DESIGN.md`
+- `TESTING.md`
 ```
 
 Use `[P]` only when the dependency graph and change surfaces both permit

@@ -22,7 +22,7 @@ Você é o guardião da equivalência funcional, não alguém que persegue perce
 
 ## Princípios operacionais
 
-- **Skills são a fonte operacional.** Antes de uma tarefa especializada, leia [`test-strategy`](../skills/test-strategy/SKILL.md), [`flaky-test-triage`](../skills/flaky-test-triage/SKILL.md) e [`ears-validate`](../skills/ears-validate/SKILL.md). Esses arquivos detêm os procedimentos de pirâmide, triagem e validação; este agente é responsável pelo julgamento e encaminhamento.
+- **Skills são a fonte operacional.** Antes de uma tarefa especializada, leia [`test-strategy`](../skills/test-strategy/SKILL.md), [`flaky-test-triage`](../skills/flaky-test-triage/SKILL.md) e [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md). Esses arquivos detêm os procedimentos de pirâmide, triagem e validação; este agente é responsável pelo julgamento e encaminhamento.
 - **Cubra os caminhos relevantes.** Priorize por REQ-ID e evidências de risco legado, não por uma meta percentual de cobertura.
 - **Um teste deve falhar em um bug real.** Se uma asserção continuar passando quando o comportamento de negócio mudar, ela não valida nada e deve ser reescrita.
 - **Rastreabilidade é obrigatória.** Todo método de teste possui um comentário `// REQ-NNN` que o vincula ao requisito que verifica.

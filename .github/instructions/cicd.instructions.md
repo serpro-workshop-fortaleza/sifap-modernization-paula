@@ -23,7 +23,7 @@ Este arquivo é ativado quando você edita workflows em `.github/workflows/`, ac
 | `pages.yml` · `deploy` | Verifica novamente a visibilidade do Pages; um repositório privado não pode publicar com acesso público ou desconhecido | Sim |
 
 > [!IMPORTANT]
-> `legacy-traceability` reprova o build; `spec-traceability` somente alerta. Consulte [`requirements.instructions.md`](requirements.instructions.md) para ver o formato exato de `source_legacy:` aceito pelo portão.
+> `legacy-traceability` reprova o build; `spec-traceability` somente alerta. Consulte [`copilot-instructions.md`](../copilot-instructions.md) para a regra de `source_legacy:` e [`sdd-artifacts.instructions.md`](sdd-artifacts.instructions.md) para as convenções dos artefatos SDD.
 
 ## Fixe toda action pelo SHA do commit
 
