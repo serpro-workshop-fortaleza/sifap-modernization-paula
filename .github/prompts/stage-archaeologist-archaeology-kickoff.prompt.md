@@ -3,7 +3,7 @@ name: "archaeology-kickoff"
 description: "Inicia a Etapa 1, orienta a equipe pelo diretório legado e produz um inventário inicial."
 argument-hint: "path=01-archaeology/legacy-sifap/"
 agent: "archaeologist"
-model: Claude Opus 5 (copilot)
+
 tools: ["read", "search", "edit"]
 ---
 # /archaeology-kickoff
