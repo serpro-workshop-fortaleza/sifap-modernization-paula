@@ -6,10 +6,10 @@
 
 | Field | Value |
 |---|---|
-| Team | [To be filled by the team] |
+| Acceptance | Requesting user's H1 acceptance recorded on 2026-09-10; see the discovery report |
 | Date | 2026-09-10 |
 | Scope | All 24 library files and all 4 DDMs plus the FDT listing |
-| Progress | All 24 library files and all 5 Adabas artifacts read; human validation pending |
+| Progress | All 24 library files and all 5 Adabas artifacts read; H1 accepted for isolated CPF/NIS, not a blanket approval of rule meanings |
 | Method | Read declarations and executable bodies; distinguish code, comments, documentation and human decisions |
 
 > [!IMPORTANT]
@@ -24,6 +24,12 @@
 Complete declaration inventory: [program-data-dictionary.md](program-data-dictionary.md).
 Per-file and per-block coverage: [reading-coverage.md](reading-coverage.md).
 Questions and proposed human owners: [mysteries-found.md](mysteries-found.md).
+
+H1 source-selection decisions and the requesting user's acceptance are in
+[discovery-report.md](discovery-report.md#4-approved-scope). The accepted first
+feature uses only SC-01..03, CV-01..02, SN-01..03 and the PDAVALID contract.
+These reading classifications are preserved: choosing that baseline does not
+resolve incompatible caller behavior or approve the remaining hypotheses.
 
 ## BATCHPGT.NSP
 
@@ -394,7 +400,8 @@ formal EARS in Stage 2.
 - [x] All source conditionals have a candidate or an explicit technical-only note.
 - [x] Imported declarations, call contracts and DDM differences are statically cross-checked.
 - [x] Open questions are linked to the human-validation register.
-- [ ] The team has reviewed the candidates; no approval is inferred from tool execution.
+- [x] The requesting user's acceptance of the reading package and selected H1 scope is recorded separately from source-rule classifications.
+- [ ] Resolve other business interpretations only when their reopening gates are met; tool execution does not supply that approval.
 
 ### Continue reading
 

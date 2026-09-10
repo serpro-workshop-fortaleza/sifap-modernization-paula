@@ -117,6 +117,30 @@ Escreva EARS apenas em `specs/<NNN>-<feature>/spec.md`, usando o Spec-Kit. Todo 
 
 ---
 
+## 7. H1 closure record - 2026-09-10
+
+The requesting user authorized the remaining scope decisions and reported
+"foi feito o aceute de tudo" in the Copilot conversation. This is the provenance
+of the recorded human acceptance, not a claim that the agent witnessed the
+handoff or obtained individual signatures. The [discovery report](discovery-report.md)
+is the authoritative scope/acceptance record for this closure.
+
+| Gate | Closure result | Evidence |
+|---|---|---|
+| Reading | All 29 technical artifacts covered; team review accepted as reported by the requesting user | [Reading ledger](reading-coverage.md) |
+| Rule origins | Selected validator behaviors have source references; no unresolved hypothesis promoted to a fact | [Rule catalogue](business-rules-catalog.md) |
+| Scope | Isolated CPF/NIS validation selected; caller integration, registration, eligibility, payments, reports, migration and operations deferred | [Approved scope](discovery-report.md#4-approved-scope) |
+| Open questions | All 41 have a disposition, accountable role and reopening gate; historical questions are not claimed solved | [Disposition register](mysteries-found.md#h1-dispositions) |
+| Verification | Static evidence checked by executable validator/tests; fingerprints retained | [Evidence snapshot](validation/evidence.json) |
+| Receiving acceptance | H1 acceptance reported by the requesting user; release is only to Stage 2 specification of the selected feature | [Acceptance record](discovery-report.md#6-verification-and-approval) |
+
+Canonical-ID reconciliation remains owned by Pair 1 and the facilitator before
+any canonical score is reported. Runtime characterization remains a later gate;
+neither item is falsely certified by this closure. Expanding the accepted feature
+reactivates the affected question's reopening gate.
+
+---
+
 ### Continue lendo
 
 | Anterior | Próximo |

@@ -6,7 +6,7 @@
 
 | Field | Value |
 |---|---|
-| Date / branch / team | 2026-09-10 / develop / [To be filled by the team] |
+| Date / branch / acceptance | 2026-09-10 / develop / acceptance reported by the requesting user |
 | Requested scope | Every supplied library member and Adabas artifact |
 | Library read | 24/24: 12 NSP, 5 NSN, 2 NSC, 2 NSA, 1 NSL, 2 JCL |
 | Adabas read | 5/5: 4 DDMs and 1 physical FDT listing |
@@ -15,8 +15,10 @@
 | DDM inventory | 199 value-bearing declarations including MU, 7 groups, 14 derived descriptors |
 
 Comments were read for provenance but excluded from executable-control counts.
-No legacy file was edited. Human reading by each assigned pair has not been
-certified by this agent; that gate remains the team's responsibility.
+No legacy file was edited. The requesting user reported completion of the
+human acceptance on 2026-09-10; the agent did not independently collect each
+pair's signature or witness its reading. The [H1 record](discovery-report.md)
+releases the isolated CPF/NIS scope, not all unresolved business interpretations.
 
 ## Program catalogue and reading ledger
 
@@ -132,10 +134,37 @@ not canonical IDs. The mapping is for review navigation only.
 
 ## Reproducing static checks
 
-These commands are provided for a later terminal run from the repository root.
-In this session the equivalent anchored workspace searches were performed;
-the commands themselves were not executed. They exclude Natural comment lines
-and count source text, not executable test coverage.
+The closure uses the existing [evidence validator](scripts/validate-evidence.mjs)
+and its [tests](scripts/validate-evidence.test.mjs). Run from the repository root:
+
+```bash
+node --test --experimental-test-coverage --test-coverage-include='**/validate-evidence.mjs' --test-coverage-lines=80 --test-coverage-branches=70 --test-reporter=spec --test-reporter=tap --test-reporter-destination=stdout --test-reporter-destination=01-archaeology/validation/validator-tests.tap 01-archaeology/scripts/validate-evidence.test.mjs
+node 01-archaeology/scripts/validate-evidence.mjs --write-report
+npx markdownlint-cli2 01-archaeology/{inventory,business-rules-catalog,dependency-map,data-map,program-data-dictionary,reading-coverage,mysteries-found,glossary,discovery-report,LEGACY-EXPLORATION-CHECKLIST}.md
+```
+
+The generated [evidence report](validation/evidence.json) contains execution
+time, baseline commit, static totals, SHA-256 for all 29 technical sources,
+fingerprints for all ten documents (including the closure checklist), and the
+validator/test-source fingerprints. `source_commit` identifies the repository
+baseline; it does not assert that closure edits have been committed. The hashes
+capture the working-tree snapshot, which becomes stale after a later edit until
+regenerated. No commit or push is performed by these commands.
+
+The closure suite passed **17/17 tests**, including six H1-specific checks;
+validator coverage was **94.84% of lines and 98.43% of branches**, above the
+configured 80%/70% gates. The [TAP execution record](validation/validator-tests.tap)
+retains that result. The validator also enforces exactly one disposition per
+question, role ownership, reopening gates and preservation of the original
+unresolved statuses. Markdown lint (CLI 0.23.2) passed for all ten documents.
+
+These checks do not hash the evidence report itself or certify human acceptance,
+Natural runtime equivalence, physical precision, every prose interpretation or
+historical DOCX equivalence. Test coverage here measures the documentary validator,
+not coverage of the SIFAP business logic.
+
+The following optional searches reproduce the initial inventory of markers.
+They exclude Natural comment lines and count source text, not executed branches.
 
 ```bash
 rg -n '^\s*IF\b' 01-archaeology/legacy-sifap/natural-programs -g '*.NSP' -g '*.NSN' -g '*.NSC'
@@ -145,12 +174,13 @@ rg -n '^\s*(CALLNAT|INCLUDE|LOCAL USING|PARAMETER USING|FETCH)\b' 01-archaeology
 rg -n '^\s*(M\s+)?[12]\s+[A-Z][A-Z0-9]\s+\S+\s+[ANP]\s+' 01-archaeology/legacy-sifap/adabas-ddms -g '*.ddm'
 ```
 
-## Remaining gates
+## H1 closure and later gates
 
 - [x] Every supplied technical artifact has a complete reading record.
 - [x] Source conditions and declarations are traced to the written artifacts.
 - [x] DDM/code and historical-document differences remain explicit.
-- [ ] Each pair confirms its assigned reading and discusses the evidence.
-- [ ] Named owners validate hypotheses and the canonical mystery mapping.
-- [ ] The PO selects a small feature and confirms deferred scope at H1.
-- [ ] Compile/run in an authorized environment before claiming behavioral equivalence.
+- [x] Record the requesting user's report of team reading/review and H1 acceptance, without invented individual signatures.
+- [x] Select isolated CPF/NIS validation and assign all 41 question dispositions and reopening gates.
+- [x] Release the source-linked selected scope to Stage 2; broader domains remain excluded.
+- [ ] Pair 1 reconciles canonical IDs with the facilitator before a canonical completion score is claimed.
+- [ ] Compile/run or document unavailable runtime evidence before claiming behavioral equivalence at implementation acceptance.

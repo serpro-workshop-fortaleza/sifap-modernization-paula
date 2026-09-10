@@ -12,7 +12,7 @@ const adabas = path.join(archaeology, 'legacy-sifap/adabas-ddms');
 const artifacts = [
     'inventory.md', 'business-rules-catalog.md', 'dependency-map.md', 'data-map.md',
     'program-data-dictionary.md', 'reading-coverage.md', 'mysteries-found.md',
-    'glossary.md', 'discovery-report.md',
+    'glossary.md', 'discovery-report.md', 'LEGACY-EXPLORATION-CHECKLIST.md',
 ];
 
 export function controlBlocks(source) {
@@ -47,17 +47,17 @@ export function controlBlocks(source) {
 
 export function declaredVariables(source) {
     const declaration = source.split(/^END-DEFINE\s*$/m)[0];
-    return Object.fromEntries([...declaration.matchAll(/^\s*\d+\s+(#[\w-]+)\s+\(([^)]+)\)/gm)]
+    return Object.fromEntries([...declaration.matchAll(/^[ \t]*\d+[ \t]+(#[\w-]+)[ \t]+\(([^)\r\n]+)\)/gm)]
         .map(match => [match[1], match[2].replaceAll(' ', '')]));
 }
 
 function documentedVariables(section) {
     const variables = {};
     for (const line of section.split('\n')) {
-        const typed = line.match(/^((?:[ANP]\d+(?:\.\d+)?|L)(?:\/[\d:,]+)?):\s*(.*)$/);
+        const typed = line.match(/^((?:[ANP]\d+(?:\.\d+)?|L)(?:\/[\d:,]+)?):/);
         const table = line.match(/^\| (#[^|]+) \| ((?:[ANP]\d+(?:\.\d+)?|L)(?:\/[\d:,]+)?) \|/);
         if (!typed && !table) continue;
-        const names = typed ? typed[2] : table[1];
+        const names = typed ? line.slice(typed[0].length) : table[1];
         const format = typed ? typed[1] : table[2];
         for (const name of names.match(/#[\w-]+/g) ?? []) variables[name] = format;
     }
@@ -72,6 +72,37 @@ function section(document, heading) {
 
 function cells(line) {
     return line.split('|').slice(1, -1).map(cell => cell.trim());
+}
+
+function questionRows(document, heading) {
+    const body = document.split(`## ${heading}\n`)[1];
+    assert.ok(body !== undefined, `Missing H1 section: ${heading}`);
+    return body.split('\n## ')[0].split('\n')
+        .filter(line => /^\| BONUS-Q\d{2} \|/.test(line)).map(cells);
+}
+
+function validateDispositions(document) {
+    const questions = questionRows(document, 'Question register');
+    const dispositions = questionRows(document, 'H1 dispositions');
+    const expected = Array.from({ length: 41 }, (_, index) => `BONUS-Q${String(index + 1).padStart(2, '0')}`);
+    assert.deepEqual(questions.map(row => row[0]), expected, 'H1 source-question IDs');
+    assert.deepEqual(dispositions.map(row => row[0]), expected, 'H1 disposition IDs');
+    for (const question of questions) {
+        assert.equal(question[6], 'Awaiting human validation', `H1 source-question status: ${question[0]}`);
+    }
+    for (const row of dispositions) {
+        const [identifier, disposition, action, owner, gate] = row;
+        assert.equal(row.length, 5, `H1 disposition columns: ${identifier}`);
+        assert.equal(disposition, identifier === 'BONUS-Q01' ? 'Scoped decision' : 'Deferred', `H1 disposition type: ${identifier}`);
+        assert.ok(action.length > 0, `H1 action: ${identifier}`);
+        assert.match(owner, /^Pair [1345] \/ [A-Za-z][A-Za-z ]+$/, `H1 owner: ${identifier}`);
+        assert.ok(gate.startsWith('Before '), `H1 reopening gate: ${identifier}`);
+    }
+    return {
+        dispositions: dispositions.length,
+        scoped_decisions: dispositions.filter(row => row[1] === 'Scoped decision').length,
+        deferred_questions: dispositions.filter(row => row[1] === 'Deferred').length,
+    };
 }
 
 function checksum(file) {
@@ -175,6 +206,7 @@ export function validateEvidence(documentOverrides = {}) {
     assert.equal(members.length, 24, 'Library coverage changed');
     assert.equal(definitions.length, 5, 'Adabas coverage changed');
     const totals = { IF: 0, DECIDE: 0, REPORT: 0, ERROR: 0, CALLNAT: 0, INCLUDE: 0, USING: 0, fields: 0, groups: 0, derived: 0, variables: 0, links: 0 };
+    Object.assign(totals, validateDispositions(documents['mysteries-found.md']));
     const sources = {};
     for (const name of members) {
         validateMember(name, documents, totals);
@@ -199,6 +231,7 @@ export function validateEvidence(documentOverrides = {}) {
         source_sha256: sources,
         artifact_sha256: Object.fromEntries(artifacts.map(name => [name, checksum(path.join(archaeology, name))])),
         validator_sha256: checksum(fileURLToPath(import.meta.url)),
+        validator_tests_sha256: checksum(path.join(archaeology, 'scripts/validate-evidence.test.mjs')),
         limitations: ['Not a Natural compiler or runtime test', 'No business-rule or human H1 approval', 'Historical document formats are not asserted equivalent'],
     };
 }

@@ -2,11 +2,16 @@
 
 > **Trail:** [Team kit](../README.md) > [Stage 1](README.md) > **Open questions**
 
-**Questions for human validation, with evidence and explicitly unconfirmed hypotheses.**
+**Source questions preserved with approved H1 dispositions, owners and reopening gates.**
 
-Date: 2026-09-10. Team: [To be filled by the team]. No answer or human approval
-has been recorded by this reading pass. Proposed owners below identify areas;
-the team still needs to assign named people.
+Reading and H1 closure date: 2026-09-10. The requesting user authorized the
+remaining decisions and reported acceptance of everything in the Copilot
+conversation. The [H1 dispositions](#h1-dispositions) record how every question
+is handled for the isolated CPF/NIS scope; they do not confirm the hypotheses.
+The original question status and proposed domain reviewers below are retained
+as the reading snapshot. Accountability is assigned to repository roles, not
+invented individuals; the requesting user is the escalation contact until the
+team identifies the person occupying a role.
 
 ## Canonical-ID boundary
 
@@ -15,6 +20,11 @@ pair, but does not enumerate the individual question-to-ID mapping. The local
 `BONUS-Qnn` keys below therefore do not claim a canonical assignment, replace
 the denominator of 20, or report any mystery as solved. The facilitator/team
 must validate the mapping to `SIFAP-M-01` through `SIFAP-M-20` explicitly.
+
+H1 accepts the source-linked local register for the selected feature. Pair 1
+(Requirements Engineer) owns canonical reconciliation with the facilitator
+before reporting a canonical score. No canonical completion claim is made,
+and no prerequisite or score is silently marked complete by this disposition.
 
 ## Question register
 
@@ -62,12 +72,86 @@ must validate the mapping to `SIFAP-M-01` through `SIFAP-M-20` explicitly.
 | BONUS-Q40 | What implements hyperexit 03 and the phonetic/derived-key semantics needed outside the supplied source? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L144), 144-153; [FDT](legacy-sifap/adabas-ddms/FDT-150-BENEFICIARY.txt#L89), 89-95 | Derived-query equivalence | Unconfirmed: database-level extensions may require a separately supplied implementation | Adabas DBA | Awaiting human validation |
 | BONUS-Q41 | How should DDM decimal lengths, Natural formats and physical packed-byte lengths be reconciled? | [BENEFIC.ddm](legacy-sifap/adabas-ddms/BENEFIC.ddm#L78), 78-80; [FDT](legacy-sifap/adabas-ddms/FDT-150-BENEFICIARY.txt#L44), 44-46; [CALCBENF.NSN](legacy-sifap/natural-programs/CALCBENF.NSN#L60), 60-68 | Precision, range and overflow behavior | Unconfirmed: notation conventions or reconstructed listings may differ | Natural specialist + DBA | Awaiting human validation |
 
+## H1 dispositions
+
+Decision authority: the requesting user's authorization and acceptance reported
+on 2026-09-10; scope and provenance are recorded in the
+[discovery report](discovery-report.md). `Scoped decision` settles only which
+source behavior is selected for the first feature. `Deferred` accepts postponement
+because the affected behavior is excluded, not because its risk is resolved.
+One scoped decision and 40 deferrals cover all 41 local questions exactly once.
+
+Owners use the existing [team roles](../00-TEAM-FLOW.md): Pair 1 owns business
+interpretation, Pair 3 technical translation, Pair 4 data/quality, and Pair 5
+operational controls. Pair 2 receives this record for architecture. The accountable
+role gathers the domain review identified above before any expansion of scope.
+
+| Question | H1 disposition | Approved action for the first feature | Accountable role | Reopen gate |
+|---|---|---|---|---|
+| BONUS-Q01 | Scoped decision | Use SUBVALCP with CCVALCPF and SUBVALNI via PDAVALID only. Preserve their error precedence; do not replace or unify CADBENEF, VALBENEF or VALDOCS. Historic authority remains open outside this boundary. | Pair 1 / Requirements Engineer | Before integrating a caller, review differing outcomes with the business owner and require source-linked tests. |
+| BONUS-Q02 | Deferred | Exclude beneficiary status changes and age-based suspension. | Pair 1 / Product Owner | Before registration updates, approve a status-transition table and age boundary examples. |
+| BONUS-Q03 | Deferred | Exclude address capture, storage and display. | Pair 4 / DBA | Before address migration, approve length/overflow handling with registration and sample data. |
+| BONUS-Q04 | Deferred | Exclude dependent registration and counts; do not choose a new limit. | Pair 1 / Product Owner | Before dependent scope, approve the business maximum separately from storage capacity. |
+| BONUS-Q05 | Deferred | Do not translate relationship codes. | Pair 1 / Requirements Engineer | Before dependent scope, approve a code-mapping table against domain and stored-data evidence. |
+| BONUS-Q06 | Deferred | Exclude dependent attributes and active-state initialization. | Pair 4 / DBA | Before dependent writes, identify mandatory attributes, defaults and the responsible producer. |
+| BONUS-Q07 | Deferred | Exclude all K factors and monetary adjustment. | Pair 1 / Product Owner | Before calculation scope, obtain factor provenance and approved numerical examples. |
+| BONUS-Q08 | Deferred | Exclude age, birth-date and period computations. | Pair 1 / Requirements Engineer | Before eligibility/reprocessing, approve the reference date and century policy. |
+| BONUS-Q09 | Deferred | Exclude calendar validation from the document-number feature. | Pair 4 / QA Engineer | Before date validation, approve leap-year and future-date cases with the domain owner. |
+| BONUS-Q10 | Deferred | Do not introduce a region-99 bypass into CPF/NIS validation. | Pair 1 / Product Owner | Before eligibility scope, require explicit exception authority and affected-check boundaries. |
+| BONUS-Q11 | Deferred | Exclude income and eligibility thresholds. | Pair 1 / Requirements Engineer | Before eligibility scope, confirm the income unit and household divisor with examples. |
+| BONUS-Q12 | Deferred | Validate NIS digits only; exclude eligibility-code interpretation and database lookups. | Pair 1 / Requirements Engineer | Before eligibility integration, approve the grammar and obtain valid record-context behavior. |
+| BONUS-Q13 | Deferred | No payment calculation, identifier allocation or persistence in the first feature. | Pair 3 / Technical Lead | Before payment design, settle write ownership and test duplicate/concurrent creation paths. |
+| BONUS-Q14 | Deferred | No remittance generation or batch restart in the first feature. | Pair 5 / DevOps Engineer | Before batch implementation, approve a restart/reconciliation procedure with failure injection evidence. |
+| BONUS-Q15 | Deferred | No income-band calculation or invented fallback factor. | Pair 1 / Product Owner | Before calculation scope, approve the no-matching-band result and boundary examples. |
+| BONUS-Q16 | Deferred | Exclude December/thirteenth-payment calculation. | Pair 1 / Product Owner | Before December scope, approve the formula, proration basis and numerical examples. |
+| BONUS-Q17 | Deferred | No deductions, court exemptions, cap ordering or net updates. | Pair 1 / Product Owner | Before deduction scope, obtain finance/legal approval and order-sensitive examples. |
+| BONUS-Q18 | Deferred | No deduction-code translation. | Pair 4 / DBA | Before deduction scope, reconcile every stored code with an approved mapping. |
+| BONUS-Q19 | Deferred | No index tables or retroactive monetary correction. | Pair 1 / Product Owner | Before correction scope, identify the index authority, covered periods and accumulation rule. |
+| BONUS-Q20 | Deferred | No payment scans or dependence on within-CPF ordering. | Pair 4 / DBA | Before correction queries, demonstrate descriptor order and inclusive interval behavior. |
+| BONUS-Q21 | Deferred | No correction persistence or legacy audit transaction. | Pair 4 / DBA | Before correction writes, verify atomicity and final-audit durability with failure cases. |
+| BONUS-Q22 | Deferred | No bank identity assignment or bank-return parsing. | Pair 5 / DevOps Engineer | Before bank integration, obtain the actual bank/layout contract and approved code mapping. |
+| BONUS-Q23 | Deferred | No reconciliation status or job-return mapping. | Pair 5 / DevOps Engineer | Before reconciliation scope, approve unknown-return handling and operational escalation. |
+| BONUS-Q24 | Deferred | No reuse or normalization of CO/CN/DV actions; no legacy audit writes. | Pair 1 / Requirements Engineer | Before audit integration, approve the versioned vocabulary and query-recording policy. |
+| BONUS-Q25 | Deferred | No beneficiary/payment history query. | Pair 4 / DBA | Before consultation scope, define deterministic latest-first order and ties. |
+| BONUS-Q26 | Deferred | No legacy screen/report masks are adopted. The first feature must not log raw CPF/NIS or echo them in diagnostics. | Pair 5 / DevOps Engineer | Before identifier display or logging changes, obtain the privacy policy and disclosure tests. |
+| BONUS-Q27 | Deferred | No program subtotal reporting. | Pair 4 / QA Engineer | Before report scope, verify complete grouping across noncontiguous records. |
+| BONUS-Q28 | Deferred | No audit report or deletion-event filter. | Pair 1 / Product Owner | Before audit-report scope, obtain control-owner approval of included events. |
+| BONUS-Q29 | Deferred | No histogram or filtered-report totals. | Pair 4 / QA Engineer | Before reporting scope, approve populations and reconciliation expectations. |
+| BONUS-Q30 | Deferred | No VALDOCS prefix exemptions or clearing of prior errors. Preserve only the selected helpers' behavior. | Pair 1 / Product Owner | Before special-document support, require an approved exception list and error precedence. |
+| BONUS-Q31 | Deferred | Exclude CTPS, voter ID and stored documentation approval; valid digits do not establish registration or eligibility. | Pair 1 / Requirements Engineer | Before document-approval scope, identify validators, producer and persistence responsibility. |
+| BONUS-Q32 | Deferred | Exclude personal-name validation and string-padding policy for names. | Pair 4 / QA Engineer | Before name validation, approve trimmed/padded and single-word examples. |
+| BONUS-Q33 | Deferred | Use the selected integer check-digit logic only; no money or rounding is involved. | Pair 4 / QA Engineer | Before monetary scope, obtain runtime numeric characterization and finance-approved totals. |
+| BONUS-Q34 | Deferred | No regional classification, lookup or factor table. | Pair 1 / Requirements Engineer | Before regional scope, reconcile macroregion/state codes and missing/special values. |
+| BONUS-Q35 | Deferred | No payment lifecycle or payment-type translation. | Pair 1 / Requirements Engineer | Before payments, approve code meanings, transitions and historical mappings. |
+| BONUS-Q36 | Deferred | No database migration or choice between the DDM and FDT extract. | Pair 4 / DBA | Before data extraction, obtain authoritative physical definitions including JA/JB. |
+| BONUS-Q37 | Deferred | No new writes to control, biometric, death/block, correlation or profile fields. | Pair 4 / DBA | Before dependent integration, document each field's producer and ownership. |
+| BONUS-Q38 | Deferred | No audit partition query or historical completeness claim. | Pair 4 / DBA | Before audit-history scope, inventory authorized partition definitions and retention coverage. |
+| BONUS-Q39 | Deferred | No scheduler, job parameterization, alerts or production operations. | Pair 5 / DevOps Engineer | Before batch deployment, verify live scheduling, notifications and RC handling in an authorized environment. |
+| BONUS-Q40 | Deferred | No phonetic/hyperdescriptor emulation; the selected helpers do not access DDMs. | Pair 4 / DBA | Before derived searches, obtain implementation and fixtures for hyperexit 03 and phonetic rules. |
+| BONUS-Q41 | Deferred | No packed-decimal or physical-byte translation. Keep document identifiers as text and check-digit calculations as bounded integers. | Pair 4 / DBA | Before Adabas/numeric migration, validate actual precision, scale, byte layout and overflow behavior. |
+
+## H1 release rule
+
+All 41 questions have an accepted disposition; zero is marked resolved as a
+historical business question. None blocks specification of the isolated
+CPF/NIS feature under the selected contract. This is not permission to implement
+the deferred behavior: its reopening gate becomes blocking before that behavior
+enters a specification or implementation. Pair 1 approves a changed scope and
+Pair 2 records the architectural impact before the disposition is revised.
+
+The selected behavior still needs source-linked examples and tests during
+specification/implementation. In particular, document length/normalization,
+error precedence, leading zeros, wrong check digits, repeated digits, repeated
+calls and the difference between invalid input and execution error must be made
+explicit. No runtime equivalence has been certified at H1.
+
 ## Validation record requirements
 
-- [ ] Assign named human owners to the proposed areas.
-- [ ] Map eligible questions to canonical IDs with the facilitator; do not invent a score.
-- [ ] Record the decision, decision-maker, date and supporting evidence before changing a status.
-- [ ] Keep unanswered questions out of approved requirements and implementation assumptions.
+- [x] Record all 41 dispositions, accountable roles and reopening gates.
+- [x] Record the requesting user's acceptance date and provenance separately from source observations.
+- [x] Keep unanswered hypotheses out of approved factual claims and implementation assumptions.
+- [ ] Pair 1 reconciles canonical IDs with the facilitator before claiming a canonical score.
+- [ ] Role holders add their names and decisions when reopening a deferred item; no signature is fabricated here.
 
 Related: [Rule candidates](business-rules-catalog.md), [data map](data-map.md),
 [dependency map](dependency-map.md), [discovery report](discovery-report.md).

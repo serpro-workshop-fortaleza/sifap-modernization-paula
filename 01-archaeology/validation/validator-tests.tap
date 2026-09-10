@@ -1,0 +1,123 @@
+TAP version 13
+# Subtest: should_pair_nested_guards_and_ignore_commented_code
+ok 1 - should_pair_nested_guards_and_ignore_commented_code
+  ---
+  duration_ms: 2.773005
+  type: 'test'
+  ...
+# Subtest: should_record_decisions_report_hooks_and_error_handlers
+ok 2 - should_record_decisions_report_hooks_and_error_handlers
+  ---
+  duration_ms: 0.323399
+  type: 'test'
+  ...
+# Subtest: should_reject_an_unpaired_end_marker
+ok 3 - should_reject_an_unpaired_end_marker
+  ---
+  duration_ms: 1.022344
+  type: 'test'
+  ...
+# Subtest: should_reject_an_unclosed_guard
+ok 4 - should_reject_an_unclosed_guard
+  ---
+  duration_ms: 0.584825
+  type: 'test'
+  ...
+# Subtest: should_preserve_declaration_formats_and_exclude_comments_and_body
+ok 5 - should_preserve_declaration_formats_and_exclude_comments_and_body
+  ---
+  duration_ms: 0.516044
+  type: 'test'
+  ...
+# Subtest: should_validate_the_documented_corpus_without_treating_headers_as_fields
+ok 6 - should_validate_the_documented_corpus_without_treating_headers_as_fields
+  ---
+  duration_ms: 56.935665
+  type: 'test'
+  ...
+# Subtest: should_reject_a_changed_control_interval
+ok 7 - should_reject_a_changed_control_interval
+  ---
+  duration_ms: 3.349469
+  type: 'test'
+  ...
+# Subtest: should_reject_a_changed_parameter_format
+ok 8 - should_reject_a_changed_parameter_format
+  ---
+  duration_ms: 12.984802
+  type: 'test'
+  ...
+# Subtest: should_reject_a_changed_adabas_field_format
+ok 9 - should_reject_a_changed_adabas_field_format
+  ---
+  duration_ms: 14.799434
+  type: 'test'
+  ...
+# Subtest: should_reject_a_missing_evidence_link
+ok 10 - should_reject_a_missing_evidence_link
+  ---
+  duration_ms: 14.597199
+  type: 'test'
+  ...
+# Subtest: should_reject_an_out_of_range_source_line
+ok 11 - should_reject_an_out_of_range_source_line
+  ---
+  duration_ms: 12.254611
+  type: 'test'
+  ...
+# Subtest: should_record_h1_dispositions_and_hash_the_closure_checklist
+ok 12 - should_record_h1_dispositions_and_hash_the_closure_checklist
+  ---
+  duration_ms: 40.328081
+  type: 'test'
+  ...
+# Subtest: should_reject_a_missing_h1_disposition
+ok 13 - should_reject_a_missing_h1_disposition
+  ---
+  duration_ms: 1.257942
+  type: 'test'
+  ...
+# Subtest: should_reject_a_duplicate_h1_disposition
+ok 14 - should_reject_a_duplicate_h1_disposition
+  ---
+  duration_ms: 0.884229
+  type: 'test'
+  ...
+# Subtest: should_reject_an_unassigned_h1_owner
+ok 15 - should_reject_an_unassigned_h1_owner
+  ---
+  duration_ms: 0.833243
+  type: 'test'
+  ...
+# Subtest: should_reject_a_missing_h1_reopening_gate
+ok 16 - should_reject_a_missing_h1_reopening_gate
+  ---
+  duration_ms: 1.273725
+  type: 'test'
+  ...
+# Subtest: should_reject_h1_promotion_of_an_unresolved_hypothesis
+ok 17 - should_reject_h1_promotion_of_an_unresolved_hypothesis
+  ---
+  duration_ms: 1.030685
+  type: 'test'
+  ...
+1..17
+# tests 17
+# suites 0
+# pass 17
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 294.082454
+# start of coverage report
+# ------------------------------------------------------------------------
+# file                    | line % | branch % | funcs % | uncovered lines
+# ------------------------------------------------------------------------
+# 01-archaeology          |        |          |         | 
+#  scripts                |        |          |         | 
+#   validate-evidence.mjs |  94.84 |    98.43 |  100.00 | 240-252
+# ------------------------------------------------------------------------
+# all files               |  94.84 |    98.43 |  100.00 | 
+# ------------------------------------------------------------------------
+# end of coverage report

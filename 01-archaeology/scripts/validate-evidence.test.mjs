@@ -65,3 +65,46 @@ test('should_reject_an_out_of_range_source_line', () => {
     const changed = '[Invalid line](legacy-sifap/natural-programs/SUBVALNI.NSN#L99999)';
     assert.throws(() => validateEvidence({ 'inventory.md': changed }), /out-of-range/);
 });
+
+test('should_record_h1_dispositions_and_hash_the_closure_checklist', () => {
+    const report = validateEvidence();
+    assert.equal(report.totals.dispositions, 41);
+    assert.equal(report.totals.scoped_decisions, 1);
+    assert.equal(report.totals.deferred_questions, 40);
+    assert.match(report.artifact_sha256['LEGACY-EXPLORATION-CHECKLIST.md'], /^[a-f0-9]{64}$/);
+});
+
+test('should_reject_a_missing_h1_disposition', () => {
+    const original = readFileSync(new URL('../mysteries-found.md', import.meta.url), 'utf8');
+    const changed = original.replace(/^\| BONUS-Q41 \| Deferred \|.*\n/m, '');
+    assert.notEqual(changed, original);
+    assert.throws(() => validateEvidence({ 'mysteries-found.md': changed }), /H1 disposition IDs/);
+});
+
+test('should_reject_a_duplicate_h1_disposition', () => {
+    const original = readFileSync(new URL('../mysteries-found.md', import.meta.url), 'utf8');
+    const changed = original.replace('| BONUS-Q41 | Deferred |', '| BONUS-Q40 | Deferred |');
+    assert.notEqual(changed, original);
+    assert.throws(() => validateEvidence({ 'mysteries-found.md': changed }), /H1 disposition IDs/);
+});
+
+test('should_reject_an_unassigned_h1_owner', () => {
+    const original = readFileSync(new URL('../mysteries-found.md', import.meta.url), 'utf8');
+    const changed = original.replace('| Pair 1 / Requirements Engineer | Before integrating a caller', '| - | Before integrating a caller');
+    assert.notEqual(changed, original);
+    assert.throws(() => validateEvidence({ 'mysteries-found.md': changed }), /H1 owner/);
+});
+
+test('should_reject_a_missing_h1_reopening_gate', () => {
+    const original = readFileSync(new URL('../mysteries-found.md', import.meta.url), 'utf8');
+    const changed = original.replace(/Before integrating a caller[^|]+/, ' ');
+    assert.notEqual(changed, original);
+    assert.throws(() => validateEvidence({ 'mysteries-found.md': changed }), /H1 reopening gate/);
+});
+
+test('should_reject_h1_promotion_of_an_unresolved_hypothesis', () => {
+    const original = readFileSync(new URL('../mysteries-found.md', import.meta.url), 'utf8');
+    const changed = original.replace('| Awaiting human validation |', '| Resolved |');
+    assert.notEqual(changed, original);
+    assert.throws(() => validateEvidence({ 'mysteries-found.md': changed }), /H1 source-question status/);
+});
