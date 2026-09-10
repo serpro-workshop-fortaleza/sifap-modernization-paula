@@ -212,6 +212,19 @@ find 01-archaeology/legacy-sifap -type l -print
 - [x] The proposed reading order is justified and explicitly provisional.
 - [x] No legacy file contents were opened or modified during this kickoff.
 
+## Subsequent source reading
+
+On 2026-09-10, a separate source-reading pass covered all 24 library files and
+the four DDMs plus the FDT. The metadata-only kickoff above remains an initial
+snapshot, not evidence of program behavior or human approval.
+
+See [reading-coverage.md](reading-coverage.md) for the complete per-file ledger,
+[business-rules-catalog.md](business-rules-catalog.md) for block-level candidates,
+[program-data-dictionary.md](program-data-dictionary.md) for declarations, and
+[data-map.md](data-map.md) for Adabas fields and cross-source questions.
+[discovery-report.md](discovery-report.md) consolidates the package and the
+remaining H1 decisions.
+
 ### Continue reading
 
 | Previous | Next |
