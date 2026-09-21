@@ -1,77 +1,77 @@
 ---
 name: "terraform-azurerm-set-diff-analyzer"
-description: "Use quando um plano do Terraform para recursos AzureRM mostrar muitas alterações, embora apenas um elemento tenha sido adicionado ou removido, para separar diferenças falsas positivas de ordenação de Set das alterações reais. Abrange Application Gateway, Load Balancer, Firewall, Front Door e NSG. Os gatilhos incluem \"ruído no terraform plan\", \"diferença de tipo Set\", \"todos os elementos alterados\", \"diferença espúria\" e \"filtrar falsos positivos na CI\"."
+description: "Use when a Terraform plan for AzureRM resources shows many changes even though only one element was added or removed, to separate false-positive Set ordering diffs from real changes. Covers Application Gateway, Load Balancer, Firewall, Front Door, and NSG. Triggers include \"terraform plan noise\", \"Set type diff\", \"all elements changed\", \"spurious diff\", and \"filter false positives in CI\"."
 ---
-# Analisador de diferenças em conjuntos do Terraform AzureRM
+# Terraform AzureRM set diff analyzer
 
-Identifique **diferenças falsas positivas** em planos do Terraform causadas por atributos do tipo Set do provedor AzureRM e diferencie-as de alterações reais. A IaC deste kit usa Terraform (`azurerm ~> 3.x`), portanto esta habilidade se aplica diretamente à árvore `infra/` criada pela equipe no Estágio 3.
+Identify **false-positive diffs** in Terraform plans caused by Set-type attributes in the AzureRM provider and distinguish them from real changes. This kit's IaC uses Terraform (`azurerm ~> 3.x`), so this skill applies directly to the `infra/` tree created by the team in Stage 3.
 
-## Quando invocar
+## When to Invoke
 
-- "O `terraform plan` mostra dezenas de alterações, mas adicionei apenas uma regra de NSG."
-- "Meu plano do Application Gateway diz que todas as regras de roteamento mudaram. Isso é real?"
-- "Como evito que o ruído de ordenação de Set bloqueie a revisão do plano na CI?"
-- "Quais destas diferenças do Load Balancer realmente modificarão o recurso?"
+- "`terraform plan` shows dozens of changes, but I only added one NSG rule."
+- "My Application Gateway plan says all routing rules changed. Is that real?"
+- "How do I prevent Set ordering noise from blocking plan review in CI?"
+- "Which of these Load Balancer diffs will actually modify the resource?"
 
-## Contexto
+## Background
 
-O tipo Set do Terraform compara elementos por posição, não por uma chave estável. Por isso, adicionar ou remover um elemento pode fazer todos aparecerem como "alterados". Esse comportamento geral do Terraform é especialmente visível em recursos AzureRM que dependem muito de atributos do tipo Set: Application Gateway, Load Balancer, Firewall, Front Door e NSG. Essas diferenças falsas positivas não alteram o recurso implantado, mas ocultam as mudanças reais e tornam a revisão do plano sujeita a erros.
+Terraform's Set type compares elements by position, not by a stable key. As a result, adding or removing an element can make all of them appear "changed". This general Terraform behavior is especially visible in AzureRM resources that rely heavily on Set-type attributes: Application Gateway, Load Balancer, Firewall, Front Door, and NSG. These false-positive diffs do not change the deployed resource, but obscure real changes and make plan review error-prone.
 
-## Pré-requisitos
+## Prerequisites
 
-- Python 3.8+ (somente a biblioteca padrão; sem pacotes de terceiros).
+- Python 3.8+ (standard library only; no third-party packages).
 
-Se o Python não estiver disponível, instale-o pelo gerenciador de pacotes (`brew install python3`, `apt install python3`) ou pelo [python.org](https://www.python.org/downloads/).
+If Python is unavailable, install it through the package manager (`brew install python3`, `apt install python3`) or [python.org](https://www.python.org/downloads/).
 
-## Uso básico
+## Basic usage
 
 ```bash
-terraform plan -out=plan.tfplan                 # 1. capture o plano
-terraform show -json plan.tfplan > plan.json    # 2. exporte-o como JSON
-python scripts/analyze_plan.py plan.json        # 3. classifique as diferenças
+terraform plan -out=plan.tfplan                 # 1. capture the plan
+terraform show -json plan.tfplan > plan.json    # 2. export it as JSON
+python scripts/analyze_plan.py plan.json        # 3. classify the diffs
 ```
 
-O analisador lê o plano JSON, inspeciona atributos do tipo Set nos recursos AzureRM compatíveis e informa quais recursos mostram apenas alterações de ordem (falsos positivos) e quais têm adições, remoções ou modificações reais.
+The analyzer reads the JSON plan, inspects Set-type attributes in supported AzureRM resources, and reports which resources show only ordering changes (false positives) and which have real additions, removals, or modifications.
 
-## Interpretação dos resultados
+## Interpreting results
 
-| Sinal | Significado | Ação |
+| Signal | Meaning | Action |
 |---|---|---|
-| Alteração apenas de ordem em um atributo Set | Falso positivo, sem alteração real | Pode ser ignorado com segurança; registre na solicitação de pull |
-| Elemento adicionado ou removido | Alteração real | Revise antes de executar `terraform apply` |
-| Valor de atributo modificado | Alteração real | Revise antes de executar `terraform apply` |
-| Recurso ausente da lista de compatibilidade | Não analisado | Inspecione manualmente |
+| Ordering-only change in a Set attribute | False positive, no real change | Safe to ignore; document in the pull request |
+| Element added or removed | Real change | Review before running `terraform apply` |
+| Attribute value modified | Real change | Review before running `terraform apply` |
+| Resource absent from the support list | Not analyzed | Inspect manually |
 
-Os recursos compatíveis e seus atributos do tipo Set estão em [references/azurerm_set_attributes.md](references/azurerm_set_attributes.md). As opções completas da interface de linha de comando (CLI), os formatos de saída, os códigos de saída e os exemplos de CI/CD estão em [scripts/README.md](scripts/README.md).
+Supported resources and their Set-type attributes are in [references/azurerm_set_attributes.md](references/azurerm_set_attributes.md). Full command-line interface (CLI) options, output formats, exit codes, and CI/CD examples are in [scripts/README.md](scripts/README.md).
 
-## Solução de problemas
+## Troubleshooting
 
-| Problema | Solução |
+| Problem | Solution |
 |---|---|
-| `python: command not found` | Use `python3` ou instale o Python 3.8+ |
-| `ModuleNotFoundError` | O script usa apenas a biblioteca padrão; confirme que o Python 3.8+ está ativo |
-| Um recurso não foi classificado | Confirme que ele aparece em `references/azurerm_set_attributes.md`; caso contrário, revise-o manualmente |
+| `python: command not found` | Use `python3` or install Python 3.8+ |
+| `ModuleNotFoundError` | The script uses only the standard library; confirm that Python 3.8+ is active |
+| A resource was not classified | Confirm that it appears in `references/azurerm_set_attributes.md`; otherwise, review it manually |
 
-## Modelo de saída
+## Output Template
 
-Informe a classificação em uma tabela e acrescente um parecer de uma linha:
+Report the classification in a table and add a one-line verdict:
 
 ```markdown
-## Análise de diferenças de Set — plan.json
+## Set diff analysis — plan.json
 
-| Recurso | Atributo Set | Parecer | Alterações reais |
+| Resource | Set attribute | Verdict | Real changes |
 |---|---|---|---|
-| azurerm_application_gateway.main | request_routing_rule | Falso positivo (apenas ordem) | 0 |
-| azurerm_network_security_group.web | security_rule | Alteração real | +1 / -0 |
+| azurerm_application_gateway.main | request_routing_rule | False positive (ordering only) | 0 |
+| azurerm_network_security_group.web | security_rule | Real change | +1 / -0 |
 
-Total: 2 recursos analisados, 1 falso positivo e 1 com alterações reais.
-Parecer: revise a alteração da regra de NSG antes de aplicar o plano; a diferença do gateway pode ser ignorada com segurança.
+Total: 2 resources analyzed, 1 false positive and 1 with real changes.
+Verdict: review the NSG rule change before applying the plan; the gateway diff can safely be ignored.
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Um plano JSON foi produzido com `terraform show -json` antes da análise.
-- [ ] `scripts/analyze_plan.py` foi executado no plano JSON com Python 3.8+.
-- [ ] Cada recurso sinalizado está classificado como falso positivo (apenas ordem) ou alteração real.
-- [ ] As alterações reais são revisadas antes de `terraform apply`; os falsos positivos são documentados como seguros para ignorar.
-- [ ] Todos os recursos fora da lista de compatibilidade foram revisados manualmente.
+- [ ] A JSON plan was produced with `terraform show -json` before analysis.
+- [ ] `scripts/analyze_plan.py` was run on the JSON plan with Python 3.8+.
+- [ ] Every flagged resource is classified as a false positive (ordering only) or a real change.
+- [ ] Real changes are reviewed before `terraform apply`; false positives are documented as safe to ignore.
+- [ ] All resources outside the support list were reviewed manually.

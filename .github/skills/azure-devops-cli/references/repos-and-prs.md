@@ -1,59 +1,59 @@
-# Repositórios e solicitações de pull
+# Repositories and pull requests
 
-## Sumário
+## Contents
 
-- [Repositórios](#repositórios)
-- [Importação de repositório](#importação-de-repositório)
-- [Solicitações de pull](#solicitações-de-pull)
-- [Referências Git](#referências-git)
-- [Políticas de repositório](#políticas-de-repositório)
+- [Repositories](#repositories)
+- [Repository import](#repository-import)
+- [Pull requests](#pull-requests)
+- [Git references](#git-references)
+- [Repository policies](#repository-policies)
 
 ---
 
-## Repositórios
+## Repositories
 
-### Listar repositórios
+### List repositories
 
 ```bash
 az repos list --org https://dev.azure.com/{org} --project {project}
 az repos list --output table
 ```
 
-### Exibir detalhes do repositório
+### Show repository details
 
 ```bash
 az repos show --repository {repo-name} --project {project}
 ```
 
-### Criar repositório
+### Create repository
 
 ```bash
 az repos create --name {repo-name} --project {project}
 ```
 
-### Excluir repositório
+### Delete repository
 
 ```bash
 az repos delete --id {repo-id} --project {project} --yes
 ```
 
-### Atualizar repositório
+### Update repository
 
 ```bash
 az repos update --id {repo-id} --name {new-name} --project {project}
 ```
 
-## Importação de repositório
+## Repository import
 
-### Importar repositório Git
+### Import Git repository
 
 ```bash
-# Importar de um repositório Git público
+# Import from a public Git repository
 az repos import create \
   --git-source-url https://github.com/user/repo \
   --repository {repo-name}
 
-# Importar com autenticação
+# Import with authentication
 az repos import create \
   --git-source-url https://github.com/user/private-repo \
   --repository {repo-name} \
@@ -61,94 +61,94 @@ az repos import create \
   --password {password-or-pat}
 ```
 
-## Solicitações de pull
+## Pull requests
 
-### Criar solicitação de pull
+### Create pull request
 
 ```bash
-# Criação básica de solicitação de pull
+# Basic pull request creation
 az repos pr create \
   --repository {repo} \
   --source-branch {source-branch} \
   --target-branch {target-branch} \
-  --title "Título da solicitação de pull" \
-  --description "Descrição da solicitação de pull" \
+  --title "Pull request title" \
+  --description "Pull request description" \
   --open
 
-# Solicitação de pull com itens de trabalho
+# Pull request with work items
 az repos pr create \
   --repository {repo} \
   --source-branch {source-branch} \
   --work-items 63 64
 
-# Rascunho de solicitação de pull com revisores
+# Draft pull request with reviewers
 az repos pr create \
   --repository {repo} \
   --source-branch feature/new-feature \
   --target-branch main \
-  --title "Funcionalidade: nova operação" \
+  --title "Feature: new operation" \
   --draft true \
   --reviewers user1@example.com user2@example.com \
   --required-reviewers lead@example.com \
   --labels "enhancement" "backlog"
 ```
 
-### Listar solicitações de pull
+### List pull requests
 
 ```bash
-# Todas as solicitações de pull
+# All pull requests
 az repos pr list --repository {repo}
 
-# Filtrar por status
+# Filter by status
 az repos pr list --repository {repo} --status active
 
-# Filtrar por pessoa criadora
+# Filter by creator
 az repos pr list --repository {repo} --creator {email}
 
-# Saída como tabela
+# Table output
 az repos pr list --repository {repo} --output table
 ```
 
-### Exibir detalhes da solicitação de pull
+### Show pull request details
 
 ```bash
 az repos pr show --id {pr-id}
-az repos pr show --id {pr-id} --open  # Abrir no navegador
+az repos pr show --id {pr-id} --open  # Open in the browser
 ```
 
-### Atualizar solicitação de pull (concluir/abandonar/rascunho)
+### Update pull request (complete/abandon/draft)
 
 ```bash
-# Concluir solicitação de pull
+# Complete pull request
 az repos pr update --id {pr-id} --status completed
 
-# Abandonar solicitação de pull
+# Abandon pull request
 az repos pr update --id {pr-id} --status abandoned
 
-# Definir como rascunho
+# Set as draft
 az repos pr update --id {pr-id} --draft true
 
-# Publicar o rascunho da solicitação de pull
+# Publish draft pull request
 az repos pr update --id {pr-id} --draft false
 
-# Concluir automaticamente quando as políticas forem aprovadas
+# Auto-complete when policies pass
 az repos pr update --id {pr-id} --auto-complete true
 
-# Definir título e descrição
-az repos pr update --id {pr-id} --title "Novo título" --description "Nova descrição"
+# Set title and description
+az repos pr update --id {pr-id} --title "New title" --description "New description"
 ```
 
-### Obter localmente a solicitação de pull
+### Check out pull request locally
 
 ```bash
-# Obter a ramificação da solicitação de pull
+# Check out pull request branch
 az repos pr checkout --id {pr-id}
 
-# Obter com um remoto específico
+# Check out with a specific remote
 az repos pr checkout --id {pr-id} --remote-name upstream
 ```
 
-### Votar na solicitação de pull
+### Vote on pull request
 
 ```bash
 az repos pr set-vote --id {pr-id} --vote approve
@@ -158,92 +158,92 @@ az repos pr set-vote --id {pr-id} --vote wait-for-author
 az repos pr set-vote --id {pr-id} --vote reset
 ```
 
-### Revisores da solicitação de pull
+### Pull request reviewers
 
 ```bash
-# Adicionar revisores
+# Add reviewers
 az repos pr reviewer add --id {pr-id} --reviewers user1@example.com user2@example.com
 
-# Listar revisores
+# List reviewers
 az repos pr reviewer list --id {pr-id}
 
-# Remover revisores
+# Remove reviewers
 az repos pr reviewer remove --id {pr-id} --reviewers user1@example.com
 ```
 
-### Itens de trabalho da solicitação de pull
+### Pull request work items
 
 ```bash
-# Adicionar itens de trabalho à solicitação de pull
+# Add work items to pull request
 az repos pr work-item add --id {pr-id} --work-items {id1} {id2}
 
-# Listar itens de trabalho da solicitação de pull
+# List pull request work items
 az repos pr work-item list --id {pr-id}
 
-# Remover itens de trabalho da solicitação de pull
+# Remove work items from pull request
 az repos pr work-item remove --id {pr-id} --work-items {id1}
 ```
 
-### Políticas da solicitação de pull
+### Pull request policies
 
 ```bash
-# Listar políticas de uma solicitação de pull
+# List policies for a pull request
 az repos pr policy list --id {pr-id}
 
-# Colocar a avaliação de política de uma solicitação de pull na fila
+# Queue policy evaluation for a pull request
 az repos pr policy queue --id {pr-id} --evaluation-id {evaluation-id}
 ```
 
-## Referências Git
+## Git references
 
-### Listar referências (ramificações)
+### List references (branches)
 
 ```bash
 az repos ref list --repository {repo}
 az repos ref list --repository {repo} --query "[?name=='refs/heads/main']"
 ```
 
-### Criar referência (ramificação)
+### Create reference (branch)
 
 ```bash
 az repos ref create --name refs/heads/new-branch --object-type commit --object {commit-sha}
 ```
 
-### Excluir referência (ramificação)
+### Delete reference (branch)
 
 ```bash
 az repos ref delete --name refs/heads/old-branch --repository {repo} --project {project}
 ```
 
-### Bloquear/desbloquear ramificação
+### Lock/unlock branch
 
 ```bash
 az repos ref lock --name refs/heads/main --repository {repo} --project {project}
 az repos ref unlock --name refs/heads/main --repository {repo} --project {project}
 ```
 
-## Políticas de repositório
+## Repository policies
 
-### Listar todas as políticas
+### List all policies
 
 ```bash
 az repos policy list --repository {repo-id} --branch main
 ```
 
-### Criar/atualizar/excluir política
+### Create/update/delete policy
 
 ```bash
-# Criar a partir de um arquivo de configuração
+# Create from a configuration file
 az repos policy create --config policy.json
 
-# Atualizar
+# Update
 az repos policy update --id {policy-id} --config updated-policy.json
 
-# Excluir
+# Delete
 az repos policy delete --id {policy-id} --yes
 ```
 
-### Política de quantidade de aprovações
+### Approval count policy
 
 ```bash
 az repos policy approver-count create \
@@ -255,7 +255,7 @@ az repos policy approver-count create \
   --creator-vote-counts true
 ```
 
-### Política de build
+### Build policy
 
 ```bash
 az repos policy build create \
@@ -268,7 +268,7 @@ az repos policy build create \
   --valid-duration 720
 ```
 
-### Política de vinculação de itens de trabalho
+### Work item linking policy
 
 ```bash
 az repos policy work-item-linking create \
@@ -278,7 +278,7 @@ az repos policy work-item-linking create \
   --repository-id {repo-id}
 ```
 
-### Política de revisão obrigatória
+### Required review policy
 
 ```bash
 az repos policy required-reviewer create \
@@ -289,7 +289,7 @@ az repos policy required-reviewer create \
   --required-reviewers user@example.com
 ```
 
-### Política de estratégia de mesclagem
+### Merge strategy policy
 
 ```bash
 az repos policy merge-strategy create \
@@ -302,7 +302,7 @@ az repos policy merge-strategy create \
   --allow-no-fast-forward true
 ```
 
-### Política de diferenciação entre maiúsculas e minúsculas
+### Case enforcement policy
 
 ```bash
 az repos policy case-enforcement create \
@@ -312,7 +312,7 @@ az repos policy case-enforcement create \
   --repository-id {repo-id}
 ```
 
-### Política de comentário obrigatório
+### Required comment policy
 
 ```bash
 az repos policy comment-required create \
@@ -322,7 +322,7 @@ az repos policy comment-required create \
   --repository-id {repo-id}
 ```
 
-### Política de tamanho de arquivo
+### File size policy
 
 ```bash
 az repos policy file-size create \
@@ -330,5 +330,5 @@ az repos policy file-size create \
   --enabled true \
   --branch main \
   --repository-id {repo-id} \
-  --maximum-file-size 10485760  # 10 MB em bytes
+  --maximum-file-size 10485760  # 10 MB in bytes
 ```

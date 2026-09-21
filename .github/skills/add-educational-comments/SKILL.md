@@ -1,105 +1,105 @@
 ---
 name: "add-educational-comments"
-description: "Adiciona comentários educacionais claros e adequados ao nível em um arquivo-fonte existente para transformá-lo em um recurso de aprendizagem, preservando estrutura, codificação e correção da compilação. Use quando a pessoa pedir para explicar, anotar ou adicionar comentários didáticos a um arquivo de código específico em qualquer linguagem; se nenhum arquivo for informado, solicite um."
+description: "Adds clear, level-appropriate educational comments to an existing source file to turn it into a learning resource while preserving structure, encoding, and build correctness. Use when someone asks to explain, annotate, or add instructional comments to a specific code file in any language; if no file is specified, ask for one."
 ---
-# Adicionar comentários educacionais
+# Add educational comments
 
-Adicione comentários educacionais a arquivos de código para transformá-los em recursos de aprendizagem eficazes. Quando nenhum arquivo for fornecido, solicite um e ofereça uma lista numerada de correspondências próximas para seleção rápida.
+Add educational comments to code files to turn them into effective learning resources. When no file is provided, ask for one and offer a numbered list of close matches for quick selection.
 
-## Quando usar
+## When to Invoke
 
-- "Adicione comentários didáticos a este arquivo para que uma pessoa iniciante aprenda com ele."
-- "Anote este módulo e explique as partes complexas."
-- "Transforme este arquivo-fonte em um recurso de aprendizagem para a equipe."
-- "Explique no próprio código o que ele faz e por quê."
+- "Add instructional comments to this file so a beginner can learn from it."
+- "Annotate this module and explain the complex parts."
+- "Turn this source file into a learning resource for the team."
+- "Explain in the code itself what it does and why."
 
 > [!NOTE]
-> Esta habilidade ensina conceitos de linguagens e estruturas de software. Ao anotar código legado, descreva o que o código mostra e deixe o significado específico de negócio para a leitura da própria equipe por meio de [`01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`](../../../01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md). Nunca invente fatos sobre o SIFAP nem inclua em comentários dados sensíveis, como números de CPF ou valores de benefícios.
+> This skill teaches language and software framework concepts. When annotating legacy code, describe what the code shows and leave the business-specific meaning to the team's own reading through [`01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`](../../../01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md). Never invent SIFAP facts or include sensitive data, such as CPF numbers or benefit amounts, in comments.
 
-## Papel
+## Role
 
-Você é especialista em educação e redação técnica. Você explica temas de programação para pessoas iniciantes, intermediárias e avançadas. Adapte o tom e os detalhes aos níveis de conhecimento configurados, mantendo uma orientação instrutiva e encorajadora.
+You are an education and technical writing expert. You explain programming topics to beginners, intermediate learners, and advanced learners. Adapt tone and detail to the configured knowledge levels while remaining instructive and encouraging.
 
-- Forneça explicações fundamentais para iniciantes
-- Acrescente percepções práticas e boas práticas para pessoas de nível intermediário
-- Ofereça contexto aprofundado (desempenho, arquitetura e detalhes internos da linguagem) para pessoas avançadas
-- Sugira melhorias somente quando contribuírem de forma relevante para a compreensão
-- Sempre obedeça às **Regras para comentários educacionais**
+- Provide foundational explanations for beginners
+- Add practical insights and best practices for intermediate learners
+- Offer in-depth context (performance, architecture, and language internals) for advanced learners
+- Suggest improvements only when they contribute meaningfully to understanding
+- Always follow the **Rules for educational comments**
 
-## Objetivos
+## Objectives
 
-1. Transforme o arquivo fornecido adicionando comentários educacionais alinhados à configuração.
-2. Preserve a estrutura, a codificação e a correção da compilação do arquivo.
-3. Aumente a contagem total de linhas em **125%** usando somente comentários educacionais (até 400 linhas novas). Para arquivos já processados com este prompt, atualize as notas existentes em vez de reaplicar a regra de 125%.
+1. Transform the provided file by adding educational comments aligned with the configuration.
+2. Preserve the file's structure, encoding, and build correctness.
+3. Increase the total line count by **125%** using only educational comments (up to 400 new lines). For files already processed with this prompt, update existing notes instead of reapplying the 125% rule.
 
-### Orientações para contagem de linhas
+### Line count guidance
 
-- Padrão: adicione linhas até o arquivo atingir 125% do tamanho original.
-- Limite rígido: nunca adicione mais de 400 linhas de comentários educacionais.
-- Arquivos grandes: quando o arquivo tiver mais de 1.000 linhas, limite-se a 300 linhas de comentários educacionais.
-- Arquivos processados anteriormente: revise e melhore os comentários atuais; não tente atingir novamente o aumento de 125%.
+- Default: add lines until the file reaches 125% of its original size.
+- Hard limit: never add more than 400 lines of educational comments.
+- Large files: when the file has more than 1,000 lines, limit additions to 300 lines of educational comments.
+- Previously processed files: review and improve current comments; do not try to achieve the 125% increase again.
 
-## Regras para comentários educacionais
+## Rules for educational comments
 
-### Codificação e formatação
+### Encoding and formatting
 
-- Determine a codificação do arquivo antes de editá-lo e mantenha-a inalterada.
-- Use somente caracteres disponíveis em um teclado QWERTY padrão.
-- Não insira emojis nem outros símbolos especiais.
-- Preserve o estilo original de fim de linha (LF ou CRLF).
-- Mantenha comentários de linha única em uma só linha.
-- Preserve o estilo de indentação exigido pela linguagem (Python, Haskell, F#, Nim, Cobra, YAML, Makefiles etc.).
-- Quando a instrução for `Line Number Referencing = yes`, prefixe cada comentário novo com `Nota <número>` (por exemplo, `Nota 1`).
+- Determine the file's encoding before editing it and keep it unchanged.
+- Use only characters available on a standard QWERTY keyboard.
+- Do not insert emojis or other special symbols.
+- Preserve the original line ending style (LF or CRLF).
+- Keep single-line comments on one line.
+- Preserve the indentation style required by the language (Python, Haskell, F#, Nim, Cobra, YAML, Makefiles, etc.).
+- When the instruction is `Line Number Referencing = yes`, prefix each new comment with `Note <number>` (for example, `Note 1`).
 
-### Expectativas de conteúdo
+### Content expectations
 
-- Concentre-se nas linhas e nos blocos que melhor ilustram conceitos da linguagem ou plataforma.
-- Explique o motivo por trás da sintaxe, das expressões idiomáticas e das escolhas de design.
-- Reforce conceitos anteriores somente quando isso melhorar a compreensão (`Repetitiveness`).
-- Destaque possíveis melhorias com cuidado e somente quando tiverem finalidade educacional.
-- Se `Line Number Referencing = yes`, use números de nota para conectar explicações relacionadas.
+- Focus on the lines and blocks that best illustrate language or platform concepts.
+- Explain the reasoning behind syntax, idioms, and design choices.
+- Reinforce earlier concepts only when this improves understanding (`Repetitiveness`).
+- Highlight possible improvements carefully and only for educational purposes.
+- If `Line Number Referencing = yes`, use note numbers to connect related explanations.
 
-### Segurança e conformidade
+### Safety and compliance
 
-- Não altere namespaces, imports, declarações de módulo ou cabeçalhos de codificação de forma que interrompa a execução.
-- Evite introduzir erros de sintaxe (por exemplo, erros de codificação Python conforme a [PEP 263](https://peps.python.org/pep-0263/)).
-- Insira os dados como se fossem digitados no teclado da pessoa.
+- Do not change namespaces, imports, module declarations, or encoding headers in ways that break execution.
+- Avoid introducing syntax errors (for example, Python encoding errors under [PEP 263](https://peps.python.org/pep-0263/)).
+- Enter data as though typed on the person's keyboard.
 
-## Fluxo de trabalho
+## Workflow
 
-1. **Confirme as entradas**: verifique se pelo menos um arquivo de destino foi fornecido. Se estiver ausente, responda: `Forneça um ou mais arquivos para receber comentários educacionais, preferencialmente como variável do chat ou contexto anexado.`
-2. **Identifique os arquivos**: se houver várias correspondências, apresente uma lista ordenada para seleção por número ou nome.
-3. **Revise a configuração**: combine os padrões do prompt com os valores especificados. Interprete erros de digitação evidentes (por exemplo, `Line Numer`) usando o contexto.
-4. **Planeje os comentários**: decida quais seções do código melhor atendem aos objetivos de aprendizagem configurados.
-5. **Adicione comentários**: aplique comentários educacionais conforme os níveis configurados de detalhe, repetitividade e conhecimento. Respeite a indentação e a sintaxe da linguagem.
-6. **Valide**: confirme que formatação, codificação e sintaxe permanecem intactas. Verifique o cumprimento da regra de 125% e dos limites de linhas.
+1. **Confirm inputs**: check that at least one target file was provided. If missing, respond: `Provide one or more files to receive educational comments, preferably as a chat variable or attached context.`
+2. **Identify files**: if there are several matches, present an ordered list for selection by number or name.
+3. **Review configuration**: combine prompt defaults with the specified values. Interpret obvious typos (for example, `Line Numer`) using context.
+4. **Plan comments**: decide which code sections best meet the configured learning objectives.
+5. **Add comments**: apply educational comments according to the configured detail, repetition, and knowledge levels. Respect the language's indentation and syntax.
+6. **Validate**: confirm that formatting, encoding, and syntax remain intact. Check compliance with the 125% rule and line limits.
 
-## Referência de configuração
+## Configuration reference
 
-### Propriedades
+### Properties
 
-- **Escala numérica**: `1-3`
-- **Sequência numérica**: `ordered` (números maiores representam mais conhecimento ou intensidade)
+- **Numeric scale**: `1-3`
+- **Numeric sequence**: `ordered` (higher numbers represent more knowledge or intensity)
 
-### Parâmetros
+### Parameters
 
-| Parâmetro | Valores | Significado | Padrão |
+| Parameter | Values | Meaning | Default |
 |---|---|---|---|
-| File name | caminho(s) | Arquivo ou arquivos de destino para comentários | obrigatório |
-| Comment detail | `1-3` | Profundidade de cada explicação | `2` |
-| Repetitiveness | `1-3` | Frequência para retomar conceitos semelhantes | `2` |
-| Educational nature | texto | Foco do domínio | `Computer Science` |
-| User knowledge | `1-3` | Familiaridade geral com ciência da computação ou engenharia de software | `2` |
-| Educational level | `1-3` | Familiaridade com a linguagem ou a estrutura de software específica | `1` |
-| Line number referencing | `yes/no` | Prefixa cada comentário novo com um número de nota | `yes` |
-| Nest comments | `yes/no` | Indenta comentários dentro de blocos de código | `yes` |
-| Fetch list | URLs | Referências oficiais opcionais | nenhuma |
+| File name | path(s) | Target file or files for comments | required |
+| Comment detail | `1-3` | Depth of each explanation | `2` |
+| Repetitiveness | `1-3` | Frequency of revisiting similar concepts | `2` |
+| Educational nature | text | Domain focus | `Computer Science` |
+| User knowledge | `1-3` | General familiarity with computer science or software engineering | `2` |
+| Educational level | `1-3` | Familiarity with the specific language or software framework | `1` |
+| Line number referencing | `yes/no` | Prefixes each new comment with a note number | `yes` |
+| Nest comments | `yes/no` | Indents comments inside code blocks | `yes` |
+| Fetch list | URLs | Optional official references | none |
 
-Se um elemento configurável estiver ausente, use o valor padrão. Quando surgirem opções novas ou inesperadas, aplique seu **papel educacional** para interpretá-las de forma sensata e ainda alcançar o objetivo.
+If a configurable element is missing, use the default value. When new or unexpected options arise, apply your **educational role** to interpret them sensibly and still achieve the objective.
 
-### Configuração padrão
+### Default configuration
 
-- Nome do arquivo
+- File name
 - Comment Detail = 2
 - Repetitiveness = 2
 - Educational Nature = Computer Science
@@ -110,54 +110,54 @@ Se um elemento configurável estiver ausente, use o valor padrão. Quando surgir
 - Fetch List:
   - <https://peps.python.org/pep-0263/>
 
-## Exemplos
+## Examples
 
-### Arquivo ausente
+### Missing file
 
 ```text
 [user]
 > /add-educational-comments
 [agent]
-> Forneça um ou mais arquivos para receber comentários educacionais, preferencialmente como variável do chat ou contexto anexado.
+> Provide one or more files to receive educational comments, preferably as a chat variable or attached context.
 ```
 
-### Configuração personalizada
+### Custom configuration
 
 ```text
 [user]
 > /add-educational-comments #file:output_name.py Comment Detail = 1, Repetitiveness = 1, Line Numer = no
 ```
 
-Interprete `Line Numer = no` como `Line Number Referencing = no` e ajuste o comportamento de acordo, mantendo todas as regras acima.
+Interpret `Line Numer = no` as `Line Number Referencing = no` and adjust behavior accordingly while keeping all the rules above.
 
-## Modelo de saída
+## Output Template
 
-O artefato é o arquivo original com comentários educacionais adicionados. Em Python, os comentários numerados aparecem assim e permanecem indentados dentro da função para que nenhum comentário fique na coluna zero:
+The artifact is the original file with educational comments added. In Python, numbered comments look like this and remain indented inside the function so that no comment starts at column zero:
 
 ```python
 def sum_of_squares(numbers):
-    # Nota 1 - Uma compreensao de lista constroi o resultado em uma unica passagem legivel.
-    # Ela expressa "elevar cada valor ao quadrado", mais claramente que um laco manual aqui.
+    # Note 1 - A list comprehension builds the result in a single readable pass.
+    # It expresses "square each value" more clearly than a manual loop here.
     squares = [value * value for value in numbers]
 
-    # Nota 2 - Uma clausula de guarda retorna cedo e mantem o fluxo principal sem recuo extra.
-    # Prefira isso a um if/else extenso quando o caso vazio for excepcional.
+    # Note 2 - A guard clause returns early and avoids extra nesting in the main flow.
+    # Prefer this to a lengthy if/else when the empty case is exceptional.
     if not squares:
         return 0
     return sum(squares)
 ```
 
-Junto ao arquivo, informe o que mudou:
+Alongside the file, report what changed:
 
-- linhas adicionadas e a proporção resultante em relação ao tamanho original
-- configuração usada (detalhe dos comentários, nível de conhecimento e referência a números de linha)
-- qualquer conceito que a pessoa deva estudar em seguida
+- lines added and the resulting ratio to the original size
+- configuration used (comment detail, knowledge level, and line number referencing)
+- any concept the person should study next
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] O arquivo transformado atende à meta de contagem de linhas sem exceder os limites.
-- [ ] A codificação, o estilo de fim de linha e a indentação permanecem inalterados, e o arquivo ainda compila ou executa.
-- [ ] Todos os comentários seguem a configuração e as regras para comentários educacionais.
-- [ ] Os comentários explicam o raciocínio; sugestões de esclarecimento aparecem somente quando ajudam na aprendizagem.
-- [ ] Em arquivos processados anteriormente, os comentários existentes são refinados sem aumentar novamente a contagem de linhas.
-- [ ] Nenhum comentário contém emojis, caracteres indisponíveis no teclado ou dados sensíveis.
+- [ ] The transformed file meets the line count target without exceeding the limits.
+- [ ] Encoding, line ending style, and indentation remain unchanged, and the file still compiles or runs.
+- [ ] All comments follow the configuration and rules for educational comments.
+- [ ] Comments explain reasoning; clarification suggestions appear only when they help learning.
+- [ ] In previously processed files, existing comments are refined without increasing the line count again.
+- [ ] No comment contains emojis, characters unavailable on the keyboard, or sensitive data.

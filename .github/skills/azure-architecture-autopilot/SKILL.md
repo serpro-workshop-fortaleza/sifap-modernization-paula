@@ -1,138 +1,138 @@
 ---
 name: "azure-architecture-autopilot"
-description: "Use quando a pessoa quiser projetar uma infraestrutura do Azure em linguagem natural ou analisar um ambiente existente do Azure em um diagrama interativo de arquitetura, iterar e, opcionalmente, implantar. Conduz um fluxo de projeto, diagrama, revisão e implantação com um mecanismo de diagramas integrado que funciona sem conexão (mais de 605 ícones do Azure). Os gatilhos incluem \"crie X no Azure\", \"projete uma arquitetura RAG\", \"analise meus recursos do Azure\" e \"desenhe um diagrama para rg-...\". Gera Bicep, que está fora do escopo deste kit; converta qualquer projeto adotado em Terraform."
+description: "Use when the user wants to design Azure infrastructure in natural language or analyze an existing Azure environment as an interactive architecture diagram, iterate, and optionally deploy. Guides a design, diagram, review, and deployment workflow with a built-in offline diagram engine (more than 605 Azure icons). Triggers include \"create X on Azure\", \"design a RAG architecture\", \"analyze my Azure resources\", and \"draw a diagram for rg-...\". Generates Bicep, which is out of scope for this kit; convert any adopted design to Terraform."
 ---
-# Piloto automático de arquitetura do Azure
+# Azure architecture autopilot
 
-Um pipeline que projeta infraestrutura do Azure com base em linguagem natural ou analisa recursos existentes. Ele apresenta a arquitetura em um diagrama interativo e permite iterar por modificações e implantação.
+A pipeline that designs Azure infrastructure from natural language or analyzes existing resources. It presents the architecture as an interactive diagram and supports iteration through modifications and deployment.
 
 > [!WARNING]
-> A infraestrutura como código (IaC) deste kit usa **Terraform (provedor do Azure `~> 3.x`)**. Esta habilidade gera **Bicep**, que está **fora do escopo** das entregas do kit. Use-a somente para exploração, diagramas e referência. Converta qualquer arquitetura adotada em Terraform em `infra/` (criado pela equipe no Estágio 3), com as etiquetas obrigatórias `project`, `environment` e `owner`.
+> This kit's infrastructure as code (IaC) uses **Terraform (Azure provider `~> 3.x`)**. This skill generates **Bicep**, which is **out of scope** for the kit's deliverables. Use it only for exploration, diagrams, and reference. Convert any adopted architecture to Terraform in `infra/` (created by the team in Stage 3), with the required `project`, `environment`, and `owner` tags.
 
 > [!NOTE]
-> Esta habilidade depende de um mecanismo de diagramas Python integrado (`scripts/`, sem necessidade de instalação). As fases de implantação também exigem a interface de linha de comando (CLI) `az` e as ferramentas do Bicep. A verificação de fatos no Microsoft Docs usa as ferramentas `web_fetch` e `web_search` diretamente no agente principal.
+> This skill depends on a built-in Python diagram engine (`scripts/`, no installation needed). Deployment phases also require the `az` command-line interface (CLI) and Bicep tools. Microsoft Docs fact-checking uses the `web_fetch` and `web_search` tools directly in the main agent.
 
-## Quando usar
+## When to Invoke
 
-- "Crie uma arquitetura RAG no Azure."
-- "Analise minha infraestrutura atual do Azure e desenhe um diagrama para rg-sifap."
-- "O Foundry está lento. Como devo alterar esta arquitetura?"
-- "Quero reduzir o custo ou reforçar a segurança deste projeto."
+- "Create a RAG architecture on Azure."
+- "Analyze my current Azure infrastructure and draw a diagram for rg-sifap."
+- "Foundry is slow. How should I change this architecture?"
+- "I want to reduce the cost or strengthen the security of this design."
 
-## Mecanismo de diagramas integrado
+## Built-in diagram engine
 
-O mecanismo de diagramas está integrado à habilidade em `scripts/`. Não é necessário executar `pip install`. Os scripts Python incluídos renderizam diagramas HTML interativos com mais de 605 ícones oficiais do Azure, totalmente sem conexão. O ponto de entrada é [scripts/cli.py](scripts/cli.py), que importa [scripts/generator.py](scripts/generator.py) para renderizar HTML/SVG e [scripts/icons.py](scripts/icons.py) para obter os dados dos ícones.
+The diagram engine is bundled with the skill in `scripts/`. No `pip install` is needed. The included Python scripts render interactive HTML diagrams with more than 605 official Azure icons, fully offline. The entry point is [scripts/cli.py](scripts/cli.py), which imports [scripts/generator.py](scripts/generator.py) to render HTML/SVG and [scripts/icons.py](scripts/icons.py) for icon data.
 
-## Idioma do conteúdo apresentado à pessoa
+## User-facing content language
 
-Detecte o idioma da primeira mensagem e apresente todo o conteúdo destinado à pessoa nesse idioma, incluindo perguntas, atualizações de progresso, relatórios e comentários do Bicep. Adapte os exemplos; não os copie literalmente.
+Detect the language of the first message and present all user-facing content in that language, including questions, progress updates, reports, and Bicep comments. Adapt the examples; do not copy them literally.
 
-## Uso de ferramentas
+## Tool usage
 
-| Necessidade | Ferramenta | Observações |
+| Need | Tool | Notes |
 |---|---|---|
-| Buscar conteúdo de URL | `web_fetch` | Consultas ao Microsoft Docs |
-| Pesquisar na Web | `web_search` | Descoberta de URLs |
-| Perguntar à pessoa | `ask_user` | `choices` deve ser um array de strings |
-| Subagentes | `task` | explore / task / general-purpose |
-| Executar no interpretador de comandos | ferramenta de interpretador de comandos | Primeiro descubra os caminhos de `az` / `python` / `bicep` |
+| Fetch URL content | `web_fetch` | Microsoft Docs lookups |
+| Search the web | `web_search` | URL discovery |
+| Ask the user | `ask_user` | `choices` must be an array of strings |
+| Subagents | `task` | explore / task / general-purpose |
+| Run in the shell | shell tool | Discover `az` / `python` / `bicep` paths first |
 
 > [!NOTE]
-> Os subagentes não podem usar `web_fetch` nem `web_search`. Verifique fatos no Microsoft Docs diretamente pelo agente principal.
+> Subagents cannot use `web_fetch` or `web_search`. Fact-check Microsoft Docs directly through the main agent.
 
-## Descoberta de caminhos
+## Path discovery
 
-`az`, `python` e `bicep` muitas vezes não estão no `PATH`. Descubra cada caminho uma vez antes de uma fase e armazene o resultado temporariamente. Não repita a descoberta em cada chamada. Prefira a descoberta direta no sistema de arquivos a apelidos do interpretador de comandos. Consulte a seção de geração de diagramas em [references/phase1-advisor.md](references/phase1-advisor.md) para ver o caminho do Python e a integração com o mecanismo incluído.
+`az`, `python`, and `bicep` are often not on `PATH`. Discover each path once before a phase and cache the result. Do not repeat discovery on every call. Prefer direct filesystem discovery over shell aliases. See the diagram generation section in [references/phase1-advisor.md](references/phase1-advisor.md) for the Python path and integration with the bundled engine.
 
-## Atualizações de progresso
+## Progress updates
 
-Relate o progresso com linhas curtas de status no idioma da pessoa, sem emojis. Use uma linha por ação:
-
-```text
-Ação: motivo
-Concluído: resultado
-Aviso: detalhe a observar
-Falha: causa e próxima etapa
-```
-
-## Fluxo
-
-Há dois caminhos, escolhidos automaticamente com base na solicitação. Em caso de ambiguidade, pergunte qual a pessoa quer seguir.
-
-### Caminho A: novo projeto
-
-Frases de gatilho: "criar", "configurar", "implantar", "construir".
+Report progress with short status lines in the user's language, without emojis. Use one line per action:
 
 ```text
-Fase 1 (references/phase1-advisor.md)    Projeto interativo + diagrama
-  -> Fase 2 (references/bicep-generator.md)  Geração de Bicep (fora do escopo do kit)
-  -> Fase 3 (references/bicep-reviewer.md)    Revisão + verificação de compilação
-  -> Fase 4 (references/phase4-deployer.md)    validação -> análise de alterações (what-if) -> implantação
+Action: reason
+Completed: result
+Warning: detail to watch
+Failed: cause and next step
 ```
 
-### Caminho B: analisar e modificar
+## Flow
 
-Frases de gatilho: "analisar", "recursos atuais", "examinar", "desenhar um diagrama".
+There are two paths, selected automatically based on the request. If ambiguous, ask which one the user wants to follow.
+
+### Path A: New design
+
+Trigger phrases: "create", "configure", "deploy", "build".
 
 ```text
-Fase 0 (references/phase0-scanner.md)    Exame de recursos existentes + diagrama
-  -> Conversa sobre modificações (solicitação de alteração em linguagem natural)
-  -> Fase 1 (references/phase1-advisor.md)   Confirmação das alterações + atualização do diagrama
-  -> Fases 2 a 4, como no Caminho A
+Phase 1 (references/phase1-advisor.md)    Interactive design + diagram
+  -> Phase 2 (references/bicep-generator.md)  Bicep generation (out of scope for the kit)
+  -> Phase 3 (references/bicep-reviewer.md)    Review + build check
+  -> Phase 4 (references/phase4-deployer.md)    validation -> change analysis (what-if) -> deployment
 ```
 
-## Regras de transição entre fases
+### Path B: Analyze and modify
 
-- Cada fase segue as instruções do respectivo arquivo `references/*.md`.
-- Em toda transição, sempre informe a próxima etapa.
-- Não pule fases. Em especial, nunca pule a análise de alterações (`what-if`) entre as Fases 3 e 4.
-- A transição da Fase 1 para a Fase 2 exige que `01_arch_diagram_draft.html` tenha sido gerado e apresentado à pessoa. Nunca gere Bicep sem um diagrama confirmado.
-- Uma modificação após a implantação retorna à Fase 1, não à Fase 0.
+Trigger phrases: "analyze", "current resources", "inspect", "draw a diagram".
 
-## Cobertura de serviços
+```text
+Phase 0 (references/phase0-scanner.md)    Existing resource scan + diagram
+  -> Modification discussion (natural-language change request)
+  -> Phase 1 (references/phase1-advisor.md)   Change confirmation + diagram update
+  -> Phases 2 through 4, as in Path A
+```
 
-Serviços otimizados: Microsoft Foundry, Azure OpenAI, AI Search, ADLS Gen2, Key Vault, Microsoft Fabric, Azure Data Factory, VNet / Private Endpoint e AML / AI Hub. Todos os outros serviços do Azure têm o mesmo padrão de qualidade por meio de consultas ao Microsoft Docs.
+## Phase transition rules
 
-| Categoria | Tratamento | Exemplos |
+- Each phase follows the instructions in its respective `references/*.md` file.
+- At every transition, always state the next step.
+- Do not skip phases. In particular, never skip change analysis (`what-if`) between Phases 3 and 4.
+- Transitioning from Phase 1 to Phase 2 requires `01_arch_diagram_draft.html` to have been generated and presented to the user. Never generate Bicep without a confirmed diagram.
+- A modification after deployment returns to Phase 1, not Phase 0.
+
+## Service coverage
+
+Optimized services: Microsoft Foundry, Azure OpenAI, AI Search, ADLS Gen2, Key Vault, Microsoft Fabric, Azure Data Factory, VNet / Private Endpoint, and AML / AI Hub. All other Azure services receive the same quality standard through Microsoft Docs lookups.
+
+| Category | Handling | Examples |
 |---|---|---|
-| Estável | Consulte primeiro os arquivos de referência | `isHnsEnabled`, trios de endpoint privado (Private Endpoint) |
-| Dinâmico | Sempre consulte o Microsoft Docs | Versão da API, disponibilidade do modelo, SKU, região |
+| Stable | Consult reference files first | `isHnsEnabled`, Private Endpoint trios |
+| Dynamic | Always consult Microsoft Docs | API version, model availability, SKU, region |
 
-## Arquivos de referência
+## Reference files
 
-| Arquivo | Função |
+| File | Purpose |
 |---|---|
-| [references/phase0-scanner.md](references/phase0-scanner.md) | Exame de recursos existentes, inferência de relações e diagrama |
-| [references/phase1-advisor.md](references/phase1-advisor.md) | Projeto interativo e verificação de fatos |
-| [references/bicep-generator.md](references/bicep-generator.md) | Regras de geração de Bicep (fora do escopo do kit) |
-| [references/bicep-reviewer.md](references/bicep-reviewer.md) | Lista de verificação da revisão de código |
-| [references/phase4-deployer.md](references/phase4-deployer.md) | validação -> análise de alterações (`what-if`) -> implantação |
-| [references/service-gotchas.md](references/service-gotchas.md) | Propriedades obrigatórias e mapeamentos de Private Endpoint |
-| [references/azure-dynamic-sources.md](references/azure-dynamic-sources.md) | Registro de URLs do Microsoft Docs |
-| [references/azure-common-patterns.md](references/azure-common-patterns.md) | Padrões de Private Endpoint, segurança e nomenclatura |
-| [references/architecture-guidance-sources.md](references/architecture-guidance-sources.md) | Fontes de orientação de arquitetura |
-| [references/ai-data.md](references/ai-data.md) | Guia de serviços de IA e dados |
+| [references/phase0-scanner.md](references/phase0-scanner.md) | Existing resource scan, relationship inference, and diagram |
+| [references/phase1-advisor.md](references/phase1-advisor.md) | Interactive design and fact-checking |
+| [references/bicep-generator.md](references/bicep-generator.md) | Bicep generation rules (out of scope for the kit) |
+| [references/bicep-reviewer.md](references/bicep-reviewer.md) | Code review checklist |
+| [references/phase4-deployer.md](references/phase4-deployer.md) | validation -> change analysis (`what-if`) -> deployment |
+| [references/service-gotchas.md](references/service-gotchas.md) | Required properties and Private Endpoint mappings |
+| [references/azure-dynamic-sources.md](references/azure-dynamic-sources.md) | Microsoft Docs URL registry |
+| [references/azure-common-patterns.md](references/azure-common-patterns.md) | Private Endpoint, security, and naming patterns |
+| [references/architecture-guidance-sources.md](references/architecture-guidance-sources.md) | Architecture guidance sources |
+| [references/ai-data.md](references/ai-data.md) | AI and data services guide |
 
-Exemplos de saída: [diagrama de arquitetura](assets/06-architecture-diagram.png), [recursos no portal do Azure](assets/07-azure-portal-resources.png) e [implantação concluída](assets/08-deployment-succeeded.png).
+Output examples: [architecture diagram](assets/06-architecture-diagram.png), [resources in the Azure portal](assets/07-azure-portal-resources.png), and [successful deployment](assets/08-deployment-succeeded.png).
 
-## Modelo de saída
+## Output Template
 
-A habilidade produz um diagrama HTML interativo e um resumo do projeto. Registre o projeto adotado para que ele possa ser convertido em Terraform:
+The skill produces an interactive HTML diagram and a design summary. Record the adopted design so it can be converted to Terraform:
 
 ```text
-Arquitetura: <nome>
-Caminho: A (novo projeto) | B (analisar + modificar)
-Diagrama: 01_arch_diagram_draft.html (gerado, apresentado e confirmado)
-Serviços: Foundry, AI Search, ADLS Gen2, Key Vault (Private Endpoints)
-Bicep: gerado somente para referência (fora do escopo do kit)
-Acompanhamento no kit: converter em Terraform em infra/ com as tags project/environment/owner
+Architecture: <name>
+Path: A (new design) | B (analyze + modify)
+Diagram: 01_arch_diagram_draft.html (generated, presented, and confirmed)
+Services: Foundry, AI Search, ADLS Gen2, Key Vault (Private Endpoints)
+Bicep: generated for reference only (out of scope for the kit)
+Kit follow-up: convert to Terraform in infra/ with project/environment/owner tags
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] O caminho (A, novo projeto; B, analisar e modificar) foi escolhido ou confirmado.
-- [ ] Um diagrama (`01_arch_diagram_draft.html`) foi gerado com o mecanismo integrado e apresentado antes de qualquer Bicep.
-- [ ] As fases foram executadas na ordem, sem pular a análise de alterações (`what-if`) entre a revisão e a implantação.
-- [ ] Os fatos dinâmicos (versão da API, SKU, região e disponibilidade do modelo) foram confirmados no Microsoft Docs.
-- [ ] O conteúdo apresentado usou o idioma da pessoa e o próprio primitivo não contém emojis.
-- [ ] Qualquer arquitetura adotada foi marcada para conversão em Terraform em `infra/`, pois Bicep está fora do escopo do kit.
+- [ ] The path (A, new design; B, analyze and modify) was selected or confirmed.
+- [ ] A diagram (`01_arch_diagram_draft.html`) was generated with the built-in engine and presented before any Bicep.
+- [ ] Phases ran in order, without skipping change analysis (`what-if`) between review and deployment.
+- [ ] Dynamic facts (API version, SKU, region, and model availability) were confirmed in Microsoft Docs.
+- [ ] Presented content used the user's language, and the primitive itself contains no emojis.
+- [ ] Any adopted architecture was flagged for conversion to Terraform in `infra/`, because Bicep is out of scope for the kit.

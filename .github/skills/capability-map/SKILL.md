@@ -1,75 +1,75 @@
 ---
 name: "capability-map"
-description: "Use ao mapear capacidades de negócio, identificar sobreposições ou lacunas na empresa ou alinhar investimentos de TI aos resultados de negócio. Os gatilhos incluem \"mapa de capacidades\", \"capacidade de negócio\", \"mapa de domínio\" e \"arquitetura corporativa\"."
+description: "Use when mapping business capabilities, identifying overlaps or gaps in an enterprise, or aligning IT investments with business outcomes. Triggers include \"capability map\", \"business capability\", \"domain map\", and \"enterprise architecture\"."
 ---
-# Mapa de capacidades
+# Capability map
 
-## Quando usar
+## When to Invoke
 
-- "Crie um mapa de capacidades para o domínio identificado pela equipe."
-- "Onde há sobreposição de responsabilidade entre duas equipes?"
-- "Quais capacidades são essenciais e quais são comuns?"
+- "Create a capability map for the domain identified by the team."
+- "Where does ownership overlap between two teams?"
+- "Which capabilities are core and which are commodity?"
 
-## Conceito
+## Concept
 
-Uma **capacidade** descreve *o que* a empresa faz, não *como* ela faz. As capacidades permanecem estáveis por décadas, enquanto aplicações e processos mudam com frequência.
+A **capability** describes *what* the enterprise does, not *how* it does it. Capabilities remain stable for decades, while applications and processes change frequently.
 
-## Estrutura (3 níveis)
+## Structure (3 levels)
 
-- **L1**: área de negócio de nível superior (por exemplo, "Arrecadação de impostos" ou "Atendimento ao cliente").
-- **L2**: principais subfunções identificadas pela equipe.
-- **L3**: capacidades específicas confirmadas por evidências.
+- **L1**: top-level business area (for example, "Tax collection" or "Customer service").
+- **L2**: major subfunctions identified by the team.
+- **L3**: specific capabilities confirmed by evidence.
 
-Regra geral: de 8 a 12 capacidades L1 para uma empresa de médio porte.
+Rule of thumb: 8 to 12 L1 capabilities for a medium-sized enterprise.
 
-## Etapas
+## Steps
 
-1. **Comece pelos resultados**, não pelo organograma. "O que esta empresa faz para seus clientes?"
-2. **Decomponha de cima para baixo** até L3. Pare quando uma capacidade corresponder a uma única pessoa responsável.
-3. **Classifique cada capacidade**:
+1. **Start with outcomes**, not the organization chart. "What does this enterprise do for its customers?"
+2. **Decompose top-down** to L3. Stop when a capability maps to a single owner.
+3. **Classify each capability**:
 
-- **Core (Essencial)**: diferenciadora, desenvolva internamente.
-- **Supporting (Suporte)**: necessária, compre ou configure.
-- **Commodity (Comum)**: não diferenciada, terceirize ou use software como serviço (SaaS).
+- **Core**: differentiating; build in-house.
+- **Supporting**: necessary; buy or configure.
+- **Commodity**: undifferentiated; outsource or use software as a service (SaaS).
 
-4. **Sobreponha os sistemas**: identifique quais aplicações fornecem cada capacidade L3. Procure:
+4. **Overlay systems**: identify which applications provide each L3 capability. Look for:
 
-- Duplicação (dois sistemas fazendo a mesma coisa)
-- Lacunas (uma capacidade sem responsável)
-- Monólitos (um sistema abrangendo muitas capacidades L1)
+- Duplication (two systems doing the same thing)
+- Gaps (a capability without an owner)
+- Monoliths (one system spanning many L1 capabilities)
 
-5. **Sobreponha os investimentos**: compare para onde vai o dinheiro com onde ocorre a diferenciação.
+5. **Overlay investments**: compare where the money goes with where differentiation occurs.
 
-## Exemplo em Mermaid
+## Mermaid example
 
 ```mermaid
 flowchart TD
- A[Arrecadação de impostos] --> B[Avaliação]
+ A[Tax collection] --> B[Assessment]
  A --> C[<Capability>]
- A --> D[Fiscalização]
- B --> B1[Calcular penalidade]
- B --> B2[Auditar contribuinte]
+ A --> D[Oversight]
+ B --> B1[Calculate penalty]
+ B --> B2[Audit taxpayer]
  C --> C1[<Sub-capability>]
- C --> C2[Emitir reembolso]
+ C --> C2[Issue refund]
 ```
 
-## Modelo de saída
+## Output Template
 
 ```markdown
-## Mapa de capacidades - <Domain>
+## Capability map - <Domain>
 
 ### L1: <Top area>
 #### L2: <Sub-function>
 - **<L3 capability>** [Core|Supporting|Commodity]
- - Responsável: <team>
- - Sistemas: <app1>, <app2>
- - Maturidade: 1-5
- - Investimento: $$$
+ - Owner: <team>
+ - Systems: <app1>, <app2>
+ - Maturity: 1-5
+ - Investment: $$$
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Cada capacidade L3 tem exatamente uma pessoa responsável.
-- [ ] Cada capacidade L3 está classificada como Core (Essencial), Supporting (Suporte) ou Commodity (Comum).
-- [ ] Cada capacidade L3 está sobreposta aos sistemas que a fornecem.
-- [ ] Duplicações, lacunas e monólitos estão sinalizados para acompanhamento.
+- [ ] Each L3 capability has exactly one owner.
+- [ ] Each L3 capability is classified as Core, Supporting, or Commodity.
+- [ ] Each L3 capability is overlaid with the systems that provide it.
+- [ ] Duplications, gaps, and monoliths are flagged for follow-up.

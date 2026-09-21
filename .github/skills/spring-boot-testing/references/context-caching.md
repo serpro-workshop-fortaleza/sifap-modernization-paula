@@ -1,23 +1,23 @@
-# Cache de contexto
+# Context caching
 
-Otimize o desempenho da suíte de testes do Spring Boot com cache de contexto.
+Optimize Spring Boot test suite performance with context caching.
 
-## Como funciona o cache de contexto
+## How context caching works
 
-O TestContext Framework do Spring armazena contextos de aplicação em cache com base na "chave" de configuração. Testes com configurações idênticas reutilizam o mesmo contexto.
+Spring's TestContext Framework caches application contexts based on the configuration "key". Tests with identical configurations reuse the same context.
 
-### O que afeta a chave do cache
+### What affects the cache key
 
 - @ContextConfiguration
 - @TestPropertySource
 - @ActiveProfiles
 - @WebAppConfiguration
-- definições de @MockitoBean
-- importações de @TestConfiguration
+- @MockitoBean definitions
+- @TestConfiguration imports
 
-## Exemplos de chaves de cache
+## Cache key examples
 
-### Mesma chave (contexto reutilizado)
+### Same key (context reused)
 
 ```java
 @WebMvcTest(OrderController.class)
@@ -29,10 +29,10 @@ class OrderControllerTest1 {
 class OrderControllerTest2 {
   @MockitoBean private OrderService orderService;
 }
-// O mesmo contexto é reutilizado
+// The same context is reused
 ```
 
-### Chave diferente (novo contexto)
+### Different key (new context)
 
 ```java
 @WebMvcTest(OrderController.class)
@@ -42,10 +42,10 @@ class OrderControllerTest1 { }
 @WebMvcTest(OrderController.class)
 @ActiveProfiles("integration")
 class OrderControllerTest2 { }
-// Contextos diferentes são carregados
+// Different contexts are loaded
 ```
 
-## Visualização das estatísticas do cache
+## Viewing cache statistics
 
 ### Spring Boot Actuator
 
@@ -57,29 +57,29 @@ management:
         include: metrics
 ```
 
-Acesso: `GET /actuator/metrics/spring.test.context.cache`
+Access: `GET /actuator/metrics/spring.test.context.cache`
 
-### Registros de depuração
+### Debug logging
 
 ```properties
 logging.level.org.springframework.test.context.cache=DEBUG
 ```
 
-## Otimização da taxa de acerto do cache
+## Optimizing the cache hit rate
 
-### Agrupe os testes por configuração
+### Group tests by configuration
 
 ```text
  tests/
-   unit/           # Sem contexto
+  unit/           # No context
    web/            # @WebMvcTest
    repository/     # @DataJpaTest
    integration/    # @SpringBootTest
 ```
 
-### Minimize variações de @TestPropertySource
+### Minimize @TestPropertySource variations
 
-**Ruim (vários contextos):**
+**Bad (multiple contexts):**
 
 ```java
 @TestPropertySource(properties = "app.feature-x=true")
@@ -89,27 +89,27 @@ class FeatureXTest { }
 class FeatureYTest { }
 ```
 
-**Melhor (agrupado):**
+**Better (grouped):**
 
 ```java
 @TestPropertySource(properties = {"app.feature-x=true", "app.feature-y=true"})
 class FeaturesTest { }
 ```
 
-### Use @DirtiesContext com moderação
+### Use @DirtiesContext sparingly
 
-Somente quando o estado do contexto realmente mudar:
+Only when the context state actually changes:
 
 ```java
 @Test
-@DirtiesContext // Força a reconstrução do contexto após o teste
+@DirtiesContext // Forces a context rebuild after the test
 void testThatModifiesBeanDefinitions() { }
 ```
 
-## Práticas recomendadas
+## Best practices
 
-1. **Agrupe por configuração**: mantenha juntos os testes com a mesma configuração
-2. **Limite as variações de propriedades**: prefira perfis a propriedades individuais
-3. **Evite @DirtiesContext**: prefira limpar os dados de teste
-4. **Use fatias restritas**: @WebMvcTest em vez de @SpringBootTest
-5. **Monitore os acertos do cache**: habilite os registros de depuração ocasionalmente
+1. **Group by configuration**: keep tests with the same configuration together
+2. **Limit property variations**: prefer profiles to individual properties
+3. **Avoid @DirtiesContext**: prefer cleaning up test data
+4. **Use narrow slices**: @WebMvcTest instead of @SpringBootTest
+5. **Monitor cache hits**: enable debug logging occasionally

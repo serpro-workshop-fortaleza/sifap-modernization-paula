@@ -1,109 +1,109 @@
-# Referência para detecção do conjunto de tecnologias
+# Stack detection reference
 
-Carregue este arquivo quando o conjunto de tecnologias for ambíguo, por exemplo, quando houver vários arquivos de manifesto, extensões de arquivo desconhecidas ou nenhum `package.json` ou `go.mod` evidente.
+Load this file when the stack is ambiguous, for example, when there are multiple manifest files, unfamiliar file extensions, or no obvious `package.json` or `go.mod`.
 
 ---
 
-## Arquivo de manifesto → ecossistema
+## Manifest file to ecosystem
 
-| Arquivo | Ecossistema | Principais campos para leitura |
+| File | Ecosystem | Key fields to read |
 |------|-----------|--------------------|
 | `package.json` | Node.js / JavaScript / TypeScript | `dependencies`, `devDependencies`, `scripts`, `main`, `type`, `engines` |
-| `go.mod` | Go | Caminho do módulo, versão do Go e bloco `require` |
-| `requirements.txt` | Python (pip) | Lista de pacotes com versões fixadas |
-| `Pipfile` | Python (pipenv) | `[packages]`, `[dev-packages]` e versão do Python em `[requires]` |
+| `go.mod` | Go | Module path, Go version, and `require` block |
+| `requirements.txt` | Python (pip) | List of packages with pinned versions |
+| `Pipfile` | Python (pipenv) | `[packages]`, `[dev-packages]`, and Python version in `[requires]` |
 | `pyproject.toml` | Python (poetry / uv / hatch) | `[tool.poetry.dependencies]`, `[project]`, `[build-system]` |
-| `setup.py` / `setup.cfg` | Python (setuptools, legado) | `install_requires`, `python_requires` |
+| `setup.py` / `setup.cfg` | Python (setuptools, legacy) | `install_requires`, `python_requires` |
 | `Cargo.toml` | Rust | `[dependencies]`, `[[bin]]`, `[lib]` |
 | `pom.xml` | Java / Kotlin (Maven) | `<dependencies>`, `<artifactId>`, `<groupId>`, `<java.version>` |
 | `build.gradle` / `build.gradle.kts` | Java / Kotlin (Gradle) | `dependencies {}`, `sourceCompatibility` |
 | `composer.json` | PHP | `require`, `require-dev` |
-| `Gemfile` | Ruby | Declarações `gem` e restrição de versão de `ruby` |
+| `Gemfile` | Ruby | `gem` declarations and `ruby` version constraint |
 | `mix.exs` | Elixir | `deps/0`, `elixir: "~> X.Y"` |
 | `pubspec.yaml` | Dart / Flutter | `dependencies`, `dev_dependencies`, `environment.sdk` |
 | `*.csproj` | .NET / C# | `<PackageReference>`, `<TargetFramework>` |
-| `*.sln` | Solução .NET | Referencia vários projetos `.csproj` |
-| `deno.json` / `deno.jsonc` | Deno (ambiente de execução TypeScript) | `imports`, `tasks` |
-| `bun.lockb` | Bun (ambiente de execução JavaScript) | Arquivo de bloqueio binário; verifique as dependências em `package.json` |
+| `*.sln` | .NET solution | References multiple `.csproj` projects |
+| `deno.json` / `deno.jsonc` | Deno (TypeScript runtime) | `imports`, `tasks` |
+| `bun.lockb` | Bun (JavaScript runtime) | Binary lockfile; check dependencies in `package.json` |
 
 ---
 
-## Detecção da versão do ambiente de execução da linguagem
+## Language runtime version detection
 
-| Linguagem | Onde encontrar a versão |
+| Language | Where to find the version |
 |----------|--------------------------|
-| Node.js | `.nvmrc`, `.node-version`, `engines.node` em `package.json` e Docker `FROM node:X` |
+| Node.js | `.nvmrc`, `.node-version`, `engines.node` in `package.json`, and Docker `FROM node:X` |
 | Python | `.python-version`, `pyproject.toml [requires-python]`, Docker `FROM python:X` |
-| Go | Primeira linha de `go.mod` (`go 1.21`) |
-| Java | `<java.version>` em `pom.xml`, `sourceCompatibility` em `build.gradle` e Docker `FROM eclipse-temurin:X` |
+| Go | First line of `go.mod` (`go 1.21`) |
+| Java | `<java.version>` in `pom.xml`, `sourceCompatibility` in `build.gradle`, and Docker `FROM eclipse-temurin:X` |
 | Ruby | `.ruby-version`, `Gemfile` `ruby 'X.Y.Z'` |
-| Rust | Arquivo `rust-toolchain.toml` ou `rust-toolchain` |
-| .NET | `<TargetFramework>` em `.csproj` (por exemplo, `net8.0`) |
+| Rust | `rust-toolchain.toml` or `rust-toolchain` file |
+| .NET | `<TargetFramework>` in `.csproj` (for example, `net8.0`) |
 
 ---
 
-## Detecção de estrutura de software (Node.js/TypeScript)
+## Framework detection (Node.js/TypeScript)
 
-| Dependência em `package.json` | Estrutura de software |
+| Dependency in `package.json` | Framework |
 |-----------------------------|-----------|
-| `express` | Express.js (servidor HTTP mínimo) |
-| `fastify` | Fastify (servidor HTTP de alto desempenho) |
-| `next` | Next.js (SSR/SSG React; verifique os diretórios `pages/` ou `app/`) |
+| `express` | Express.js (minimal HTTP server) |
+| `fastify` | Fastify (high-performance HTTP server) |
+| `next` | Next.js (React SSR/SSG; check the `pages/` or `app/` directories) |
 | `nuxt` | Nuxt.js (SSR/SSG Vue) |
-| `@nestjs/core` | NestJS (estrutura de software Node.js opinativa com DI) |
-| `koa` | Koa (focado em componentes intermediários, sem roteador integrado) |
+| `@nestjs/core` | NestJS (opinionated Node.js framework with DI) |
+| `koa` | Koa (middleware-focused, no built-in router) |
 | `@hapi/hapi` | Hapi |
-| `@trpc/server` | tRPC (API com segurança de tipos sem esquemas REST/GraphQL) |
-| `routing-controllers` | routing-controllers (camada adaptadora do Express baseada em decoradores) |
-| `typeorm` | TypeORM (ORM SQL com decoradores) |
-| `prisma` | Prisma (ORM com segurança de tipos; verifique `prisma/schema.prisma`) |
+| `@trpc/server` | tRPC (type-safe API without REST/GraphQL schemas) |
+| `routing-controllers` | routing-controllers (decorator-based Express wrapper) |
+| `typeorm` | TypeORM (SQL ORM with decorators) |
+| `prisma` | Prisma (type-safe ORM; check `prisma/schema.prisma`) |
 | `mongoose` | Mongoose (MongoDB ODM) |
 | `sequelize` | Sequelize (SQL ORM) |
-| `drizzle-orm` | Drizzle (ORM SQL leve) |
-| `react` sem `next` | SPA React pura (verifique `react-router-dom`) |
-| `vue` sem `nuxt` | SPA Vue pura |
+| `drizzle-orm` | Drizzle (lightweight SQL ORM) |
+| `react` without `next` | Plain React SPA (check `react-router-dom`) |
+| `vue` without `nuxt` | Plain Vue SPA |
 
 ---
 
-## Detecção de estrutura de software (Python)
+## Framework detection (Python)
 
-| Pacote | Estrutura de software |
+| Package | Framework |
 |---------|-----------|
-| `fastapi` | FastAPI (REST assíncrono e documentação OpenAPI automática) |
-| `flask` | Flask (estrutura de software web WSGI mínima) |
-| `django` | Django (com recursos integrados; verifique `settings.py`) |
-| `starlette` | Starlette (ASGI, usado frequentemente como base do FastAPI) |
-| `aiohttp` | aiohttp (cliente e servidor HTTP assíncronos) |
-| `sqlalchemy` | SQLAlchemy (ORM SQL; verifique migrações `alembic`) |
-| `alembic` | Alembic (ferramenta de migração do SQLAlchemy) |
-| `pydantic` | Pydantic (validação de dados; componente central do FastAPI) |
-| `celery` | Celery (fila de tarefas distribuída) |
+| `fastapi` | FastAPI (async REST and automatic OpenAPI documentation) |
+| `flask` | Flask (minimal WSGI web framework) |
+| `django` | Django (batteries included; check `settings.py`) |
+| `starlette` | Starlette (ASGI, often used as the basis of FastAPI) |
+| `aiohttp` | aiohttp (async HTTP client and server) |
+| `sqlalchemy` | SQLAlchemy (SQL ORM; check `alembic` migrations) |
+| `alembic` | Alembic (SQLAlchemy migration tool) |
+| `pydantic` | Pydantic (data validation; core FastAPI component) |
+| `celery` | Celery (distributed task queue) |
 
 ---
 
-## Detecção de monorepositório
+## Monorepo detection
 
-Verifique estes sinais em ordem. Um monorepositório reúne vários projetos no mesmo repositório:
+Check these signals in order. A monorepo combines several projects in one repository:
 
-1. `pnpm-workspace.yaml`: espaços de trabalho do pnpm
-2. `lerna.json`: monorepositório Lerna
-3. `nx.json`: monorepositório Nx (verifique também `workspace.json`)
+1. `pnpm-workspace.yaml`: pnpm workspaces
+2. `lerna.json`: Lerna monorepo
+3. `nx.json`: Nx monorepo (also check `workspace.json`)
 4. `turbo.json`: Turborepo
-5. `rush.json`: Rush (gerenciador de monorepositórios da Microsoft)
+5. `rush.json`: Rush (Microsoft's monorepo manager)
 6. `moon.yml`: Moon
-7. `package.json` com `"workspaces": [...]`: espaços de trabalho do npm/yarn
-8. Presença dos diretórios `packages/`, `apps/`, `libs/` ou `services/` com seus próprios arquivos `package.json`
+7. `package.json` with `"workspaces": [...]`: npm/yarn workspaces
+8. Presence of `packages/`, `apps/`, `libs/`, or `services/` directories with their own `package.json` files
 
-Se um monorepositório for detectado, cada espaço de trabalho poderá ter dependências e convenções **independentes**. Mapeie cada subpacote separadamente em `STACK.md` e registre a estrutura do monorepositório em `STRUCTURE.md`.
+If a monorepo is detected, each workspace may have **independent** dependencies and conventions. Map each subpackage separately in `STACK.md` and record the monorepo structure in `STRUCTURE.md`.
 
 ---
 
-## Detecção de nomes alternativos de caminho do TypeScript
+## TypeScript path alias detection
 
-Se `tsconfig.json` tiver uma chave `paths`, as importações com prefixos não relativos serão nomes alternativos. Mapeie-os antes de documentar a estrutura.
+If `tsconfig.json` has a `paths` key, imports with non-relative prefixes are aliases. Map them before documenting the structure.
 
 ```json
-// Exemplo de tsconfig.json
+// Example tsconfig.json
 "paths": {
   "@/*": ["./src/*"],
   "@components/*": ["./src/components/*"],
@@ -111,21 +111,21 @@ Se `tsconfig.json` tiver uma chave `paths`, as importações com prefixos não r
 }
 ```
 
-Importações como `import { foo } from '@/utils/bar'` são resolvidas como `src/utils/bar`. Documente como `src/utils/bar`, não como `@/utils/bar`.
+Imports such as `import { foo } from '@/utils/bar'` resolve to `src/utils/bar`. Document as `src/utils/bar`, not `@/utils/bar`.
 
 ---
 
-## Imagem base do Docker → ambiente de execução
+## Docker base image to runtime
 
-Se nenhum arquivo de manifesto estiver presente, mas existir um `Dockerfile`, a linha `FROM` revelará o ambiente de execução:
+If no manifest file is present but a `Dockerfile` exists, the `FROM` line reveals the runtime:
 
-| Padrão da linha FROM | Ambiente de execução |
+| FROM line pattern | Runtime |
 |------------------|---------|
 | `FROM node:X` | Node.js X |
 | `FROM python:X` | Python X |
 | `FROM golang:X` | Go X |
-| `FROM eclipse-temurin:X` | Java X (JDK Eclipse Temurin) |
+| `FROM eclipse-temurin:X` | Java X (Eclipse Temurin JDK) |
 | `FROM mcr.microsoft.com/dotnet/aspnet:X` | .NET X |
 | `FROM ruby:X` | Ruby X |
 | `FROM rust:X` | Rust X |
-| `FROM alpine` (isolado) | Verifique o que foi instalado por meio de `RUN apk add` |
+| `FROM alpine` (standalone) | Check what was installed through `RUN apk add` |

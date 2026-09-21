@@ -1,45 +1,45 @@
-# Arquitetura do Azure: [Nome do grupo de recursos]
+# Azure architecture: [Resource group name]
 
-**Assinatura**: [subscription-name]
-**Região**: [primary-region]
-**Quantidade de recursos**: [count]
-**Gerado em**: [date]
+**Subscription**: [subscription-name]
+**Region**: [primary-region]
+**Resource count**: [count]
+**Generated on**: [date]
 
-## Visão geral
+## Overview
 
 [2-3 paragraph summary of the architecture, its purpose, and key components]
 
-## Inventário de recursos
+## Resource inventory
 
-| Nome do recurso | Tipo | Camada/SKU | Local | Observações |
+| Resource name | Type | Tier/SKU | Location | Notes |
 |--------------|------|----------|----------|-------|
-| app-prod-001 | App Service | P1v2 | East US | Aplicação Web de produção |
-| func-prod-001 | Function App | Y1 | East US | Plano de consumo |
+| app-prod-001 | App Service | P1v2 | East US | Production web application |
+| func-prod-001 | Function App | Y1 | East US | Consumption plan |
 
-## Diagrama da arquitetura
+## Architecture diagram
 
 ```mermaid
 [full diagram here]
 ```
 
-## Detalhes dos relacionamentos
+## Relationship details
 
-### Arquitetura de rede
+### Network architecture
 
 [Describe VNets, subnets, network security]
 
-### Fluxo de dados
+### Data flow
 
 [Describe how data moves between components]
 
-### Identidade e acesso
+### Identity and access
 
 [Describe managed identities, key vault access, RBAC]
 
-### Dependências
+### Dependencies
 
 [Describe critical dependencies and their order]
 
-## Observações e recomendações
+## Notes and recommendations
 
 [Any observations, potential issues, or suggestions]

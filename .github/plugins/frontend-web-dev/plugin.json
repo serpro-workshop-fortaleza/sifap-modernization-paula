@@ -1,6 +1,6 @@
 {
   "name": "frontend-web-dev",
-  "description": "Instruções orientadoras (prompts), regras e modos de conversa essenciais para o desenvolvimento moderno de interfaces web, incluindo React, Angular, Vue, TypeScript e estruturas CSS (frameworks).",
+  "description": "Essential prompts, rules, and chat modes for modern web frontend development, including React, Angular, Vue, TypeScript, and CSS frameworks.",
   "version": "1.0.0",
   "author": { "name": "Awesome Copilot Community" },
   "repository": "https://github.com/github/awesome-copilot",

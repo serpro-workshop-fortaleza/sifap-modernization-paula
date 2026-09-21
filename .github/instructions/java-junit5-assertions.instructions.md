@@ -1,18 +1,18 @@
 ---
-description: "Use ao escrever ou revisar asserções JUnit 5 (Jupiter) em testes Java de backend — ordem do valor esperado, mensagens Supplier lazy, agrupamento assertAll, assertThrows e assertThrowsExactly, timeouts e assertInstanceOf."
+description: "Use when writing or reviewing JUnit 5 (Jupiter) assertions in backend Java tests: expected-value ordering, lazy Supplier messages, assertAll grouping, assertThrows and assertThrowsExactly, timeouts, and assertInstanceOf."
 applyTo: "**/*Test.java,**/*IT.java,**/*Steps.java,**/*StepDefs.java"
 ---
 
-# Asserções JUnit 5 — Convenções de asserções Jupiter
+# JUnit 5 assertions - Jupiter assertion conventions
 
-Este arquivo é ativado em testes Java de backend (`*Test.java`, `*IT.java`, `*Steps.java`, `*StepDefs.java`). Ele ensina a usar corretamente as `org.junit.jupiter.api.Assertions` integradas do JUnit Jupiter no Java 21: ordem do valor esperado, mensagens de falha lazy, asserções agrupadas, verificações de exceção e tipo e timeouts. Ele ensina como fazer asserções, mas não decide estratégia de testes, escolha de slice, política de mocks ou metas de cobertura. A estrutura e a pirâmide ficam na skill [`java-junit`](../skills/java-junit/SKILL.md), os testes de slice e integração Spring na skill [`spring-boot-testing`](../skills/spring-boot-testing/SKILL.md) e a rastreabilidade e cobertura em [`tests.instructions.md`](tests.instructions.md).
+This file activates for backend Java tests (`*Test.java`, `*IT.java`, `*Steps.java`, `*StepDefs.java`). It teaches correct use of JUnit Jupiter's built-in `org.junit.jupiter.api.Assertions` in Java 21: expected-value ordering, lazy failure messages, grouped assertions, exception and type checks, and timeouts. It teaches how to assert, but does not decide test strategy, slice selection, mocking policy, or coverage targets. Structure and the pyramid live in the [`java-junit`](../skills/java-junit/SKILL.md) skill, Spring slice and integration tests in the [`spring-boot-testing`](../skills/spring-boot-testing/SKILL.md) skill, and traceability and coverage in [`tests.instructions.md`](tests.instructions.md).
 
 > [!NOTE]
-> Estas são as `Assertions` integradas do Jupiter. Para cadeias fluentes e verificações avançadas de objetos ou coleções, o kit prefere AssertJ (`assertThat(...)`), como em [`tests.instructions.md`](tests.instructions.md) e na skill [`spring-boot-testing`](../skills/spring-boot-testing/SKILL.md). Use as asserções Jupiter abaixo para verificações agrupadas, de exceção, timeout, tipo exato e igualdade simples.
+> These are Jupiter's built-in `Assertions`. For fluent chains and advanced object or collection checks, the kit prefers AssertJ (`assertThat(...)`), as in [`tests.instructions.md`](tests.instructions.md) and the [`spring-boot-testing`](../skills/spring-boot-testing/SKILL.md) skill. Use the Jupiter assertions below for grouped, exception, timeout, exact-type, and simple equality checks.
 
-## Imports estáticos
+## Static imports
 
-Importe cada asserção estaticamente para que os métodos de teste expressem intenção, não código repetitivo. Prefira imports explícitos ao curinga, salvo quando o módulo já o padronizar.
+Import each assertion statically so test methods express intent, not boilerplate. Prefer explicit imports over wildcards unless the module already standardizes on them.
 
 ```java
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -22,45 +22,45 @@ import static org.junit.jupiter.api.Assertions.assertAll;
 assertEquals(expected, actual);
 ```
 
-Sempre importe de `org.junit.jupiter.api.Assertions`. Nunca misture `org.junit.Assert` (JUnit 4): a ordem dos argumentos é diferente, e as APIs não são intercambiáveis.
+Always import from `org.junit.jupiter.api.Assertions`. Never mix in `org.junit.Assert` (JUnit 4): argument ordering differs, and the APIs are not interchangeable.
 
-## Valor esperado primeiro
+## Expected value first
 
-`expected` é sempre o **primeiro** argumento, e `actual`, o **segundo**, para que o log de falha informe corretamente "esperado X, mas encontrado Y".
+`expected` is always the **first** argument, and `actual` the **second**, so the failure log correctly reports "expected X but got Y".
 
 ```java
-// Evite — ordem invertida; a mensagem de falha engana
+// Avoid - reversed order; the failure message is misleading
 assertEquals(resourceService.count(), 2);
 
-// Prefira
+// Prefer
 assertEquals(2, resourceService.count());
 
-// Ponto flutuante inevitável (nunca dinheiro, que usa BigDecimal): informe um delta
+// Unavoidable floating point (never money, which uses BigDecimal): provide a delta
 assertEquals(0.3, 0.1 + 0.2, 1e-9);
 ```
 
 > [!WARNING]
-> `assertEquals` em `BigDecimal` usa `equals`, que é sensível à escala: `new BigDecimal("10.0")` **não** é igual a `new BigDecimal("10.00")`. Para valores monetários, compare o valor com `assertEquals(0, expected.compareTo(actual))` ou use `isEqualByComparingTo` do AssertJ.
+> `assertEquals` on `BigDecimal` uses `equals`, which is scale-sensitive: `new BigDecimal("10.0")` does **not** equal `new BigDecimal("10.00")`. For monetary amounts, compare the value with `assertEquals(0, expected.compareTo(actual))` or use AssertJ's `isEqualByComparingTo`.
 
-## Mensagens de falha: Supplier e String
+## Failure messages: Supplier and String
 
-Passe a mensagem como `Supplier<String>` quando sua construção for cara, para criar a string somente na falha. Um literal constante pode continuar como `String`.
+Pass the message as `Supplier<String>` when construction is expensive, so the string is created only on failure. A constant literal can remain a `String`.
 
 ```java
-// Evite — a mensagem formatada é criada mesmo quando a asserção passa
+// Avoid - the formatted message is created even when the assertion passes
 assertEquals(expected, actual, "expected %s but got %s".formatted(expected, actual));
 
-// Prefira — avaliação lazy, somente na falha
+// Prefer - lazy evaluation, only on failure
 assertEquals(expected, actual,
     () -> "expected %s but got %s".formatted(expected, actual));
 
-// Adequado — um literal constante não gera custo adicional
+// Appropriate - a constant literal incurs no additional cost
 assertTrue(account.isActive(), "account must be active");
 ```
 
-## Agrupamento com assertAll
+## Grouping with assertAll
 
-Use `assertAll` para verificar várias propriedades de um resultado; todas as asserções executam mesmo quando uma anterior falha, mostrando todas as divergências.
+Use `assertAll` to check multiple properties of a result; all assertions run even when an earlier one fails, showing every mismatch.
 
 ```java
 record PaymentView(String beneficiary, BigDecimal amount, PaymentStatus status) {}
@@ -76,11 +76,11 @@ void should_map_all_fields_when_building_view() { // REQ-042
 }
 ```
 
-Não crie manualmente uma sequência de asserções isoladas para verificar um objeto; a primeira falha oculta as demais.
+Do not manually build a sequence of isolated assertions to check an object; the first failure hides the others.
 
-## Exceções: assertThrows e assertThrowsExactly
+## Exceptions: assertThrows and assertThrowsExactly
 
-`assertThrows` retorna a exceção lançada para permitir verificações e aceita subtipos da classe esperada. Use `assertThrowsExactly` (JUnit 5.8+) quando a classe exata fizer parte do contrato.
+`assertThrows` returns the thrown exception for further checks and accepts subtypes of the expected class. Use `assertThrowsExactly` (JUnit 5.8+) when the exact class is part of the contract.
 
 ```java
 @Test
@@ -92,13 +92,13 @@ void should_reject_duplicate_label_when_it_exists() { // REQ-021
     assertEquals("alpha", ex.conflictingLabel());
 }
 
-// Tipo exato obrigatório — uma subclasse NÃO deve satisfazer esta asserção
+// Exact type required - a subclass must NOT satisfy this assertion
 assertThrowsExactly(IllegalArgumentException.class, () -> ResourceLabel.of(""));
 ```
 
 ## assertDoesNotThrow
 
-Use `assertDoesNotThrow` somente quando a ausência de exceção for o contrato em teste; ele retorna o valor para outras asserções.
+Use `assertDoesNotThrow` only when absence of an exception is the contract under test; it returns the value for further assertions.
 
 ```java
 BigDecimal total = assertDoesNotThrow(() -> invoiceService.total(batch));
@@ -107,7 +107,7 @@ assertEquals(0, new BigDecimal("2500.00").compareTo(total));
 
 ## Timeouts
 
-Use `assertTimeout` para verificar uma duração sem interromper o trabalho. Use `assertTimeoutPreemptively` somente quando for necessário abortar rigidamente.
+Use `assertTimeout` to check a duration without interrupting the work. Use `assertTimeoutPreemptively` only when a hard abort is necessary.
 
 ```java
 assertTimeout(Duration.ofSeconds(1), () -> reportService.generate(batch));
@@ -116,11 +116,11 @@ assertTimeoutPreemptively(Duration.ofMillis(500), () -> validator.check(payload)
 ```
 
 > [!WARNING]
-> `assertTimeoutPreemptively` executa o código em uma **thread separada**, por isso o estado `ThreadLocal` não é propagado. O `EntityManager` vinculado de um teste `@Transactional` e qualquer contexto de segurança ficam ausentes. Nunca envolva nele uma chamada transacional de persistência.
+> `assertTimeoutPreemptively` runs code in a **separate thread**, so `ThreadLocal` state is not propagated. The bound `EntityManager` of a `@Transactional` test and any security context are absent. Never wrap a transactional persistence call in it.
 
-## Verificações de tipo: assertInstanceOf
+## Type checks: assertInstanceOf
 
-Prefira `assertInstanceOf` (JUnit 5.8+) a `assertTrue(x instanceof T)`; ele falha com mensagem útil e retorna o valor já convertido, adequado aos tipos de resultado sealed do kit.
+Prefer `assertInstanceOf` (JUnit 5.8+) over `assertTrue(x instanceof T)`; it fails with a useful message and returns the cast value, suitable for the kit's sealed result types.
 
 ```java
 sealed interface PaymentResult permits Approved, Rejected {}
@@ -129,45 +129,45 @@ Approved approved = assertInstanceOf(Approved.class, paymentService.process(requ
 assertEquals(42L, approved.paymentId());
 ```
 
-## Coleções e arrays
+## Collections and arrays
 
-Use as asserções específicas para que as falhas mostrem um diff por elemento em vez de um `false` opaco.
+Use dedicated assertions so failures show an element-by-element diff instead of an opaque `false`.
 
 ```java
-assertIterableEquals(List.of("alpha", "beta"), resourceService.labels()); // diff profundo ordenado
+assertIterableEquals(List.of("alpha", "beta"), resourceService.labels()); // ordered deep diff
 assertArrayEquals(expectedBytes, actualBytes);
 ```
 
-## Convenções
+## Conventions
 
-| Regra | Justificativa |
+| Rule | Rationale |
 |---|---|
-| `expected` primeiro e `actual` depois em `assertEquals` | O log de falha mostra corretamente o esperado e o encontrado |
-| Compare `BigDecimal` por valor, não com `equals` | `equals` é sensível à escala e falha silenciosamente com dinheiro |
-| Envolva mensagens caras em `Supplier<String>` | A mensagem só é criada quando a asserção falha |
-| Agrupe verificações relacionadas com `assertAll` | Todas as propriedades são informadas |
-| `assertThrows` para hierarquia, `assertThrowsExactly` para classe exata | Corresponde à rigidez do tipo no contrato |
-| `assertInstanceOf` em vez de `assertTrue(... instanceof ...)` | Retorna o valor convertido e falha com mensagem útil |
-| Importe somente de `org.junit.jupiter.api.Assertions` | `org.junit.Assert` do JUnit 4 usa outra ordem de argumentos |
+| `expected` first and `actual` second in `assertEquals` | The failure log correctly shows expected and actual values |
+| Compare `BigDecimal` by value, not with `equals` | `equals` is scale-sensitive and silently fails for money |
+| Wrap expensive messages in `Supplier<String>` | The message is created only when the assertion fails |
+| Group related checks with `assertAll` | All properties are reported |
+| `assertThrows` for hierarchy, `assertThrowsExactly` for exact class | Matches the contract's type strictness |
+| `assertInstanceOf` instead of `assertTrue(... instanceof ...)` | Returns the cast value and fails with a useful message |
+| Import only from `org.junit.jupiter.api.Assertions` | JUnit 4's `org.junit.Assert` uses different argument ordering |
 
-## Faça / Não faça
+## Do / Don't
 
-| Faça | Não faça |
+| Do | Don't |
 |---|---|
-| Coloque `expected` antes de `actual` | Inverta-os e gere logs enganosos |
-| Compare dinheiro com `compareTo` ou `isEqualByComparingTo` | Compare `BigDecimal` com `equals`, sensível à escala |
-| Use `assertEquals(2, result)` para valores | Use `assertTrue(result == 2)` e perca os valores no log |
-| Verifique o valor quando possível | Limite-se a `assertNotNull` quando houver verificação real |
-| Use `Supplier` para mensagens caras | Crie mensagem formatada em toda execução |
-| Não use `assertTimeoutPreemptively` em código transacional | Envolva persistência `@Transactional` e perca o `EntityManager` |
-| Permita que as asserções falhem claramente | Capture `AssertionError` para ocultar falha |
+| Put `expected` before `actual` | Reverse them and produce misleading logs |
+| Compare money with `compareTo` or `isEqualByComparingTo` | Compare `BigDecimal` with scale-sensitive `equals` |
+| Use `assertEquals(2, result)` for values | Use `assertTrue(result == 2)` and lose the values in the log |
+| Check the value when possible | Settle for `assertNotNull` when a real check is available |
+| Use `Supplier` for expensive messages | Build a formatted message on every run |
+| Avoid `assertTimeoutPreemptively` in transactional code | Wrap `@Transactional` persistence and lose the `EntityManager` |
+| Let assertions fail clearly | Catch `AssertionError` to hide a failure |
 
-## Lista de verificação antes de abrir uma PR
+## PR Checklist
 
-- [ ] Todo `assertEquals` lista `expected` primeiro e `actual` depois
-- [ ] `BigDecimal` e outros valores monetários são comparados por valor, não com `equals` sensível à escala
-- [ ] Verificações de várias propriedades usam `assertAll`; mensagens caras usam `Supplier<String>`
-- [ ] Testes de exceção escolhem deliberadamente `assertThrows` ou `assertThrowsExactly` e verificam a exceção retornada
-- [ ] `assertTimeoutPreemptively` não envolve código transacional nem vinculado a `ThreadLocal`
-- [ ] Os imports são somente do Jupiter; não há mistura com `org.junit.Assert` (JUnit 4)
-- [ ] Testes orientados por requisitos mantêm o comentário inline `// REQ-NNN` (consulte [`tests.instructions.md`](tests.instructions.md))
+- [ ] Every `assertEquals` lists `expected` first and `actual` second
+- [ ] `BigDecimal` and other monetary amounts are compared by value, not with scale-sensitive `equals`
+- [ ] Multiple-property checks use `assertAll`; expensive messages use `Supplier<String>`
+- [ ] Exception tests deliberately choose `assertThrows` or `assertThrowsExactly` and check the returned exception
+- [ ] `assertTimeoutPreemptively` wraps neither transactional nor `ThreadLocal`-bound code
+- [ ] Imports are Jupiter-only; no mixing with `org.junit.Assert` (JUnit 4)
+- [ ] Requirement-driven tests retain the inline `// REQ-NNN` comment (see [`tests.instructions.md`](tests.instructions.md))

@@ -1,90 +1,90 @@
 ---
 name: "comment-code-generate-a-tutorial"
-description: "Refatore um script Python conforme a PEP 8, adicione comentários didáticos para iniciantes e gere um tutorial README.md completo (visão geral, configuração, funcionamento e exemplo de uso). Use quando a pessoa quiser transformar um script Python em um projeto aprimorado e didático ou produzir um guia passo a passo."
+description: "Refactor a Python script according to PEP 8, add instructional comments for beginners, and generate a complete README.md tutorial (overview, setup, how it works, and usage example). Use when someone wants to turn a Python script into a polished educational project or produce a step-by-step guide."
 ---
-# Comentar o código e gerar um tutorial
+# Comment code and generate a tutorial
 
-Use esta habilidade para transformar um script funcional em um artefato didático. Refatore o código para melhorar a clareza, adicione comentários instrutivos que expliquem o raciocínio por trás de cada decisão e escreva um tutorial `README.md` que permita a iniciantes executar o script e entender seu funcionamento. O exemplo usa Python, mas o mesmo procedimento de três etapas se aplica a qualquer linguagem.
+Use this skill to turn a working script into an educational artifact. Refactor the code for clarity, add instructional comments explaining the reasoning behind each decision, and write a `README.md` tutorial that lets beginners run the script and understand how it works. The example uses Python, but the same three-step procedure applies to any language.
 
 > [!NOTE]
-> Nesta imersão, o prompt (instrução) [`/comment-code-generate-a-tutorial`](../../prompts/comment-code-generate-a-tutorial.prompt.md) aplica este procedimento ao conjunto de tecnologias Java 21 e TypeScript do kit. Mantenha esta habilidade como a fonte procedural oficial à qual o prompt recorre.
+> In this immersion, the [`/comment-code-generate-a-tutorial`](../../prompts/comment-code-generate-a-tutorial.prompt.md) prompt applies this procedure to the kit's Java 21 and TypeScript stack. Keep this skill as the authoritative procedural source used by the prompt.
 
-## Quando usar
+## When to Invoke
 
-- "Refatore este script Python e escreva um tutorial README para ele."
-- "Adicione comentários para iniciantes a este script e explique como ele funciona."
-- "Transforme este utilitário em um projeto didático com documentação de configuração e uso."
-- "Gere um guia passo a passo para este script."
+- "Refactor this Python script and write a README tutorial for it."
+- "Add beginner comments to this script and explain how it works."
+- "Turn this utility into an educational project with setup and usage documentation."
+- "Generate a step-by-step guide for this script."
 
-## Fluxo de trabalho
+## Workflow
 
-### 1. Refatorar para melhorar a clareza
+### 1. Refactor for clarity
 
-- Aplique o guia de estilo da linguagem (PEP 8 para Python).
-- Renomeie variáveis e funções pouco claras para que os nomes revelem a intenção.
-- Extraia blocos longos em funções pequenas e nomeadas.
-- Mantenha a interface pública e a saída observável idênticas. Esta etapa melhora a legibilidade, não reescreve o programa.
+- Apply the language's style guide (PEP 8 for Python).
+- Rename unclear variables and functions so their names reveal intent.
+- Extract long blocks into small, named functions.
+- Keep the public interface and observable output identical. This step improves readability, not rewrites the program.
 
-### 2. Adicionar comentários instrutivos
+### 2. Add instructional comments
 
-Explique o raciocínio, não a sintaxe. Um comentário útil responde "por quê"; um comentário ruim repete "o quê".
+Explain reasoning, not syntax. A useful comment answers "why"; a poor comment repeats "what".
 
-| Escreva comentários que | Evite comentários que |
+| Write comments that | Avoid comments that |
 |---|---|
-| Expliquem por que uma decisão de design foi tomada | Repitam uma linha, como `i += 1  # soma um` |
-| Apresentem um idioma da linguagem na primeira ocorrência | Repitam o nome da função em prosa |
-| Alertem sobre um caso extremo ou uma invariante | Narrem um fluxo de controle óbvio |
-| Nomeiem o conceito que uma pessoa iniciante deve pesquisar | Adicionem ruído que se torna obsoleto |
+| Explain why a design decision was made | Repeat a line, such as `i += 1  # add one` |
+| Introduce a language idiom on its first occurrence | Repeat the function name in prose |
+| Warn about an edge case or invariant | Narrate obvious control flow |
+| Name the concept a beginner should research | Add noise that becomes stale |
 
-### 3. Gerar o tutorial
+### 3. Generate the tutorial
 
-Escreva um `README.md` ao lado do script com estas seções: visão geral do projeto, instruções de configuração, funcionamento, exemplo de uso e, opcionalmente, uma saída de exemplo.
+Write a `README.md` alongside the script with these sections: project overview, setup instructions, how it works, usage example, and optionally sample output.
 
-## Regras
+## Rules
 
-- Preserve o comportamento, a codificação do arquivo e o estilo de fim de linha. Uma revisão didática nunca deve quebrar a compilação.
-- Use apenas caracteres padrão do teclado em código e comentários. Não use emojis.
-- Escreva todos os comentários e todas as seções do tutorial em português do Brasil.
-- Nunca inclua dados sensíveis (por exemplo, números de CPF ou valores de benefícios) em exemplos ou saídas de exemplo.
-- Execute o comando de configuração e o exemplo antes de publicar o tutorial.
+- Preserve behavior, file encoding, and line ending style. An educational revision must never break the build.
+- Use only standard keyboard characters in code and comments. Do not use emojis.
+- Write all comments and tutorial sections in Brazilian Portuguese.
+- Never include sensitive data (for example, CPF numbers or benefit amounts) in examples or sample output.
+- Run the setup command and example before publishing the tutorial.
 
-## Modelo de saída
+## Output Template
 
-O `README.md` gerado começa com um H1 que nomeia o projeto, seguido destas seções:
+The generated `README.md` starts with an H1 naming the project, followed by these sections:
 
 ```markdown
-## Visão geral do projeto
-`wordcount.py` conta quantas vezes cada palavra aparece em um arquivo de texto e
-exibe as entradas mais frequentes. Ele demonstra leitura de arquivo, agregação
-com dicionários e ordenação em Python.
+## Project overview
+`wordcount.py` counts how often each word appears in a text file and
+displays the most frequent entries. It demonstrates file reading, aggregation
+with dictionaries, and sorting in Python.
 
-## Configuração
-- Requer Python 3.8 ou mais recente
-- Não tem dependências de terceiros
+## Setup
+- Requires Python 3.8 or later
+- Has no third-party dependencies
 
-Execute a partir da raiz do projeto:
+Run from the project root:
 
     python3 wordcount.py sample.txt --top 10
 
-## Como funciona
-1. Leia o arquivo e converta cada linha em minúsculas para ignorar diferenças entre maiúsculas e minúsculas.
-2. Divida cada linha nos espaços em branco e conte as palavras em um dicionário.
-3. Ordene o dicionário pela contagem e exiba as N primeiras entradas.
+## How it works
+1. Read the file and lowercase each line to ignore case differences.
+2. Split each line on whitespace and count the words in a dictionary.
+3. Sort the dictionary by count and display the top N entries.
 
-## Exemplo de uso
+## Usage example
     python3 wordcount.py article.txt --top 5
 
-## Saída de exemplo
+## Sample output
     the      42
     and      31
     data     27
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] O script ainda funciona e produz uma saída idêntica após a refatoração.
-- [ ] Os nomes revelam a intenção e nenhum comportamento mudou durante a melhoria de legibilidade.
-- [ ] Os comentários explicam raciocínios e idiomas da linguagem, não sintaxe óbvia.
-- [ ] O `README.md` inclui visão geral, configuração, funcionamento e exemplo de uso.
-- [ ] O comando de configuração e o exemplo foram testados e estão corretos.
-- [ ] Tudo está escrito em português do Brasil, sem emojis nem dados sensíveis.
+- [ ] The script still works and produces identical output after refactoring.
+- [ ] Names reveal intent and no behavior changed during the readability improvement.
+- [ ] Comments explain reasoning and language idioms, not obvious syntax.
+- [ ] The `README.md` includes an overview, setup, how it works, and usage example.
+- [ ] The setup command and example have been tested and are correct.
+- [ ] Everything is written in Brazilian Portuguese, without emojis or sensitive data.

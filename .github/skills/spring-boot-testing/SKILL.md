@@ -1,122 +1,122 @@
 ---
 name: "spring-boot-testing"
-description: "Seleciona a técnica de teste adequada do Spring Boot para um cenário: fatias (@WebMvcTest, @DataJpaTest, @RestClientTest, @JsonTest, @SpringBootTest), Testcontainers, Mockito e AssertJ. Use ao escrever ou revisar testes de integração ou de fatia do Spring Boot. Destina-se ao Spring Boot 3.3 + JUnit 5 do kit; APIs mais recentes das versões 3.4+/4.0 (MockMvcTester, @MockitoBean, RestTestClient) estão fora do escopo."
+description: "Select the right Spring Boot testing technique for a scenario: slices (@WebMvcTest, @DataJpaTest, @RestClientTest, @JsonTest, @SpringBootTest), Testcontainers, Mockito, and AssertJ. Use when writing or reviewing Spring Boot integration or slice tests. Targets the kit's Spring Boot 3.3 + JUnit 5; newer 3.4+/4.0 APIs (MockMvcTester, @MockitoBean, RestTestClient) are out of scope."
 ---
-# Testes com Spring Boot
+# Spring Boot testing
 
-Esta habilidade ajuda a escolher a técnica de teste do Spring Boot adequada para um cenário. Destina-se ao conjunto tecnológico **Spring Boot 3.3 + JUnit 5 + Testcontainers** do kit. Algumas APIs mais recentes do Spring Boot 3.4+/4.0 aparecem apenas como referência e estão claramente marcadas como **fora do escopo do kit**. Para testes unitários simples de lógica de negócio, sem contexto Spring, use [`java-junit`](../java-junit/SKILL.md).
+This skill helps choose the right Spring Boot testing technique for a scenario. It targets the kit's **Spring Boot 3.3 + JUnit 5 + Testcontainers** stack. Some newer Spring Boot 3.4+/4.0 APIs appear only as references and are clearly marked **out of scope for the kit**. For plain business-logic unit tests without a Spring context, use [`java-junit`](../java-junit/SKILL.md).
 
-## Quando invocar
+## When to Invoke
 
-- "Qual fatia de teste devo usar para este controlador?"
-- "Escreva um `@DataJpaTest` contra um PostgreSQL real com Testcontainers."
-- "Revise a camada e o escopo destes testes do Spring Boot."
-- "Configure o Testcontainers para nossos testes de integração."
+- "Which test slice should I use for this controller?"
+- "Write a `@DataJpaTest` against real PostgreSQL with Testcontainers."
+- "Review the layer and scope of these Spring Boot tests."
+- "Set up Testcontainers for our integration tests."
 
-## Princípios básicos
+## Core principles
 
-1. **Pirâmide de testes**: unitário (rápido) > fatia (focada) > integração (completo)
-2. **Ferramenta adequada**: use a fatia mais restrita que ofereça confiança
-3. **Estilo AssertJ**: prefira asserções fluentes e legíveis a comparadores verbosos
-4. **Conjunto tecnológico do kit**: no Spring Boot 3.3, use MockMvc clássico e `@MockBean`; as APIs mais recentes MockMvcTester / `@MockitoBean` / RestTestClient (3.4+/4.0) estão fora do escopo
+1. **Test pyramid**: unit (fast) > slice (focused) > integration (full)
+2. **Right tool**: use the narrowest slice that provides confidence
+3. **AssertJ style**: prefer fluent, readable assertions to verbose matchers
+4. **Kit stack**: on Spring Boot 3.3, use classic MockMvc and `@MockBean`; newer MockMvcTester / `@MockitoBean` / RestTestClient APIs (3.4+/4.0) are out of scope
 
-## Qual fatia de teste usar?
+## Which test slice should you use?
 
-| Cenário | Anotação | Referência |
+| Scenario | Annotation | Reference |
 |----------|------------|-----------|
-| Controlador + semântica HTTP | `@WebMvcTest` | [references/webmvctest.md](references/webmvctest.md) |
-| Repositório + consultas JPA | `@DataJpaTest` | [references/datajpatest.md](references/datajpatest.md) |
-| Cliente REST + APIs externas | `@RestClientTest` | [references/restclienttest.md](references/restclienttest.md) |
-| (Des)serialização JSON | `@JsonTest` | [references/test-slices-overview.md](references/test-slices-overview.md) |
-| Aplicação completa | `@SpringBootTest` | [references/test-slices-overview.md](references/test-slices-overview.md) |
+| Controller + HTTP semantics | `@WebMvcTest` | [references/webmvctest.md](references/webmvctest.md) |
+| Repository + JPA queries | `@DataJpaTest` | [references/datajpatest.md](references/datajpatest.md) |
+| REST client + external APIs | `@RestClientTest` | [references/restclienttest.md](references/restclienttest.md) |
+| JSON (de)serialization | `@JsonTest` | [references/test-slices-overview.md](references/test-slices-overview.md) |
+| Full application | `@SpringBootTest` | [references/test-slices-overview.md](references/test-slices-overview.md) |
 
-## Referência de fatias de teste
+## Test slice reference
 
-- [references/test-slices-overview.md](references/test-slices-overview.md): matriz de decisão e comparação
-- [references/webmvctest.md](references/webmvctest.md): camada web com MockMvc
-- [references/datajpatest.md](references/datajpatest.md): camada de dados com Testcontainers
-- [references/restclienttest.md](references/restclienttest.md): testes de cliente REST
+- [references/test-slices-overview.md](references/test-slices-overview.md): decision and comparison matrix
+- [references/webmvctest.md](references/webmvctest.md): web layer with MockMvc
+- [references/datajpatest.md](references/datajpatest.md): data layer with Testcontainers
+- [references/restclienttest.md](references/restclienttest.md): REST client tests
 
-## Referência de ferramentas de teste
+## Testing tool reference
 
-- [references/mockmvc-classic.md](references/mockmvc-classic.md): MockMvc clássico, padrão do kit no Spring Boot 3.3
-- [references/mockmvc-tester.md](references/mockmvc-tester.md): MockMvc no estilo AssertJ (Spring Boot 3.4+, fora do escopo)
-- [references/mockitobean.md](references/mockitobean.md): objetos simulados com `@MockitoBean` (Spring Boot 3.4+, fora do escopo)
-- [references/resttestclient.md](references/resttestclient.md): RestTestClient (Spring Boot 4.0, fora do escopo)
+- [references/mockmvc-classic.md](references/mockmvc-classic.md): classic MockMvc, the kit's default on Spring Boot 3.3
+- [references/mockmvc-tester.md](references/mockmvc-tester.md): AssertJ-style MockMvc (Spring Boot 3.4+, out of scope)
+- [references/mockitobean.md](references/mockitobean.md): mocks with `@MockitoBean` (Spring Boot 3.4+, out of scope)
+- [references/resttestclient.md](references/resttestclient.md): RestTestClient (Spring Boot 4.0, out of scope)
 
-## Bibliotecas de asserção
+## Assertion libraries
 
-- [references/assertj-basics.md](references/assertj-basics.md): escalares, strings, booleanos e datas
-- [references/assertj-collections.md](references/assertj-collections.md): listas, conjuntos, mapas e arrays
+- [references/assertj-basics.md](references/assertj-basics.md): scalars, strings, booleans, and dates
+- [references/assertj-collections.md](references/assertj-collections.md): lists, sets, maps, and arrays
 
 ## Testcontainers
 
-- [references/testcontainers-jdbc.md](references/testcontainers-jdbc.md): PostgreSQL 16 e outros bancos de dados JDBC
+- [references/testcontainers-jdbc.md](references/testcontainers-jdbc.md): PostgreSQL 16 and other JDBC databases
 
-## Geração de dados de teste
+## Test data generation
 
-- [references/instancio.md](references/instancio.md): geração de objetos de teste complexos (3 ou mais propriedades)
+- [references/instancio.md](references/instancio.md): generating complex test objects (3 or more properties)
 
-## Desempenho e migração
+## Performance and migration
 
-- [references/context-caching.md](references/context-caching.md): aceleração das suítes de teste
-- [references/sb4-migration.md](references/sb4-migration.md): alterações do Spring Boot 4.0
+- [references/context-caching.md](references/context-caching.md): speeding up test suites
+- [references/sb4-migration.md](references/sb4-migration.md): Spring Boot 4.0 changes
 
-## Árvore de decisão rápida
+## Quick decision tree
 
 ```text
-Testando um ponto de acesso de controlador?
-  Sim → @WebMvcTest com MockMvc clássico (MockMvcTester exige Spring Boot 3.4+)
+Testing a controller endpoint?
+  Yes → @WebMvcTest with classic MockMvc (MockMvcTester requires Spring Boot 3.4+)
 
-Testando consultas de repositório?
-  Sim → @DataJpaTest com Testcontainers (banco de dados real)
+Testing repository queries?
+  Yes → @DataJpaTest with Testcontainers (real database)
 
-Testando lógica de negócio no serviço?
-  Sim → JUnit simples + Mockito (sem contexto Spring)
+Testing business logic in the service?
+  Yes → Plain JUnit + Mockito (no Spring context)
 
-Testando cliente de API externa?
-  Sim → @RestClientTest com MockRestServiceServer
+Testing an external API client?
+  Yes → @RestClientTest with MockRestServiceServer
 
-Testando mapeamento JSON?
-  Sim → @JsonTest
+Testing JSON mapping?
+  Yes → @JsonTest
 
-Precisa de um teste de integração completo?
-  Sim → @SpringBootTest com configuração mínima de contexto
+Need a full integration test?
+  Yes → @SpringBootTest with minimal context configuration
 ```
 
-## APIs mais recentes fora do escopo do kit (Spring Boot 3.4+/4.0)
+## Newer APIs outside the kit's scope (Spring Boot 3.4+/4.0)
 
-O kit está fixado em **Spring Boot 3.3 + JUnit 5**. As APIs mais recentes a seguir são listadas
-apenas para conhecimento. Não as adote no código do kit:
+The kit is pinned to **Spring Boot 3.3 + JUnit 5**. The following newer APIs are listed
+for awareness only. Do not adopt them in the kit's code:
 
-- **MockMvcTester**: asserções MockMvc no estilo AssertJ (Spring Boot 3.4+). Na versão 3.3, use MockMvc clássico.
-- **@MockitoBean**: substitui `@MockBean` (Spring Boot 3.4+). Na versão 3.3, use `@MockBean`.
-- **RestTestClient**: alternativa ao `TestRestTemplate` (Spring Boot 4.0). Na versão 3.3, use `TestRestTemplate` ou `RestClient`.
-- **Inicializadores de teste modulares** e **pausa de contexto** (Spring Boot 4.0 / Spring Framework 7).
+- **MockMvcTester**: AssertJ-style MockMvc assertions (Spring Boot 3.4+). On 3.3, use classic MockMvc.
+- **@MockitoBean**: replaces `@MockBean` (Spring Boot 3.4+). On 3.3, use `@MockBean`.
+- **RestTestClient**: alternative to `TestRestTemplate` (Spring Boot 4.0). On 3.3, use `TestRestTemplate` or `RestClient`.
+- **Modular test starters** and **context pausing** (Spring Boot 4.0 / Spring Framework 7).
 
-Consulte [references/sb4-migration.md](references/sb4-migration.md) somente se o projeto realmente for atualizado para uma versão posterior à 3.3.
+Consult [references/sb4-migration.md](references/sb4-migration.md) only if the project is actually upgraded beyond 3.3.
 
-## Práticas recomendadas de teste
+## Testing best practices
 
-### Avaliação da complexidade do código
+### Assessing code complexity
 
-Quando um método ou uma classe for complexo demais para ser testado com eficácia:
+When a method or class is too complex to test effectively:
 
-1. **Analise a complexidade**: se forem necessários mais de cinco a sete casos de teste para cobrir um único método, ele provavelmente é complexo demais
-2. **Recomende a refatoração**: sugira dividir o código em funções menores e focadas
-3. **Respeite a decisão da pessoa**: se ela concordar com a refatoração, ajude a identificar pontos de extração
-4. **Prossiga se necessário**: se ela decidir manter o código complexo, implemente os testes apesar da dificuldade
+1. **Analyze complexity**: if more than five to seven test cases are needed to cover a single method, it is probably too complex
+2. **Recommend refactoring**: suggest splitting the code into smaller, focused functions
+3. **Respect the user's decision**: if they agree to refactor, help identify extraction points
+4. **Proceed if necessary**: if they choose to keep the complex code, implement tests despite the difficulty
 
-**Exemplo de recomendação de refatoração:**
+**Example refactoring recommendation:**
 
 ```java
-// Antes: método complexo e difícil de testar
+// Before: complex method that is hard to test
 public Order processOrder(OrderRequest request) {
-  // Validação, cálculo de desconto, pagamento, estoque, notificação...
-  // Mais de 50 linhas com responsabilidades misturadas
+  // Validation, discount calculation, payment, inventory, notification...
+  // More than 50 lines with mixed responsibilities
 }
 
-// Depois: refatorado em unidades testáveis
+// After: refactored into testable units
 public Order processOrder(OrderRequest request) {
   validateOrder(request);
   var order = createOrder(request);
@@ -128,58 +128,58 @@ public Order processOrder(OrderRequest request) {
 }
 ```
 
-### Evite repetição de código
+### Avoid code repetition
 
-Crie métodos auxiliares para objetos usados com frequência e para a configuração de objetos simulados, melhorando a legibilidade e a manutenibilidade.
+Create helper methods for frequently used objects and mock setup, improving readability and maintainability.
 
-### Organização de testes com @DisplayName
+### Test organization with @DisplayName
 
-Use nomes de exibição descritivos para esclarecer a intenção do teste:
+Use descriptive display names to clarify test intent:
 
 ```java
 @Test
-@DisplayName("Deve calcular o desconto para cliente VIP")
+@DisplayName("Should calculate the discount for a VIP customer")
 void shouldCalculateDiscountForVip() { }
 
 @Test
-@DisplayName("Deve rejeitar o pedido quando o cliente não tiver crédito suficiente")
+@DisplayName("Should reject the order when the customer has insufficient credit")
 void shouldRejectOrderForInsufficientCredit() { }
 ```
 
-### Ordem da cobertura de testes
+### Test coverage order
 
-Sempre estruture os testes nesta ordem:
+Always structure tests in this order:
 
-1. **Cenário principal**: fluxo de sucesso, caso de uso mais comum
-2. **Outros fluxos**: cenários válidos alternativos e casos-limite
-3. **Exceções/erros**: entradas inválidas, condições de erro e modos de falha
+1. **Main scenario**: happy path, most common use case
+2. **Other paths**: alternative valid scenarios and boundary cases
+3. **Exceptions/errors**: invalid inputs, error conditions, and failure modes
 
-### Teste cenários de produção
+### Test production scenarios
 
-Escreva testes pensando em cenários reais de produção. Isso torna os testes mais compreensíveis e ajuda a entender o comportamento do código em casos reais.
+Write tests with real production scenarios in mind. This makes tests easier to understand and helps explain code behavior in real cases.
 
-### Metas de cobertura de testes
+### Test coverage targets
 
-Busque 80% de cobertura de código como equilíbrio prático entre qualidade e esforço. Uma cobertura maior é benéfica, mas não é o único objetivo.
+Aim for 80% code coverage as a practical balance between quality and effort. Higher coverage is beneficial but is not the only goal.
 
-Use o plugin Maven JaCoCo para gerar relatórios e acompanhar a cobertura.
+Use the JaCoCo Maven plugin to generate reports and track coverage.
 
-**Regras de cobertura:**
+**Coverage rules:**
 
-- Cobertura mínima de 80%
-- Foco em asserções relevantes, não apenas na execução
+- Minimum coverage of 80%
+- Focus on meaningful assertions, not just execution
 
-**O que priorizar:**
+**What to prioritize:**
 
-1. Fluxos críticos de negócio (processamento de pagamentos, validação de pedidos)
-2. Algoritmos complexos (precificação, cálculo de descontos)
-3. Tratamento de erros (exceções, casos-limite)
-4. Pontos de integração (APIs externas, bancos de dados)
+1. Critical business flows (payment processing, order validation)
+2. Complex algorithms (pricing, discount calculation)
+3. Error handling (exceptions, boundary cases)
+4. Integration points (external APIs, databases)
 
-## Dependências (Spring Boot 3.3)
+## Dependencies (Spring Boot 3.3)
 
-`spring-boot-starter-test` já inclui JUnit 5, Mockito, AssertJ e MockMvc. Adicione o módulo de
-suporte do Testcontainers para executar `@DataJpaTest` / `@SpringBootTest` contra um PostgreSQL 16 real.
+`spring-boot-starter-test` already includes JUnit 5, Mockito, AssertJ, and MockMvc. Add the
+Testcontainers support module to run `@DataJpaTest` / `@SpringBootTest` against real PostgreSQL 16.
 
 ```xml
 <dependency>
@@ -188,7 +188,7 @@ suporte do Testcontainers para executar `@DataJpaTest` / `@SpringBootTest` contr
   <scope>test</scope>
 </dependency>
 
-<!-- Suporte do Testcontainers (PostgreSQL real para @DataJpaTest / @SpringBootTest) -->
+<!-- Testcontainers support (real PostgreSQL for @DataJpaTest / @SpringBootTest) -->
 <dependency>
   <groupId>org.springframework.boot</groupId>
   <artifactId>spring-boot-testcontainers</artifactId>
@@ -201,7 +201,7 @@ suporte do Testcontainers para executar `@DataJpaTest` / `@SpringBootTest` contr
 </dependency>
 ```
 
-## Modelo de saída
+## Output Template
 
 ```java
 @DataJpaTest
@@ -224,11 +224,11 @@ class PaymentRepositoryTest {
 }
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] É usada a fatia mais restrita que ofereça confiança (unitário -> fatia -> `@SpringBootTest`).
-- [ ] Os testes da camada de dados e de integração completa são executados contra um PostgreSQL 16 real via Testcontainers, não H2.
-- [ ] No Spring Boot 3.3, são usados `MockMvc` clássico e `@MockBean`; nenhuma API 3.4+/4.0 (MockMvcTester, `@MockitoBean`, RestTestClient) é adotada.
-- [ ] As asserções usam `assertThat` do AssertJ; cada teste se concentra em um comportamento.
-- [ ] A suíte reutiliza o contexto Spring quando possível (consulte context-caching) para permanecer rápida.
-- [ ] `./mvnw test` passa localmente antes da abertura do PR.
+- [ ] The narrowest slice that provides confidence is used (unit -> slice -> `@SpringBootTest`).
+- [ ] Data-layer and full integration tests run against real PostgreSQL 16 through Testcontainers, not H2.
+- [ ] On Spring Boot 3.3, classic `MockMvc` and `@MockBean` are used; no 3.4+/4.0 API (MockMvcTester, `@MockitoBean`, RestTestClient) is adopted.
+- [ ] Assertions use AssertJ's `assertThat`; each test focuses on one behavior.
+- [ ] The suite reuses the Spring context where possible (see context-caching) to stay fast.
+- [ ] `./mvnw test` passes locally before opening the PR.

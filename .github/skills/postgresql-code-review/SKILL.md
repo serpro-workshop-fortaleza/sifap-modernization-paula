@@ -1,93 +1,93 @@
 ---
 name: "postgresql-code-review"
-description: "Revisa SQL, esquemas e funções existentes do PostgreSQL quanto a antipadrões específicos, qualidade e segurança: operações JSONB, uso de arrays, tipos personalizados, projeto de esquema, otimização de funções e segurança no nível de linha (Row Level Security, RLS). Use quando a pessoa solicitar a revisão, auditoria ou avaliação crítica de código PostgreSQL existente ou de uma migração. Para criar ou otimizar novos recursos, use postgresql-optimization."
+description: "Review existing PostgreSQL SQL, schemas, and functions for specific anti-patterns, quality, and security: JSONB operations, array usage, custom types, schema design, function optimization, and Row Level Security (RLS). Use when someone requests a review, audit, or critical assessment of existing PostgreSQL code or a migration. To create or optimize new features, use postgresql-optimization."
 ---
-# Revisão de código PostgreSQL
+# PostgreSQL code review
 
-Revisão especializada de código PostgreSQL para `${selection}` (ou para todo o projeto quando nada estiver selecionado). Concentra-se em práticas recomendadas, antipadrões e padrões de qualidade exclusivos do PostgreSQL, não em SQL genérico. Para criar ou ajustar novos recursos do PostgreSQL em vez de revisar os existentes, use [`postgresql-optimization`](../postgresql-optimization/SKILL.md).
+Specialized PostgreSQL code review for `${selection}` (or the whole project when nothing is selected). Focuses on PostgreSQL-specific best practices, anti-patterns, and quality standards, not generic SQL. To create or tune new PostgreSQL features instead of reviewing existing ones, use [`postgresql-optimization`](../postgresql-optimization/SKILL.md).
 
 > [!IMPORTANT]
-> A camada de servidor do SIFAP 2.0 acessa o **PostgreSQL 16** por **JPA/Hibernate**. As consultas da aplicação devem usar JPQL, consultas derivadas do Spring Data ou parâmetros nativos vinculados, nunca SQL concatenado em textos. O esquema fica nas migrações do Flyway em `backend/src/main/resources/db/migration/`. Quando esta habilidade e [`database.instructions.md`](../../instructions/database.instructions.md) se sobrepuserem, o arquivo de instruções será autoritativo.
+> The SIFAP 2.0 backend accesses **PostgreSQL 16** through **JPA/Hibernate**. Application queries must use JPQL, Spring Data derived queries, or bound native parameters, never string-concatenated SQL. The schema lives in Flyway migrations in `backend/src/main/resources/db/migration/`. Where this skill and [`database.instructions.md`](../../instructions/database.instructions.md) overlap, the instruction file is authoritative.
 
-## Quando invocar
+## When to Invoke
 
-- "Revise esta migração quanto a antipadrões do PostgreSQL."
-- "Audite nosso uso de JSONB e arrays."
-- "Este esquema usa os tipos corretos do PostgreSQL?"
-- "Verifique esta função PL/pgSQL e a política RLS antes da mesclagem."
+- "Review this migration for PostgreSQL anti-patterns."
+- "Audit our JSONB and array usage."
+- "Does this schema use the correct PostgreSQL types?"
+- "Check this PL/pgSQL function and RLS policy before merging."
 
-## Áreas de revisão específicas do PostgreSQL
+## PostgreSQL-specific review areas
 
-### Práticas recomendadas de JSONB
+### JSONB best practices
 
 ```sql
--- RUIM: uso ineficiente de JSONB
-SELECT * FROM orders WHERE data->>'status' = 'shipped';  -- Sem suporte de índice
+-- BAD: inefficient JSONB usage
+SELECT * FROM orders WHERE data->>'status' = 'shipped';  -- No index support
 
--- BOM: consultas JSONB indexáveis
+-- GOOD: indexable JSONB queries
 CREATE INDEX idx_orders_status ON orders USING gin((data->'status'));
 SELECT * FROM orders WHERE data @> '{"status": "shipped"}';
 
--- RUIM: aninhamento profundo sem avaliação
+-- BAD: deep nesting without evaluation
 UPDATE orders SET data = data || '{"shipping":{"tracking":{"number":"123"}}}';
 
--- BOM: JSONB estruturado com validação
+-- GOOD: structured JSONB with validation
 ALTER TABLE orders ADD CONSTRAINT valid_status
 CHECK (data->>'status' IN ('pending', 'shipped', 'delivered'));
 ```
 
-### Revisão de operações com arrays
+### Array operations review
 
 ```sql
--- RUIM: operações ineficientes com arrays
-SELECT * FROM products WHERE 'electronics' = ANY(categories);  -- Sem índice
+-- BAD: inefficient array operations
+SELECT * FROM products WHERE 'electronics' = ANY(categories);  -- No index
 
--- BOM: consultas em arrays indexados por GIN
+-- GOOD: GIN-indexed array queries
 CREATE INDEX idx_products_categories ON products USING gin(categories);
 SELECT * FROM products WHERE categories @> ARRAY['electronics'];
 
--- RUIM: concatenação de arrays em loops
--- Isto seria ineficiente em uma função ou procedure
+-- BAD: array concatenation in loops
+-- This would be inefficient in a function or procedure
 
--- BOM: operações em lote com arrays
+-- GOOD: batch array operations
 UPDATE products SET categories = categories || ARRAY['new_category']
 WHERE id IN (SELECT id FROM products WHERE condition);
 ```
 
-### Revisão do projeto de esquema PostgreSQL
+### PostgreSQL schema design review
 
 ```sql
--- RUIM: não usa recursos do PostgreSQL
+-- BAD: does not use PostgreSQL features
 CREATE TABLE users (
     id INTEGER,
     email VARCHAR(255),
     created_at TIMESTAMP
 );
 
--- BOM: esquema otimizado para PostgreSQL
+-- GOOD: PostgreSQL-optimized schema
 CREATE TABLE users (
     id BIGSERIAL PRIMARY KEY,
-    email CITEXT UNIQUE NOT NULL,  -- E-mail sem diferenciação de caixa
+    email CITEXT UNIQUE NOT NULL,  -- Case-insensitive email
     created_at TIMESTAMPTZ DEFAULT NOW(),
     metadata JSONB DEFAULT '{}',
     CONSTRAINT valid_email CHECK (email ~* '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$')
 );
 
--- Adiciona índice GIN de JSONB para consultas de metadados
+-- Adds a JSONB GIN index for metadata queries
 CREATE INDEX idx_users_metadata ON users USING gin(metadata);
 ```
 
-### Tipos e domínios personalizados
+### Custom types and domains
 
 ```sql
--- RUIM: usa tipos genéricos para dados específicos
+-- BAD: uses generic types for specific data
 CREATE TABLE transactions (
     amount DECIMAL(10,2),
     currency VARCHAR(3),
     status VARCHAR(20)
 );
 
--- BOM: tipos personalizados do PostgreSQL
+-- GOOD: PostgreSQL custom types
 CREATE TYPE currency_code AS ENUM ('USD', 'EUR', 'GBP', 'JPY');
 CREATE TYPE transaction_status AS ENUM ('pending', 'completed', 'failed', 'cancelled');
 CREATE DOMAIN positive_amount AS DECIMAL(10,2) CHECK (VALUE > 0);
@@ -99,35 +99,35 @@ CREATE TABLE transactions (
 );
 ```
 
-## Antipadrões específicos do PostgreSQL
+## PostgreSQL-specific anti-patterns
 
-### Antipadrões de desempenho
+### Performance anti-patterns
 
-- **Evitar índices específicos do PostgreSQL**: não usar GIN/GiST para os tipos de dados adequados
-- **Usar JSONB incorretamente**: tratar JSONB como um campo de string simples
-- **Ignorar operadores de array**: usar operações ineficientes com arrays
-- **Selecionar mal a chave de partição**: não aproveitar o particionamento do PostgreSQL de forma eficaz
+- **Avoiding PostgreSQL-specific indexes**: not using GIN/GiST for appropriate data types
+- **Misusing JSONB**: treating JSONB as a plain string field
+- **Ignoring array operators**: using inefficient array operations
+- **Poor partition key selection**: not leveraging PostgreSQL partitioning effectively
 
-### Problemas no projeto do esquema
+### Schema design issues
 
-- **Não usar tipos ENUM**: usar VARCHAR para conjuntos limitados de valores
-- **Ignorar restrições**: não incluir restrições CHECK para validar dados
-- **Usar tipos de dados incorretos**: usar VARCHAR em vez de TEXT ou CITEXT
-- **Não estruturar JSONB**: usar JSONB sem estrutura e sem validação
+- **Not using ENUM types**: using VARCHAR for limited value sets
+- **Ignoring constraints**: not including CHECK constraints to validate data
+- **Using incorrect data types**: using VARCHAR instead of TEXT or CITEXT
+- **Not structuring JSONB**: using JSONB without structure or validation
 
-### Problemas em funções e gatilhos
+### Function and trigger issues
 
 ```sql
--- RUIM: função de gatilho ineficiente
+-- BAD: inefficient trigger function
 CREATE OR REPLACE FUNCTION update_modified_time()
 RETURNS TRIGGER AS $$
 BEGIN
-    NEW.updated_at = NOW();  -- Deve usar TIMESTAMPTZ
+    NEW.updated_at = NOW();  -- Should use TIMESTAMPTZ
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
--- BOM: função de gatilho otimizada
+-- GOOD: optimized trigger function
 CREATE OR REPLACE FUNCTION update_modified_time()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -136,7 +136,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Configura o gatilho para disparar somente quando necessário
+-- Configures the trigger to fire only when necessary
 CREATE TRIGGER update_modified_time_trigger
     BEFORE UPDATE ON table_name
     FOR EACH ROW
@@ -144,33 +144,33 @@ CREATE TRIGGER update_modified_time_trigger
     EXECUTE FUNCTION update_modified_time();
 ```
 
-## Revisão do uso de extensões do PostgreSQL
+## PostgreSQL extension usage review
 
-### Práticas recomendadas para extensões
+### Extension best practices
 
 ```sql
--- Verifica se a extensão existe antes de criá-la
+-- Checks whether the extension exists before creating it
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "pg_trgm";
 
--- Usa as extensões adequadamente
--- Geração de UUID
+-- Uses extensions appropriately
+-- UUID generation
 SELECT uuid_generate_v4();
 
--- Hash de senha
+-- Password hashing
 SELECT crypt('password', gen_salt('bf'));
 
--- Correspondência aproximada de texto
+-- Fuzzy text matching
 SELECT word_similarity('postgres', 'postgre');
 ```
 
-## Revisão de segurança do PostgreSQL
+## PostgreSQL security review
 
 ### Row Level Security (RLS)
 
 ```sql
--- BOM: implementação de RLS
+-- GOOD: RLS implementation
 ALTER TABLE sensitive_data ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY user_data_policy ON sensitive_data
@@ -178,87 +178,87 @@ CREATE POLICY user_data_policy ON sensitive_data
     USING (user_id = current_setting('app.current_user_id')::INTEGER);
 ```
 
-### Gerenciamento de privilégios
+### Privilege management
 
 ```sql
--- RUIM: permissões excessivamente amplas
+-- BAD: overly broad permissions
 GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app_user;
 
--- BOM: permissões granulares
+-- GOOD: granular permissions
 GRANT SELECT, INSERT, UPDATE ON specific_table TO app_user;
 GRANT USAGE ON SEQUENCE specific_table_id_seq TO app_user;
 ```
 
-## Lista de verificação da qualidade do código PostgreSQL
+## PostgreSQL code quality checklist
 
-### Projeto do esquema
+### Schema design
 
-- [ ] Usa tipos de dados adequados do PostgreSQL (CITEXT, JSONB, arrays)
-- [ ] Aproveita tipos ENUM para valores restritos
-- [ ] Implementa restrições CHECK adequadas
-- [ ] Usa TIMESTAMPTZ em vez de TIMESTAMP
-- [ ] Define domínios personalizados para restrições reutilizáveis
+- [ ] Uses appropriate PostgreSQL data types (CITEXT, JSONB, arrays)
+- [ ] Leverages ENUM types for constrained values
+- [ ] Implements appropriate CHECK constraints
+- [ ] Uses TIMESTAMPTZ instead of TIMESTAMP
+- [ ] Defines custom domains for reusable constraints
 
-### Considerações de desempenho
+### Performance considerations
 
-- [ ] Usa tipos de índice adequados (GIN para JSONB/arrays, GiST para intervalos)
-- [ ] Usa operadores de contenção (@>, ?) nas consultas JSONB
-- [ ] Usa operadores específicos do PostgreSQL nas operações com arrays
-- [ ] Usa corretamente funções de janela e CTEs
-- [ ] Usa funções específicas do PostgreSQL de forma eficiente
+- [ ] Uses appropriate index types (GIN for JSONB/arrays, GiST for ranges)
+- [ ] Uses containment operators (@>, ?) in JSONB queries
+- [ ] Uses PostgreSQL-specific operators in array operations
+- [ ] Uses window functions and CTEs correctly
+- [ ] Uses PostgreSQL-specific functions efficiently
 
-### Uso dos recursos do PostgreSQL
+### PostgreSQL feature usage
 
-- [ ] Usa extensões quando adequado
-- [ ] Implementa procedimentos armazenados em PL/pgSQL quando vantajoso
-- [ ] Aproveita os recursos SQL avançados do PostgreSQL
-- [ ] Usa técnicas de otimização específicas do PostgreSQL
-- [ ] Implementa tratamento de erros adequado nas funções
+- [ ] Uses extensions where appropriate
+- [ ] Implements PL/pgSQL stored procedures where beneficial
+- [ ] Leverages PostgreSQL's advanced SQL features
+- [ ] Uses PostgreSQL-specific optimization techniques
+- [ ] Implements appropriate error handling in functions
 
-### Segurança e conformidade
+### Security and compliance
 
-- [ ] Implementa Row Level Security (RLS) quando necessário
-- [ ] Gerencia corretamente funções e privilégios
-- [ ] Usa as funções de criptografia integradas do PostgreSQL
-- [ ] Implementa trilhas de auditoria com recursos do PostgreSQL
+- [ ] Implements Row Level Security (RLS) when necessary
+- [ ] Manages roles and privileges correctly
+- [ ] Uses PostgreSQL's built-in encryption functions
+- [ ] Implements audit trails with PostgreSQL features
 
-## Diretrizes de revisão específicas do PostgreSQL
+## PostgreSQL-specific review guidelines
 
-1. **Otimização dos tipos de dados**: confirme o uso adequado dos tipos específicos do PostgreSQL
-2. **Estratégia de índices**: revise os tipos de índice e confirme o uso dos índices específicos do PostgreSQL
-3. **Estrutura JSONB**: valide o projeto do esquema JSONB e os padrões de consulta
-4. **Qualidade das funções**: revise a eficiência e as práticas recomendadas das funções PL/pgSQL
-5. **Uso de extensões**: verifique o uso adequado das extensões do PostgreSQL
-6. **Recursos de desempenho**: verifique o uso dos recursos avançados do PostgreSQL
-7. **Implementação de segurança**: revise os recursos de segurança específicos do PostgreSQL
+1. **Data type optimization**: confirm appropriate use of PostgreSQL-specific types
+2. **Index strategy**: review index types and confirm use of PostgreSQL-specific indexes
+3. **JSONB structure**: validate JSONB schema design and query patterns
+4. **Function quality**: review PL/pgSQL function efficiency and best practices
+5. **Extension usage**: check appropriate use of PostgreSQL extensions
+6. **Performance features**: check use of PostgreSQL's advanced features
+7. **Security implementation**: review PostgreSQL-specific security features
 
-Concentre-se nos recursos exclusivos do PostgreSQL e confirme que o código aproveita suas particularidades, em vez de tratá-lo como um banco de dados SQL genérico.
+Focus on PostgreSQL's unique features and confirm that the code leverages its capabilities rather than treating it as a generic SQL database.
 
-## Modelo de saída
+## Output Template
 
-Entregue a revisão com um parecer, uma tabela de achados e o SQL corrigido pronto para colar.
+Deliver the review with a verdict, a findings table, and corrected SQL ready to paste.
 
 ```markdown
-## Revisão de PostgreSQL — <arquivo ou seleção>
+## PostgreSQL review — <file or selection>
 
-**Parecer**: Aprovado | Correção necessária | Rejeitado
+**Verdict**: Approved | Fix required | Rejected
 
-| # | Gravidade | Achado | Evidência | Correção |
+| # | Severity | Finding | Evidence | Fix |
 |---|---|---|---|---|
-| 1 | Alta | Entrada da pessoa usuária concatenada no SQL | `... WHERE status = '` + input | Vincule `:status` por JPQL ou consulta nativa parametrizada |
-| 2 | Média | Consulta de contenção JSONB sem índice GIN | Seq Scan em `orders` | `CREATE INDEX idx_orders_data ON orders USING gin(data)` |
-| 3 | Baixa | VARCHAR usado para e-mail sem diferenciação de caixa | `email VARCHAR(255)` | Use `CITEXT` com uma restrição `CHECK` |
+| 1 | High | User input concatenated into SQL | `... WHERE status = '` + input | Bind `:status` through JPQL or a parameterized native query |
+| 2 | Medium | JSONB containment query without a GIN index | Seq Scan on `orders` | `CREATE INDEX idx_orders_data ON orders USING gin(data)` |
+| 3 | Low | VARCHAR used for case-insensitive email | `email VARCHAR(255)` | Use `CITEXT` with a `CHECK` constraint |
 
-### SQL corrigido
+### Corrected SQL
 CREATE INDEX idx_orders_data ON orders USING gin(data);
--- A consulta do repositório permanece parametrizada: WHERE data @> :filter
+-- The repository query remains parameterized: WHERE data @> :filter
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Há um parecer: Aprovado, Correção necessária ou Rejeitado.
-- [ ] Cada achado tem gravidade e evidência concreta (arquivo/linha ou trecho do plano).
-- [ ] Nenhuma entrada da pessoa usuária é concatenada no SQL; todos os parâmetros estão vinculados (JPQL, consulta derivada ou consulta nativa vinculada).
-- [ ] Os tipos específicos do PostgreSQL, os tipos de índice (GIN/GiST/parcial) e as restrições `CHECK`/`ENUM`/domínio foram validados.
-- [ ] Dados pessoais, como CPF ou valores de benefícios, estão mascarados nos registros de eventos ou documentados com um `COMMENT` de coluna.
-- [ ] O SQL corrigido está pronto para colar, e todas as alterações de esquema podem ser revertidas com segurança (consulte [`database.instructions.md`](../../instructions/database.instructions.md)).
+- [ ] There is a verdict: Approved, Fix required, or Rejected.
+- [ ] Every finding has a severity and concrete evidence (file/line or plan excerpt).
+- [ ] No user input is concatenated into SQL; all parameters are bound (JPQL, derived query, or bound native query).
+- [ ] PostgreSQL-specific types, index types (GIN/GiST/partial), and `CHECK`/`ENUM`/domain constraints have been validated.
+- [ ] Personal data, such as CPF or benefit amounts, is masked in logs or documented with a column `COMMENT`.
+- [ ] Corrected SQL is ready to paste, and all schema changes can be safely rolled back (see [`database.instructions.md`](../../instructions/database.instructions.md)).

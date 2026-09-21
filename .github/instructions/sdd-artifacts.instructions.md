@@ -1,113 +1,74 @@
 ---
-applyTo: ".specs/**/*.md,.specs/**/*.yaml,.specs/**/*.json"
+applyTo: "specs/**/*.md,specs/**/*.yaml,specs/**/*.json,02-modern-spec/scope-decisions.md,02-modern-spec/bounded-contexts.md,02-modern-spec/ADRs/*.md"
 description: "Use when editing tracked SDD artifacts that require naming, EARS, traceability, evidence, or status conventions."
 ---
 
 # Specification-Driven Development Artifacts
 
-The `sdd-requirements-engineer` skill owns lifecycle and generation procedures. These instructions own only the durable shape of files under `.specs/`.
+The [sdd-requirements-engineer skill](../skills/sdd-requirements-engineer/SKILL.md) owns lifecycle and generation procedures. These instructions own the shape of this kit's `specs/` artifacts and supporting Stage 2 decisions. Follow the [H2 contract](../../00-TEAM-FLOW.md#handoff-h2-da-spec-para-o-código-fim-do-estágio-2-1500); do not create a parallel `.specs/` tree.
 
 ## Artifact Contracts
 
-Every canonical feature package contains the same ten feature artifacts:
+Each approved feature uses `specs/<NNN>-<feature>/` with these files:
 
-- `SPECIFICATION.md`
-- `ANALYSIS.md`
-- `DESIGN.md`
-- `TASKS.md`
-- `TESTING.md`
-- `DECISIONS.md`
-- `CHECKLIST.md`
-- `CROSS_ANALYSIS.md`
-- `VERIFICATION.md`
-- `SOURCE_TRACEABILITY.md`
+| Artifact | Responsibility |
+|---|---|
+| `spec.md` | EARS requirements, `source_legacy`, acceptance criteria, scope, assumptions, dependencies, source register, and approval status |
+| `plan.md` | Design, decisions, risks, applicable contracts and diagrams, test strategy, and requirement-to-component traceability |
+| `tasks.md` | Dependency-ordered implementation and test tasks, REQ-ID/AC-ID mapping, planned checks, dated execution evidence, and completion status |
+| `02-modern-spec/scope-decisions.md` | Human-approved scope and deferred work |
+| `02-modern-spec/bounded-contexts.md`, `02-modern-spec/ADRs/` | Supporting boundary decisions and ADRs, only when needed |
 
-Every package also carries two subdirectories, both required by
-`scripts/validate-specs.py`:
+Preserve existing standalone specifications and their IDs, including the portal specification. Do not rename them as part of a new feature. A requirements-only request does not authorize creating a full package. Add contracts, evidence files, or supplementary analysis only when the selected scope needs them, and link them from the owning artifact.
 
-- `checkpoints/` holding `spec-to-plan.yaml`, `plan-to-tasks.yaml` and
-  `test-coverage.yaml`.
-- `contracts/` holding `manifest.yaml`, which declares which canonical
-  contracts the package provides, alongside the contract files themselves.
+Reuse `.specify/memory/constitution.md` if the team has created it with Spec-Kit. If it is absent, record that fact and use the repository instructions; do not invent a constitution or claim CLI initialization. Templates from another repository do not impose extra filenames, generated artifacts, or scripts here.
 
-Four of the ten markdown artifacts -- `CHECKLIST.md`, `CROSS_ANALYSIS.md`,
-`VERIFICATION.md` and `SOURCE_TRACEABILITY.md` -- are generated from the other
-six by `scripts/generate-sdd-support-artifacts.py`. Author the six and run the
-generator; hand-authoring the four invites the two sides to disagree.
+## Requirements and Evidence
 
-Reuse the repository-level `.specs/CONSTITUTION.md`. Do not create a
-feature-local constitution as a substitute for missing feature artifacts.
-Optional `IMPLEMENTATION_PLAN.md`, `TEST_PLAN.md`, or machine-readable test
-manifests may supplement the portfolio but never replace an artifact above.
-Historical packages follow the same content-quality and traceability standard;
-their status may be historical or superseded, but their artifacts must remain
-substantive and internally consistent.
-
-- `SPECIFICATION.md` owns canonical REQ/NFR statements, acceptance scenarios,
-  assumptions, dependencies, open decisions, and `implementation_status`.
-- `ANALYSIS.md` owns the gate summary, cross-artifact traceability, dated
-  validation evidence, current findings, approval conditions, and sign-off.
-- `DESIGN.md` owns architecture, system context, components, deployment, state,
-  critical sequences, data flow and lifecycle, interfaces, errors, security,
-  observability, implementation surface, phased development, and the delivery
-  trace from requirements through evidence.
-- `TASKS.md` owns the dependency DAG, test mapping, phased checklist, completion
-  gate, and dated execution ledger. A checked task must appear in the
-  verification-sweep ledger; code presence without complete acceptance evidence
-  stays unchecked and is reported as partial.
-- `TESTING.md` owns the named test catalog, deterministic commands, evidence
-  contract, exit criteria, and dated verification status.
-- `DECISIONS.md` owns stable decision IDs, alternatives, consequences,
-  evidence, requirement traces, and revisit triggers.
+- Use `REQ-NNN` for new SIFAP requirements and preserve existing identifiers. Classify the EARS pattern and write one observable response using `shall`.
+- Put a `source_legacy:` line within 20 lines after each requirement declaration and before the next requirement. It must name an existing supported legacy file or contain `[GREENFIELD]` plus an explicit justification, as defined in [repository instructions](../copilot-instructions.md).
+- Give new acceptance criteria stable `AC-REQ-NNN-NN` IDs and Given/When/Then scenarios. Preserve existing acceptance IDs.
+- Supplement primary evidence with `SRC-###` IDs where useful; they do not replace `source_legacy:`.
+- Keep draft, approval, implementation, and verification states separate. Record `PENDING`, `BLOCKED`, or `NOT APPLICABLE` with a reason instead of inventing execution or acceptance.
 
 ## Diagram and Task Presentation
 
-- Use the same light neutral Mermaid palette in every graph-like SDD diagram:
-  white feature-owned nodes, light-gray zones/groupings, and darker-gray
-  external systems or neighboring specifications.
-- Begin every Mermaid block, including sequence, ER, class, state, and gantt,
-  with the canonical `theme: base` directive defining white background and
-  primary nodes, dark-gray text and lines, light-gray secondary surfaces, and
-  darker-gray tertiary surfaces.
-- Give every `flowchart`, `graph`, and `classDiagram` the canonical `default`,
-  `zone`, and `external` class definitions. Do not put `classDef` in
-  `stateDiagram`, `sequenceDiagram`, `erDiagram`, or `gantt`; those types
-  inherit the same colors from the universal theme directive. In particular,
-  `stateDiagram-v2` treats `default` as a reserved token in current renderers.
-- Make architecture, component, deployment, state, sequence, and data-flow or
-  lifecycle views reviewable. Keep labels concise and move detail to tables.
-- In `DESIGN.md`, map REQ/NFR IDs to design components, tasks or plan items,
-  dependencies, tests/evidence, and current-versus-target state.
-- In `TASKS.md`, use `- [ ]` or `- [x]` task entries with stable task ID, `[S]`
-  or `[P]`, `[Plan:...]`, requirement trace, change surface, and acceptance
-  evidence. The Mermaid dependency graph and execution ledger must cover the
-  same task IDs.
+- Apply the [SDD document and Mermaid standard](../skills/sdd-requirements-engineer/references/sdd-document-and-mermaid-standard.md) to requested diagrams. Include only views that clarify a material decision; do not create diagrams to satisfy a quota.
+- In `plan.md`, map requirements to design components, tasks, dependencies, tests/evidence, and current-versus-target state.
+- In `tasks.md`, use checkboxes with a stable task ID, dependency/parallelism metadata, requirement and acceptance trace, change surface, and planned or executed evidence. A checked task requires actual acceptance evidence in its dated execution ledger.
+- Keep a task graph consistent with the task list when a graph is needed. A planned red-green-refactor cycle is not proof that tests ran.
+
+## Executable Checks
+
+Run the same [traceability CLI](../scripts/validate-spec-traceability.py) used by [spec-quality.yml](../workflows/spec-quality.yml), from the repository root:
+
+```bash
+python3 -B .github/scripts/validate-spec-traceability.py --mode legacy
+python3 -B .github/scripts/validate-spec-traceability.py --mode tests
+python3 -B -m unittest discover -s .github/scripts/tests -v
+```
+
+`legacy` blocks invalid or missing source declarations. `tests` only reports missing REQ-ID references; it does not run tests or prove coverage. Neither mode verifies EARS semantics, human approvals, Mermaid rendering, line-anchor accuracy, or behavioral equivalence. Review those explicitly and attach execution evidence for applicable runtime checks. With no execution tool, report commands as not executed.
 
 ## Conventions
 
-- Name feature directories with a zero-padded numeric prefix and kebab-case slug, matching the `feature_id` in artifact frontmatter.
-- Use the established uppercase artifact names such as `SPECIFICATION.md`, `DESIGN.md`, `TASKS.md`, `SOURCE_TRACEABILITY.md`, `VERIFICATION.md`, and `DECISIONS.md`.
-- Give every normative requirement a unique stable ID and one observable EARS response using `SHALL`; do not reuse retired IDs for different behavior.
-- Give acceptance criteria stable IDs tied to their parent requirement.
-- Preserve bidirectional traceability from source and decision through requirement, design, task, test, verification, and evidence.
-- Distinguish requested, brownfield, official, repository-constraint, and greenfield claims; greenfield behavior requires an explicit decision.
-- Treat live-state claims as dated evidence with source, scope, result, and freshness limits. Plans and expected output are not proof of execution.
-- Keep status, implementation state, blockers, and verification results truthful; use `PENDING` or `BLOCKED` when evidence is absent.
-- Redact credentials, personal data, private tenant details, and sensitive command output from evidence.
+- Preserve the kit's lowercase filenames and zero-padded feature directories.
+- Preserve bidirectional traceability from primary evidence through requirements, design, tasks, tests, and results.
+- Treat live-state claims as dated evidence, not plans or expected output.
+- Redact credentials, personal data, and sensitive command output from evidence.
 
 ## Do / Don't
 
 | Do | Don't |
 |---|---|
-| Preserve the canonical artifact names, IDs and traceability defined above | Substitute optional plans for required artifacts |
-| Retain dated execution evidence or an explicit blocker | Present artifact validation as implementation success |
-| Reuse the repository constitution and the owning skill's workflow | Invent a parallel lifecycle in these file-shape instructions |
+| Keep `specs/<NNN>-<feature>/spec.md`, `plan.md`, and `tasks.md` | Generate a parallel uppercase portfolio or `.specs/` tree |
+| Use the checked-in validation commands and disclose their limits | Require absent scripts or claim semantic/runtime validation from a text scan |
+| Retain human decisions, dated evidence, or explicit blockers | Mark planned work complete or simulate approval |
 
 ## PR Checklist
 
-- [ ] Required artifacts, metadata, IDs, and cross-references are internally consistent.
-- [ ] Every active requirement maps to acceptance, implementation, and verification evidence or an explicit blocker.
-- [ ] Artifact-only validation is not reported as implementation success.
-- [ ] `python3 scripts/validate-sdd-documents.py` passes for the canonical package.
-- [ ] `python3 scripts/validate-design-diagrams.py` reports every SDD Mermaid block
-  themed and free of chromatic colors.
+- [ ] Requested artifacts use canonical paths and consistent IDs, sources, and acceptance criteria.
+- [ ] Every active requirement maps to planned or executed checks, with gaps explicit.
+- [ ] The legacy-source gate passes and the informational test report is reviewed.
+- [ ] EARS meaning, scope approval, diagram rendering, and runtime evidence are reviewed separately where applicable.
+- [ ] Artifact validation is not reported as implementation success.

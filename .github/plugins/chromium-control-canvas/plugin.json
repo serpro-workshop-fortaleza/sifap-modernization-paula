@@ -1,6 +1,6 @@
 {
   "name": "chromium-control-canvas",
-  "description": "Abre uma janela real do Chromium que você pode navegar e com a qual pode interagir pelo painel de controle visual do Copilot e pelas ações do agente.",
+  "description": "Opens a real Chromium window that you can navigate and interact with through Copilot's visual control dashboard and agent actions.",
   "version": "1.0.2",
   "author": { "name": "Andrea Griffiths", "url": "https://github.com/AndreaGriffiths11" },
   "keywords": ["browser-control", "chromium-browser", "interactive-canvas", "playwright-automation", "screenshots", "ui-testing", "web-navigation"]

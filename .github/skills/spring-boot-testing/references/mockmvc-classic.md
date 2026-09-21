@@ -1,17 +1,17 @@
-# MockMvc clássico
+# Classic MockMvc
 
-API `MockMvc` clássica para testes de controladores Spring MVC, abordagem usada pelo kit no **Spring Boot 3.3**.
+Classic `MockMvc` API for Spring MVC controller tests, the approach used by the kit on **Spring Boot 3.3**.
 
-## Quando usar esta referência
+## When to use this reference
 
-- O projeto usa Spring Boot 3.3 (conjunto tecnológico do kit) ou uma versão anterior à 3.4, na qual `MockMvcTester` não está disponível
-- Os testes existentes usam `mvc.perform(...)`, e você os mantém ou amplia
-- Você precisa migrar testes MockMvc clássicos para `MockMvcTester` (consulte a seção de migração)
-- A pessoa pergunta explicitamente sobre `ResultActions`, `andExpect()` ou asserções web no estilo Hamcrest
+- The project uses Spring Boot 3.3 (the kit's stack) or a version before 3.4, where `MockMvcTester` is unavailable
+- Existing tests use `mvc.perform(...)`, and you are maintaining or extending them
+- You need to migrate classic MockMvc tests to `MockMvcTester` (see the migration section)
+- The user explicitly asks about `ResultActions`, `andExpect()`, or Hamcrest-style web assertions
 
-`MockMvcTester` (estilo AssertJ) exige **Spring Boot 3.4+** e está fora do escopo do kit. Consulte [mockmvc-tester.md](mockmvc-tester.md) somente se o projeto for atualizado para uma versão posterior à 3.3.
+`MockMvcTester` (AssertJ style) requires **Spring Boot 3.4+** and is outside the kit's scope. Consult [mockmvc-tester.md](mockmvc-tester.md) only if the project is upgraded beyond 3.3.
 
-## Configuração
+## Setup
 
 ```java
 @WebMvcTest(OrderController.class)
@@ -25,7 +25,7 @@ class OrderControllerTest {
 }
 ```
 
-## Solicitação GET básica
+## Basic GET request
 
 ```java
 @Test
@@ -41,7 +41,7 @@ void shouldReturnOrder() throws Exception {
 }
 ```
 
-## POST com corpo da solicitação
+## POST with a request body
 
 ```java
 @Test
@@ -56,7 +56,7 @@ void shouldCreateOrder() throws Exception {
 }
 ```
 
-## Solicitação PUT
+## PUT request
 
 ```java
 @Test
@@ -68,7 +68,7 @@ void shouldUpdateOrder() throws Exception {
 }
 ```
 
-## Solicitação DELETE
+## DELETE request
 
 ```java
 @Test
@@ -78,7 +78,7 @@ void shouldDeleteOrder() throws Exception {
 }
 ```
 
-## Comparadores de status
+## Status matchers
 
 ```java
 .andExpect(status().isOk())           // 200
@@ -88,33 +88,33 @@ void shouldDeleteOrder() throws Exception {
 .andExpect(status().isUnauthorized()) // 401
 .andExpect(status().isForbidden())    // 403
 .andExpect(status().isNotFound())     // 404
-.andExpect(status().is(422))          // código arbitrário
+.andExpect(status().is(422))          // arbitrary code
 ```
 
-## Asserções JSON Path
+## JSON Path assertions
 
 ```java
-// Valor exato
+// Exact value
 .andExpect(jsonPath("$.status").value("PENDING"))
 
-// Existência
+// Existence
 .andExpect(jsonPath("$.id").exists())
 .andExpect(jsonPath("$.deletedAt").doesNotExist())
 
-// Tamanho do array
+// Array size
 .andExpect(jsonPath("$.items").isArray())
 .andExpect(jsonPath("$.items", hasSize(3)))
 
-// Campo aninhado
+// Nested field
 .andExpect(jsonPath("$.customer.name").value("John Doe"))
 .andExpect(jsonPath("$.customer.address.city").value("Berlin"))
 
-// Com comparadores do Hamcrest
+// With Hamcrest matchers
 .andExpect(jsonPath("$.total", greaterThan(0.0)))
 .andExpect(jsonPath("$.description", containsString("order")))
 ```
 
-## Asserções de conteúdo
+## Content assertions
 
 ```java
 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
@@ -123,7 +123,7 @@ void shouldDeleteOrder() throws Exception {
 .andExpect(content().json("{\"status\":\"PENDING\"}"))
 ```
 
-## Asserções de cabeçalhos
+## Header assertions
 
 ```java
 .andExpect(header().string("Location", "/orders/1"))
@@ -132,23 +132,23 @@ void shouldDeleteOrder() throws Exception {
 .andExpect(header().doesNotExist("X-Deprecated"))
 ```
 
-## Parâmetros e cabeçalhos da solicitação
+## Request parameters and headers
 
 ```java
-// Parâmetros de consulta
+// Query parameters
 mvc.perform(get("/orders").param("status", "PENDING").param("page", "0"))
   .andExpect(status().isOk());
 
-// Variáveis de caminho
+// Path variables
 mvc.perform(get("/orders/{id}", 1L))
   .andExpect(status().isOk());
 
-// Cabeçalhos da solicitação
+// Request headers
 mvc.perform(get("/orders/1").header("X-Api-Key", "secret"))
   .andExpect(status().isOk());
 ```
 
-## Captura da resposta
+## Capturing the response
 
 ```java
 @Test
@@ -166,15 +166,15 @@ void shouldReturnCreatedId() throws Exception {
 }
 ```
 
-## Encadeamento com andDo
+## Chaining with andDo
 
 ```java
 mvc.perform(get("/orders/1"))
-  .andDo(print())              // exibe solicitação/resposta no console (depuração)
+  .andDo(print())              // prints request/response to the console (debugging)
   .andExpect(status().isOk());
 ```
 
-## Imports estáticos
+## Static imports
 
 ```java
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -184,23 +184,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.hamcrest.Matchers.*;
 ```
 
-## Migração para MockMvcTester
+## Migrating to MockMvcTester
 
-| MockMvc clássico | MockMvcTester (recomendado) |
+| Classic MockMvc | MockMvcTester (recommended) |
 | --- | --- |
 | `@Autowired MockMvc mvc` | `@Autowired MockMvcTester mvc` |
 | `mvc.perform(get("/orders/1"))` | `mvc.get().uri("/orders/1")` |
 | `.andExpect(status().isOk())` | `.hasStatusOk()` |
 | `.andExpect(jsonPath("$.status").value("X"))` | `.bodyJson().convertTo(T.class)` + AssertJ |
-| `throws Exception` em cada método | Sem exceção verificada |
-| Comparadores Hamcrest | Asserções fluentes AssertJ |
+| `throws Exception` on every method | No checked exception |
+| Hamcrest matchers | Fluent AssertJ assertions |
 
-Consulte [mockmvc-tester.md](mockmvc-tester.md) para conhecer a API moderna completa.
+See [mockmvc-tester.md](mockmvc-tester.md) for the complete modern API.
 
-## Pontos principais
+## Key points
 
-1. **Cada método de teste deve declarar `throws Exception`**: `perform()` lança exceções verificadas
-2. **Use `andDo(print())` durante a depuração**: remova antes do registro da alteração
-3. **Prefira `jsonPath()` a `content().string()`**: asserções mais precisas no nível dos campos
-4. **Imports estáticos são obrigatórios**: a IDE pode adicioná-los automaticamente
-5. **Migre para MockMvcTester** ao atualizar para Spring Boot 3.4+ para melhorar a legibilidade
+1. **Every test method must declare `throws Exception`**: `perform()` throws checked exceptions
+2. **Use `andDo(print())` while debugging**: remove it before committing the change
+3. **Prefer `jsonPath()` to `content().string()`**: more precise field-level assertions
+4. **Static imports are required**: the IDE can add them automatically
+5. **Migrate to MockMvcTester** when upgrading to Spring Boot 3.4+ for improved readability

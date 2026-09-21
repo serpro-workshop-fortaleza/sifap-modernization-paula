@@ -1,88 +1,88 @@
 ---
 name: "refactor-safely"
-description: "Use ao refatorar código legado, extrair um serviço ou fazer alterações que preservem o comportamento. Os gatilhos incluem \"refatorar\", \"código legado\", \"padrão Estrangulador (Strangler Fig)\", \"teste de caracterização\" e \"Método Mikado\"."
+description: "Use when refactoring legacy code, extracting a service, or making behavior-preserving changes. Triggers include \"refactor\", \"legacy code\", \"Strangler Fig pattern\", \"characterization test\", and \"Mikado Method\"."
 ---
-# Refatoração segura
+# Safe refactoring
 
-## Quando invocar
+## When to Invoke
 
-- Ao trabalhar em código sem testes suficientes.
-- Ao dividir um monólito ou extrair um serviço.
-- Quando uma alteração tem "uma linha", mas afeta um fluxo arriscado.
+- When working on code without enough tests.
+- When splitting a monolith or extracting a service.
+- When a change is "one line" but affects a risky path.
 
-## Primeira regra
+## First rule
 
-**A refatoração preserva o comportamento.** Se você não puder provar que o comportamento foi preservado, não é refatoração, mas reescrita. Primeiro, implemente testes de caracterização.
+**Refactoring preserves behavior.** If you cannot prove behavior was preserved, it is not refactoring but rewriting. Implement characterization tests first.
 
-## Fluxo de trabalho
+## Workflow
 
-1. **Caracterize**: escreva testes que fixem o comportamento atual, inclusive suas peculiaridades. Ainda não corrija bugs. O objetivo é criar uma rede de segurança, não uma correção.
-2. **Dê passos pequenos e reversíveis**: aplique uma transformação que preserve o comportamento por vez. Faça um registro de alteração após cada uma.
-3. **Mantenha os testes verdes**: execute-os após cada etapa. Reverta imediatamente se ficarem vermelhos e você não souber o motivo.
-4. **Separe registros de refatoração dos registros que alteram o comportamento**: as pessoas revisoras poderão manter o foco, e o `git bisect` continuará útil.
-5. **Integre com frequência**: ramificações de refatoração de longa duração se deterioram.
+1. **Characterize**: write tests that pin current behavior, including its quirks. Do not fix bugs yet. The goal is a safety net, not a fix.
+2. **Take small, reversible steps**: apply one behavior-preserving transformation at a time. Commit after each one.
+3. **Keep tests green**: run them after each step. Revert immediately if they turn red and you do not know why.
+4. **Separate refactoring commits from behavior-changing commits**: reviewers can stay focused, and `git bisect` remains useful.
+5. **Integrate frequently**: long-lived refactoring branches deteriorate.
 
-## Padrões
+## Patterns
 
-### Padrão Estrangulador (Strangler Fig) para sistemas
+### Strangler Fig pattern for systems
 
-1. Coloque uma fachada (intermediário, também chamado de proxy, roteador ou chave de funcionalidade) à frente do sistema antigo.
-2. Direcione uma pequena parcela do tráfego para a nova implementação.
-3. Amplie a nova implementação por partes enquanto reduz a antiga.
-4. Exclua a implementação antiga quando seu tráfego chegar a zero.
+1. Place a facade (proxy, router, or feature flag) in front of the old system.
+2. Route a small share of traffic to the new implementation.
+3. Grow the new implementation incrementally while shrinking the old one.
+4. Delete the old implementation when its traffic reaches zero.
 
-### Método Mikado (para código)
+### Mikado Method (for code)
 
-1. Registre o objetivo.
-2. Tente alcançá-lo diretamente e registre o que falhar como **pré-requisito**.
-3. Reverta. Resolva primeiro um pré-requisito. Repita recursivamente.
-4. Conclua primeiro as folhas e alcance o objetivo original por último.
+1. Record the goal.
+2. Try to achieve it directly and record what fails as a **prerequisite**.
+3. Revert. Solve a prerequisite first. Repeat recursively.
+4. Complete the leaves first and reach the original goal last.
 
-### Ramificação por abstração (Branch by Abstraction)
+### Branch by Abstraction
 
-Introduza uma interface, migre as partes chamadoras para ela, troque as implementações e desative a antiga, tudo sem uma ramificação de longa duração.
+Introduce an interface, migrate callers to it, swap implementations, and retire the old one, all without a long-lived branch.
 
-## Como criar testes de caracterização
+## How to create characterization tests
 
-- Execute o código com entradas representativas e registre a saída (arquivos de referência ou testes de instantâneo).
-- Prefira observar externamente (HTTP, CLI ou estado do banco de dados). Essa abordagem resiste a refatorações internas.
-- Cubra também casos incomuns, pois eles costumam falhar.
-- Aceite que alguns comportamentos são *erros que agora estão sendo preservados*. Marque-os e corrija-os depois que a rede de segurança estiver pronta.
+- Run the code with representative inputs and record the output (golden files or snapshot tests).
+- Prefer external observation (HTTP, CLI, or database state). This approach withstands internal refactoring.
+- Cover unusual cases too, as they often fail.
+- Accept that some behaviors are *bugs now being preserved*. Flag them and fix them after the safety net is ready.
 
-## Antipadrões
+## Anti-patterns
 
-- Solicitações de pull de "refatoração" que também corrigem erros, alteram APIs e renomeiam arquivos, o que impossibilita a revisão e a reversão.
-- Reescritas integrais sem entregas durante meses.
-- Exclusão do código antigo antes de o novo código processar 100% do tráfego.
-- Refatoração sem testes, baseada apenas na verificação manual do fluxo de sucesso.
+- "Refactoring" pull requests that also fix bugs, change APIs, and rename files, making review and rollback impossible.
+- Complete rewrites with no deliveries for months.
+- Deleting old code before the new code handles 100% of traffic.
+- Refactoring without tests, based only on manual happy-path checks.
 
-## Modelo de saída
+## Output Template
 
 ```markdown
-## Plano de refatoração - <alvo>
+## Refactoring plan - <target>
 
-| Campo | Valor |
+| Field | Value |
 |---|---|
-| Objetivo | <alteração que preserva o comportamento> |
-| Rede de segurança | <caminho do teste de caracterização> |
-| Padrão | Estrangulador / Mikado / Ramificação por abstração |
-| Etapas | <transformações ordenadas e reversíveis> |
+| Goal | <behavior-preserving change> |
+| Safety net | <characterization test path> |
+| Pattern | Strangler Fig / Mikado / Branch by Abstraction |
+| Steps | <ordered, reversible transformations> |
 
-### Pré-requisitos (Mikado)
-- <pré-requisito descoberto ao tentar alcançar o objetivo>
+### Prerequisites (Mikado)
+- <prerequisite discovered while trying to achieve the goal>
 
-### Registros de alteração
-- refactor: <uma etapa que preserva o comportamento por commit>
+### Commits
+- refactor: <one behavior-preserving step per commit>
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Os testes de caracterização capturam o comportamento atual, inclusive peculiaridades, antes de qualquer alteração.
-- [ ] Os registros de refatoração estão separados dos registros que alteram o comportamento.
-- [ ] Os testes permanecem verdes após cada etapa; uma etapa vermelha é revertida, não forçada.
-- [ ] O código antigo só é excluído depois que o novo fluxo processa todo o tráfego.
+- [ ] Characterization tests capture current behavior, including quirks, before any change.
+- [ ] Refactoring commits are separate from behavior-changing commits.
+- [ ] Tests stay green after each step; a red step is reverted, not forced through.
+- [ ] Old code is deleted only after the new path handles all traffic.
 
-## Referências
+## References
 
 - [Martin Fowler - Refactoring (2nd ed.)](https://martinfowler.com/books/refactoring.html)
 - [Michael Feathers - Working Effectively with Legacy Code](https://www.oreilly.com/library/view/working-effectively-with/0131177052/)

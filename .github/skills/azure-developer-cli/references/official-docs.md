@@ -1,45 +1,45 @@
-# Referências oficiais
+# Official references
 
-Use o Microsoft Learn como fonte da verdade para o comportamento do AZD e os detalhes do esquema. Estas referências foram revisadas em 2026-08-05.
+Use Microsoft Learn as the source of truth for AZD behavior and schema details. These references were reviewed on 2026-08-05.
 
-## Conceitos principais e estrutura
+## Core concepts and structure
 
-- [Documentação da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/)
-- [O que é a Azure Developer CLI?](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview)
-- [Visão geral dos modelos da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-templates)
-- [Visão geral da criação de modelos da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/make-azd-compatible)
-- [Referência do esquema da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-schema)
-- [Esquema JSON de `azure.yaml`](https://aka.ms/azure.yaml.json)
-- [Explorar o fluxo de trabalho `azd up`](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-up-workflow)
-- [Implantação de ponta a ponta com a Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/full-stack-deployment)
+- [Azure Developer CLI documentation](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/)
+- [What is the Azure Developer CLI?](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/overview)
+- [Azure Developer CLI templates overview](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-templates)
+- [Azure Developer CLI template creation overview](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/make-azd-compatible)
+- [Azure Developer CLI schema reference](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-schema)
+- [`azure.yaml` JSON schema](https://aka.ms/azure.yaml.json)
+- [Explore the `azd up` workflow](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-up-workflow)
+- [End-to-end deployment with the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/full-stack-deployment)
 
-## Infraestrutura como código
+## Infrastructure as code
 
-- [Usar o Terraform como ferramenta de infraestrutura como código para a Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/use-terraform-for-azd)
+- [Use Terraform as an infrastructure as code tool for the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/use-terraform-for-azd)
 - [Azure Verified Modules](https://azure.github.io/Azure-Verified-Modules/)
-- [Documentação do Bicep](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
-- [Documentação do Terraform no Azure](https://learn.microsoft.com/en-us/azure/developer/terraform/)
+- [Bicep documentation](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/)
+- [Terraform on Azure documentation](https://learn.microsoft.com/en-us/azure/developer/terraform/)
 
-## Ambientes e segredos
+## Environments and secrets
 
-- [Visão geral dos ambientes da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/environments-overview)
-- [Trabalhar com ambientes da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/work-with-environments)
-- [Trabalhar com variáveis de ambiente da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables)
-- [Suporte a ambientes remotos](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/remote-environments-support)
-- [Usar segredos de ambiente com a Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/environment-secrets)
+- [Azure Developer CLI environments overview](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/environments-overview)
+- [Work with Azure Developer CLI environments](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/work-with-environments)
+- [Work with Azure Developer CLI environment variables](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/manage-environment-variables)
+- [Remote environments support](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/remote-environments-support)
+- [Use environment secrets with the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/environment-secrets)
 
-## Ganchos, fluxos automatizados e operações
+## Hooks, pipelines, and operations
 
-- [Personalizar fluxos de trabalho da Azure Developer CLI com ganchos](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-extensibility)
-- [Explorar o suporte da Azure Developer CLI a fluxos automatizados de CI/CD](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/configure-devops-pipeline)
-- [Criar um fluxo automatizado de CI/CD do GitHub Actions com a Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/pipeline-github-actions)
-- [Recursos e configurações avançados de fluxos automatizados](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/pipeline-advanced-features)
-- [Referência de comandos da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference)
-- [Solucionar problemas da Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/troubleshoot)
+- [Customize Azure Developer CLI workflows with hooks](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/azd-extensibility)
+- [Explore Azure Developer CLI CI/CD pipeline support](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/configure-devops-pipeline)
+- [Create a GitHub Actions CI/CD pipeline with the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/pipeline-github-actions)
+- [Advanced pipeline features and configuration](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/pipeline-advanced-features)
+- [Azure Developer CLI command reference](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/reference)
+- [Troubleshoot the Azure Developer CLI](https://learn.microsoft.com/en-us/azure/developer/azure-developer-cli/troubleshoot)
 
-## Formato da habilidade
+## Skill format
 
-- [Adicionar habilidades de agente ao GitHub Copilot](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
-- [Sobre habilidades de agente](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
+- [Add agent skills to GitHub Copilot](https://docs.github.com/en/copilot/how-tos/copilot-on-github/customize-copilot/customize-cloud-agent/add-skills)
+- [About agent skills](https://docs.github.com/en/copilot/concepts/agents/about-agent-skills)
 
-Quando houver dúvida sobre um campo, opção de comando, tipo de host, status de versão prévia ou comportamento de autenticação, consulte a referência atual pertinente antes de alterar o código. Não confie na sintaxe memorizada para recursos em versão prévia que mudam rapidamente.
+When uncertain about a field, command option, host type, preview status, or authentication behavior, consult the relevant current reference before changing code. Do not rely on memorized syntax for rapidly changing preview features.

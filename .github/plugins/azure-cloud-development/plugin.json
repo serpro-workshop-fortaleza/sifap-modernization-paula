@@ -1,6 +1,6 @@
 {
   "name": "azure-cloud-development",
-  "description": "Ferramentas abrangentes de desenvolvimento em nuvem no Azure, incluindo Infraestrutura como Código, funções sem servidor, padrões de arquitetura e otimização de custos para criar aplicações de nuvem escaláveis.",
+  "description": "Comprehensive Azure cloud development tools, including Infrastructure as Code, serverless functions, architecture patterns, and cost optimization for building scalable cloud applications.",
   "version": "1.0.1",
   "author": { "name": "Awesome Copilot Community" },
   "repository": "https://github.com/github/awesome-copilot",

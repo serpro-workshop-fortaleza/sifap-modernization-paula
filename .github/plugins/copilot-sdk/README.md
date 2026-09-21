@@ -1,18 +1,18 @@
 # copilot-sdk
 
-Crie aplicações baseadas em agentes com o GitHub Copilot SDK.
+Build agent-based applications with the GitHub Copilot SDK.
 
-## O que esta extensão reúne
+## What this plugin includes
 
-| Componente | Tipo | Localização |
+| Component | Type | Location |
 |-----------|------|----------|
-| `copilot-sdk` | Habilidade | [`.github/skills/copilot-sdk/`](../../skills/copilot-sdk/) |
+| `copilot-sdk` | Skill | [`.github/skills/copilot-sdk/`](../../skills/copilot-sdk/) |
 
-## Como é habilitado
+## How it is enabled
 
-O conteúdo em `.github/skills/` é descoberto nativamente pelo Copilot neste
-repositório, portanto esta habilidade funciona aqui sem instalar nenhuma extensão. A
-camada de extensões a empacota como um conjunto nomeado no catálogo local
-`datacorp-mm-team-kit` ([`marketplace.json`](../marketplace.json)) e é declarada
-em [`.github/copilot/settings.json`](../../copilot/settings.json). Consulte o
-[índice de extensões](../README.md) para conhecer o mecanismo e suas limitações.
+Copilot discovers the content in `.github/skills/` natively in this
+repository, so this skill works here without installing a plugin. The
+plugin layer packages it as a named collection in the local
+`datacorp-mm-team-kit` marketplace ([`marketplace.json`](../marketplace.json)) and is declared
+in [`.github/copilot/settings.json`](../../copilot/settings.json). See the
+[plugin index](../README.md) for the mechanism and its limitations.

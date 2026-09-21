@@ -1,31 +1,31 @@
-# Infraestrutura como código e ambientes
+# Infrastructure as code and environments
 
-## Escolha o provedor de forma intencional
+## Choose the provider intentionally
 
 ### Bicep
 
-Use Bicep quando:
+Use Bicep when:
 
-- O projeto usar somente o Azure.
-- A cobertura nativa de recursos do Azure e o suporte imediato à API forem importantes.
-- A equipe quiser um modelo de implantação sem estado.
-- O Azure Verified Modules abranger os padrões comuns de recursos.
+- The project uses only Azure.
+- Native Azure resource coverage and immediate API support matter.
+- The team wants a stateless deployment model.
+- Azure Verified Modules covers common resource patterns.
 
-O Bicep é o provedor de IaC padrão do AZD.
+Bicep is AZD's default IaC provider.
 
 ### Terraform
 
-Use Terraform quando:
+Use Terraform when:
 
-- O repositório já usar Terraform.
-- A equipe tiver práticas estabelecidas de módulos, estado, políticas e revisão do Terraform.
-- A infraestrutura entre provedores for um requisito real.
+- The repository already uses Terraform.
+- The team has established Terraform module, state, policy, and review practices.
+- Cross-provider infrastructure is a real requirement.
 
-A documentação atual da Microsoft classifica o suporte do AZD ao Terraform como beta. Torne essa restrição visível e não migre um projeto para Terraform apenas por familiaridade.
+Current Microsoft documentation classifies AZD's Terraform support as beta. Make this constraint visible and do not migrate a project to Terraform just for familiarity.
 
-## Estrutura do Bicep
+## Bicep structure
 
-Mantenha `main.bicep` como camada de orquestração:
+Keep `main.bicep` as the orchestration layer:
 
 ```text
 infra/
@@ -39,25 +39,25 @@ infra/
 |   |-- services/
 ```
 
-### Práticas para Bicep
+### Bicep practices
 
-- Declare o `targetScope` da implantação de forma intencional.
-- Use módulos para capacidades coesas e padrões repetidos.
-- Prefira Azure Verified Modules quando atenderem ao requisito e a equipe aceitar seu modelo de versionamento.
-- Fixe as versões dos módulos e revise as atualizações, em vez de deixá-las flutuar automaticamente.
-- Adicione descrições e decoradores de validação aos parâmetros.
-- Passe os parâmetros pelos módulos, em vez de ler variáveis de ambiente do AZD dentro de cada módulo.
-- Use nomes determinísticos que respeitem as restrições de tamanho e caracteres de cada tipo de recurso.
-- Use `uniqueString` com entradas de escopo estáveis quando a exclusividade global for necessária.
-- Aplique tags consistentes de projeto, ambiente, proprietário e custo quando a política permitir.
-- Use identidades gerenciadas e atribuições de função com escopo restrito.
-- Evite chaves e strings de conexão quando o acesso baseado em identidade estiver disponível.
-- Produza os IDs, nomes e pontos de extremidade dos recursos exigidos pelas fases posteriores.
-- Nunca produza valores de segredos. As saídas de implantação são copiadas para o ambiente do AZD.
+- Declare the deployment `targetScope` intentionally.
+- Use modules for cohesive capabilities and repeated patterns.
+- Prefer Azure Verified Modules when they meet the requirement and the team accepts their versioning model.
+- Pin module versions and review updates instead of letting them float automatically.
+- Add descriptions and validation decorators to parameters.
+- Pass parameters through modules instead of reading AZD environment variables inside each module.
+- Use deterministic names that respect each resource type's length and character constraints.
+- Use `uniqueString` with stable scope inputs when global uniqueness is required.
+- Apply consistent project, environment, owner, and cost tags where policy permits.
+- Use managed identities and narrowly scoped role assignments.
+- Avoid keys and connection strings when identity-based access is available.
+- Output the resource IDs, names, and endpoints required by later phases.
+- Never output secret values. Deployment outputs are copied to the AZD environment.
 
-### Fluxo de parâmetros
+### Parameter flow
 
-Use `main.parameters.json` para mapear valores do ambiente AZD para o Bicep:
+Use `main.parameters.json` to map AZD environment values to Bicep:
 
 ```json
 {
@@ -74,71 +74,71 @@ Use `main.parameters.json` para mapear valores do ambiente AZD para o Bicep:
 }
 ```
 
-Faça a correspondência desses valores no ponto de entrada:
+Match these values in the entry point:
 
 ```bicep
-@description('Nome estavel do ambiente de implantacao do AZD.')
+@description('Stable name of the AZD deployment environment.')
 @minLength(1)
 param environmentName string
 
-@description('Regiao principal do Azure para esta implantacao.')
+@description('Primary Azure region for this deployment.')
 param location string
 ```
 
-Use as saídas como contrato entre o provisionamento e as fases posteriores do AZD:
+Use outputs as a contract between provisioning and later AZD phases:
 
 ```bicep
 output SERVICE_API_ENDPOINT_URL string = api.outputs.endpoint
 ```
 
-Escolha nomes de saída estáveis, pois serviços, ganchos e fluxos automatizados podem consumi-los como variáveis de ambiente.
+Choose stable output names because services, hooks, and pipelines may consume them as environment variables.
 
-Ao usar segredos do ambiente AZD com Bicep:
+When using AZD environment secrets with Bicep:
 
-- Marque a entrada do Bicep com `@secure()`.
-- Mapeie a referência do segredo do AZD por meio de `main.parameters.json`.
-- Não produza o valor seguro.
-- Observe que a documentação atual do AZD informa que arquivos `.bicepparam` não oferecem suporte a segredos de ambiente.
+- Mark the Bicep input with `@secure()`.
+- Map the AZD secret reference through `main.parameters.json`.
+- Do not output the secure value.
+- Note that current AZD documentation states that `.bicepparam` files do not support environment secrets.
 
-## Estrutura e estado do Terraform
+## Terraform structure and state
 
-### Práticas para Terraform
+### Terraform practices
 
-- Defina `infra.provider: terraform` explicitamente em `azure.yaml`.
-- Mantenha todos os arquivos `.tf` gerenciados pelo AZD no caminho de infraestrutura configurado.
-- Fixe as versões do Terraform e dos provedores e versione o arquivo de bloqueio de dependências.
-- Use módulos com entradas e saídas claras.
-- Marque variáveis e saídas sensíveis como `sensitive`, mas lembre-se de que os valores sensíveis ainda podem existir no estado.
-- Não versione `.tfstate`, arquivos de plano, registros de falha nem credenciais do provedor.
-- Evite dividir a responsabilidade pelo mesmo recurso do Azure entre o AZD e um módulo raiz não relacionado do Terraform.
+- Set `infra.provider: terraform` explicitly in `azure.yaml`.
+- Keep all AZD-managed `.tf` files in the configured infrastructure path.
+- Pin Terraform and provider versions and commit the dependency lock file.
+- Use modules with clear inputs and outputs.
+- Mark sensitive variables and outputs as `sensitive`, but remember that sensitive values may still exist in state.
+- Do not commit `.tfstate`, plan files, crash logs, or provider credentials.
+- Avoid splitting ownership of the same Azure resource between AZD and an unrelated Terraform root module.
 
-### Autenticação
+### Authentication
 
-O provedor do Azure para Terraform usa a autenticação da Azure CLI por padrão e não usa o armazenamento temporário de credenciais do AZD. Prefira a configuração documentada de autenticação única:
+The Azure provider for Terraform uses Azure CLI authentication by default and does not use AZD's credential cache. Prefer the documented single-authentication configuration:
 
 ```text
 azd config set auth.useAzCliAuth true
 az login
 ```
 
-Caso contrário, `azd auth login` e `az login` serão obrigatórios.
+Otherwise, both `azd auth login` and `az login` are required.
 
-### Estado remoto
+### Remote state
 
-Configure uma estrutura remota protegida (`backend`) antes de `azd pipeline config` ou de implantações colaborativas:
+Configure a protected remote backend before `azd pipeline config` or collaborative deployments:
 
-- Use uma conta de armazenamento dedicada e um contêiner privado quando adequado.
-- Restrinja o acesso com RBAC e controles de rede.
-- Ative proteções da plataforma, como controle de versão, exclusão reversível e bloqueios de recursos, conforme a política organizacional.
-- Use uma chave de estado diferente para cada projeto e ambiente.
-- Trate o estado como dado sensível.
-- Não armazene chaves de acesso da estrutura remota no controle de versão.
+- Use a dedicated storage account and private container where appropriate.
+- Restrict access with RBAC and network controls.
+- Enable platform protections such as versioning, soft delete, and resource locks according to organizational policy.
+- Use a different state key for each project and environment.
+- Treat state as sensitive data.
+- Do not store backend access keys in version control.
 
-O AZD lê as configurações da estrutura remota do Terraform em `infra/provider.conf.json` quando configurado conforme a integração oficial do Terraform.
+AZD reads Terraform backend settings from `infra/provider.conf.json` when configured according to the official Terraform integration.
 
-## Estratégia de ambientes
+## Environment strategy
 
-O AZD armazena o estado local do ambiente em:
+AZD stores local environment state in:
 
 ```text
 .azure/
@@ -148,21 +148,21 @@ O AZD armazena o estado local do ambiente em:
     |-- config.json
 ```
 
-Todo o diretório `.azure` deve permanecer fora do controle de versão.
+The entire `.azure` directory must remain outside version control.
 
-### Nomenclatura
+### Naming
 
-Use nomes que deixem claros a responsabilidade e o ciclo de vida:
+Use names that make ownership and lifecycle clear:
 
-- Compartilhado: `<project>-dev`, `<project>-test`, `<project>-prod`
-- Pessoal: `<alias>-<purpose>` ou `<alias>-dev`
-- Efêmero: `<project>-pr-<number>` quando a automação também garantir a limpeza
+- Shared: `<project>-dev`, `<project>-test`, `<project>-prod`
+- Personal: `<alias>-<purpose>` or `<alias>-dev`
+- Ephemeral: `<project>-pr-<number>` when automation also guarantees cleanup
 
-Mantenha o nome curto o suficiente para comportar recursos com limites restritivos de nomenclatura.
+Keep the name short enough to accommodate resources with restrictive naming limits.
 
-### Gerenciamento
+### Management
 
-Use comandos do AZD em vez de editar arquivos manualmente:
+Use AZD commands instead of editing files manually:
 
 ```text
 azd env new <name>
@@ -174,26 +174,26 @@ azd env unset <key>
 azd env refresh
 ```
 
-Em automações e operações possivelmente destrutivas, defina o ambiente de forma explícita:
+In automation and potentially destructive operations, set the environment explicitly:
 
 ```text
 azd provision -e <environment> --no-prompt
 azd deploy -e <environment> --no-prompt
 ```
 
-### Regras de configuração
+### Configuration rules
 
-- Mantenha uma base de código de IaC e varie o comportamento por meio de parâmetros.
-- Mantenha os padrões não secretos em configurações revisadas ou na IaC, não em arquivos `.azure` versionados.
-- Use `azd env set` para configurações não secretas específicas da implantação.
-- Permita que as saídas da IaC preencham nomes e pontos de extremidade calculados dos recursos.
-- Evite condicionais baseadas no nome do ambiente espalhadas pelos módulos. Prefira parâmetros explícitos de funcionalidade ou SKU.
-- Use `azd env refresh` após outro agente alterar as saídas da implantação.
-- Não presuma nos scripts qual é o ambiente selecionado atualmente.
+- Keep one IaC codebase and vary behavior through parameters.
+- Keep non-secret defaults in reviewed configuration or IaC, not in committed `.azure` files.
+- Use `azd env set` for deployment-specific non-secret settings.
+- Let IaC outputs populate computed resource names and endpoints.
+- Avoid environment-name conditionals scattered across modules. Prefer explicit feature or SKU parameters.
+- Use `azd env refresh` after another actor changes deployment outputs.
+- Do not assume the currently selected environment in scripts.
 
-## Ambientes compartilhados e remotos
+## Shared and remote environments
 
-Configure `state.remote` quando integrantes da equipe ou a automação precisarem de um ambiente AZD compartilhado:
+Configure `state.remote` when team members or automation need a shared AZD environment:
 
 ```yaml
 state:
@@ -204,9 +204,9 @@ state:
       containerName: <project-container-name>
 ```
 
-O estado remoto do AZD sincroniza `.env` e o `config.json` do AZD. Ele é separado do estado remoto do Terraform. Um projeto Terraform com colaboração pelo AZD pode exigir ambos:
+AZD remote state synchronizes `.env` and AZD's `config.json`. It is separate from Terraform remote state. A Terraform project with AZD collaboration may require both:
 
-- Estado remoto do AZD para a configuração do ambiente.
-- Estado remoto do Terraform para o estado da infraestrutura gerenciada.
+- AZD remote state for environment configuration.
+- Terraform remote state for managed infrastructure state.
 
-Proteja os dois armazenamentos com RBAC de privilégio mínimo e configurações adequadas de proteção de dados.
+Protect both stores with least-privilege RBAC and appropriate data protection settings.

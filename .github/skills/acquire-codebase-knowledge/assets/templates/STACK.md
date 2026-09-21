@@ -1,56 +1,56 @@
-# Conjunto de tecnologias
+# Technology stack
 
-## Seções principais (obrigatórias)
+## Core sections (required)
 
-### 1) Resumo do ambiente de execução
+### 1) Runtime summary
 
-| Área | Valor | Evidência |
+| Area | Value | Evidence |
 |------|-------|----------|
-| Linguagem principal | [VALOR] | [CAMINHO_DO_ARQUIVO] |
-| Ambiente de execução + versão | [VALOR] | [CAMINHO_DO_ARQUIVO] |
-| Gerenciador de pacotes | [VALOR] | [CAMINHO_DO_ARQUIVO] |
-| Sistema de módulos/compilação | [VALOR] | [CAMINHO_DO_ARQUIVO] |
+| Primary language | [VALUE] | [FILE_PATH] |
+| Runtime + version | [VALUE] | [FILE_PATH] |
+| Package manager | [VALUE] | [FILE_PATH] |
+| Module/build system | [VALUE] | [FILE_PATH] |
 
-### 2) Estruturas de software e dependências de produção
+### 2) Frameworks and production dependencies
 
-Liste somente dependências de produção de alto impacto (frameworks, dados, transporte e autenticação).
+List only high-impact production dependencies (frameworks, data, transport, and authentication).
 
-| Dependência | Versão | Papel no sistema | Evidência |
+| Dependency | Version | Role in the system | Evidence |
 |------------|---------|----------------|----------|
-| [NOME] | [VERSÃO] | [PAPEL] | [CAMINHO_DO_ARQUIVO] |
+| [NAME] | [VERSION] | [ROLE] | [FILE_PATH] |
 
-### 3) Ferramentas de desenvolvimento
+### 3) Development tools
 
-| Ferramenta | Finalidade | Evidência |
+| Tool | Purpose | Evidence |
 |------|---------|----------|
-| [FERRAMENTA] | [ANÁLISE ESTÁTICA/FORMATAÇÃO/TESTE/COMPILAÇÃO] | [CAMINHO_DO_ARQUIVO] |
+| [TOOL] | [LINT/FORMAT/TEST/BUILD] | [FILE_PATH] |
 
-### 4) Comandos principais
+### 4) Main commands
 
 ```bash
-[comando de instalação]
-[comando de compilação]
-[comando de teste]
-[comando de análise estática]
+[install command]
+[build command]
+[test command]
+[lint command]
 ```
 
-### 5) Ambiente e configuração
+### 5) Environment and configuration
 
-- Fontes de configuração: [LISTAR ARQUIVOS]
-- Variáveis de ambiente obrigatórias: [VAR_1], [VAR_2], [TODO]
-- Restrições de implantação/ambiente de execução: [NOTA BREVE]
+- Configuration sources: [LIST FILES]
+- Required environment variables: [VAR_1], [VAR_2], [TODO]
+- Deployment/runtime constraints: [BRIEF NOTE]
 
-### 6) Evidências
+### 6) Evidence
 
 - [path/to/manifest]
 - [path/to/runtime-config]
 - [path/to/build-or-ci-config]
 
-## Seções ampliadas (opcionais)
+## Extended sections (optional)
 
-Adicione somente quando necessário para repositórios complexos:
+Add only when needed for complex repositories:
 
-- Taxonomia completa de dependências por categoria
-- Opções detalhadas do compilador/ambiente de execução
-- Matriz de ambientes (desenvolvimento/homologação/produção)
-- Detalhes do gerenciador de processos e do ambiente de execução de contêineres
+- Full dependency taxonomy by category
+- Detailed compiler/runtime options
+- Environment matrix (development/staging/production)
+- Process manager and container runtime details

@@ -1,44 +1,44 @@
 ---
 name: "create-spring-boot-java-project"
-description: "Cria a estrutura inicial de um projeto Spring Boot (Java 21) por meio do start.spring.io com Maven, springdoc-openapi e ArchUnit, pronta para execução com Docker Compose. Use quando a pessoa quiser iniciar uma nova aplicação de servidor Spring Boot ou gerar um projeto inicial. Alinha-se ao conjunto de tecnologias Java 21 + Spring Boot 3.3 do kit."
+description: "Scaffold a Spring Boot (Java 21) project through start.spring.io with Maven, springdoc-openapi, and ArchUnit, ready to run with Docker Compose. Use when someone wants to start a new Spring Boot backend application or generate a starter project. Aligns with the kit's Java 21 + Spring Boot 3.3 stack."
 ---
-# Criar projeto Java com Spring Boot
+# Create a Java project with Spring Boot
 
-Crie uma nova estrutura de aplicação de servidor Spring Boot 3.3 em Java 21, fixada no conjunto de tecnologias do kit (PostgreSQL 16, Maven, springdoc-openapi, ArchUnit e Testcontainers). Execute todos os comandos no terminal integrado do VS Code, o único editor aprovado pelo kit. O comando orientado [`/create-spring-boot-java-project`](../../prompts/create-spring-boot-java-project.prompt.md) aplica as substituições específicas do kit (módulo de destino e conjunto de dependências).
+Create a new Spring Boot 3.3 backend application scaffold in Java 21, pinned to the kit's stack (PostgreSQL 16, Maven, springdoc-openapi, ArchUnit, and Testcontainers). Run all commands in the integrated terminal in VS Code, the kit's only approved editor. The guided [`/create-spring-boot-java-project`](../../prompts/create-spring-boot-java-project.prompt.md) command applies kit-specific overrides (target module and dependency set).
 
 > [!IMPORTANT]
-> O kit usa **somente PostgreSQL 16**, sem Redis nem MongoDB. Crie a estrutura em um novo módulo `backend/`; ele ainda não existe (a equipe o cria na Etapa 3). Nunca registre credenciais no histórico do Git. Forneça-as por meio de variáveis de ambiente.
+> The kit uses **PostgreSQL 16 only**, with no Redis or MongoDB. Create the scaffold in a new `backend/` module; it does not exist yet (the team creates it in Stage 3). Never commit credentials to Git history. Supply them through environment variables.
 
-## Quando usar
+## When to Invoke
 
-- "Inicie uma nova aplicação de servidor Spring Boot para nós."
-- "Crie a estrutura inicial do módulo `backend/`."
-- "Gere um projeto inicial Spring Boot 3.3 em Java 21 com PostgreSQL."
-- "Configure a estrutura do projeto para iniciarmos a Etapa 3."
+- "Start a new Spring Boot backend application for us."
+- "Scaffold the `backend/` module."
+- "Generate a Spring Boot 3.3 starter project in Java 21 with PostgreSQL."
+- "Set up the project structure so we can start Stage 3."
 
-## Pré-requisitos
+## Prerequisites
 
-Confirme se as ferramentas necessárias estão instaladas:
+Confirm that the required tools are installed:
 
-| Ferramenta | Finalidade |
+| Tool | Purpose |
 |---|---|
-| Java 21 (JDK) | Compilar e executar a aplicação |
-| Docker + Docker Compose | Executar o PostgreSQL 16 localmente |
-| VS Code | Editor aprovado pelo kit |
+| Java 21 (JDK) | Build and run the application |
+| Docker + Docker Compose | Run PostgreSQL 16 locally |
+| VS Code | Kit-approved editor |
 
-Para personalizar o nome do artefato ou o pacote-base, altere `artifactId` e `packageName` em [Baixar o modelo de projeto Spring Boot](#baixar-o-modelo-de-projeto-spring-boot). Para mudar a versão do Spring Boot, altere `bootVersion` na mesma etapa. Mantenha a versão na linha 3.3.x do kit.
+To customize the artifact name or base package, change `artifactId` and `packageName` in [Download the Spring Boot project template](#download-the-spring-boot-project-template). To change the Spring Boot version, change `bootVersion` in the same step. Keep the version within the kit's 3.3.x line.
 
-## Verificar a versão do Java
+## Check the Java version
 
 ```shell
 java -version
 ```
 
-Confirme se a saída informa Java 21.
+Confirm that the output reports Java 21.
 
-## Baixar o modelo de projeto Spring Boot
+## Download the Spring Boot project template
 
-Baixe do start.spring.io uma estrutura Maven + Java 21 com o conjunto de dependências do kit (sem Redis nem MongoDB):
+Download a Maven + Java 21 scaffold from start.spring.io with the kit's dependency set (no Redis or MongoDB):
 
 ```shell
 curl https://start.spring.io/starter.zip \
@@ -52,7 +52,7 @@ curl https://start.spring.io/starter.zip \
   -o starter.zip
 ```
 
-## Descompactar e limpar
+## Extract and clean up
 
 ```shell
 unzip starter.zip -d ./${input:projectName:demo-java}
@@ -60,9 +60,9 @@ rm -f starter.zip
 cd ${input:projectName:demo-java}
 ```
 
-## Adicionar springdoc-openapi e ArchUnit
+## Add springdoc-openapi and ArchUnit
 
-Insira as dependências `springdoc-openapi-starter-webmvc-ui` e `archunit-junit5` no `pom.xml`:
+Insert the `springdoc-openapi-starter-webmvc-ui` and `archunit-junit5` dependencies in `pom.xml`:
 
 ```xml
 <dependency>
@@ -78,9 +78,9 @@ Insira as dependências `springdoc-openapi-starter-webmvc-ui` e `archunit-junit5
 </dependency>
 ```
 
-## Configurar SpringDoc e JPA
+## Configure SpringDoc and JPA
 
-Adicione as configurações da interface do SpringDoc ao `application.properties`:
+Add the SpringDoc UI settings to `application.properties`:
 
 ```properties
 springdoc.swagger-ui.doc-expansion=none
@@ -88,7 +88,7 @@ springdoc.swagger-ui.operations-sorter=alpha
 springdoc.swagger-ui.tags-sorter=alpha
 ```
 
-Adicione as configurações da fonte de dados PostgreSQL e do JPA. Leia a senha de uma variável de ambiente. Nunca a fixe no código:
+Add the PostgreSQL datasource and JPA settings. Read the password from an environment variable. Never hardcode it:
 
 ```properties
 spring.datasource.driver-class-name=org.postgresql.Driver
@@ -101,11 +101,11 @@ spring.jpa.properties.hibernate.format_sql=true
 ```
 
 > [!NOTE]
-> Use `ddl-auto=validate` (não `update`) para que as migrações versionadas do Flyway controlem o esquema, conforme [`database.instructions.md`](../../instructions/database.instructions.md). Defina `POSTGRES_PASSWORD` no terminal de comandos ou em um arquivo `.env` local ignorado pelo Git, nunca no `application.properties`.
+> Use `ddl-auto=validate` (not `update`) so that versioned Flyway migrations control the schema, per [`database.instructions.md`](../../instructions/database.instructions.md). Set `POSTGRES_PASSWORD` in the shell or a local Git-ignored `.env` file, never in `application.properties`.
 
-## Adicionar Docker Compose (somente PostgreSQL 16)
+## Add Docker Compose (PostgreSQL 16 only)
 
-Crie `compose.yaml` na raiz do projeto com um único serviço PostgreSQL 16:
+Create `compose.yaml` at the project root with a single PostgreSQL 16 service:
 
 ```yaml
 services:
@@ -119,21 +119,21 @@ services:
       - ./postgres_data:/var/lib/postgresql/data
 ```
 
-Adicione o diretório de dados ao `.gitignore`:
+Add the data directory to `.gitignore`:
 
 ```gitignore
 postgres_data
 ```
 
-## Verificar a compilação
+## Verify the build
 
-O Testcontainers fornece um PostgreSQL 16 real para os testes. Assim, a compilação é executada sem iniciar um banco de dados manualmente:
+Testcontainers provides a real PostgreSQL 16 instance for tests. This lets the build run without manually starting a database:
 
 ```shell
 ./mvnw clean test
 ```
 
-Para executar a aplicação com um banco de dados local, inicie primeiro o serviço do Compose:
+To run the application with a local database, start the Compose service first:
 
 ```shell
 docker compose up -d
@@ -141,22 +141,22 @@ docker compose up -d
 docker compose down
 ```
 
-## Modelo de saída
+## Output Template
 
 ```markdown
-### Criado
-- `backend/`: estrutura Spring Boot 3.3 (Java 21, Maven)
-- Dependências: web, data-jpa, postgresql, validation, testcontainers, lombok, springdoc, archunit
-- `compose.yaml`: somente o serviço PostgreSQL 16
+### Created
+- `backend/`: Spring Boot 3.3 scaffold (Java 21, Maven)
+- Dependencies: web, data-jpa, postgresql, validation, testcontainers, lombok, springdoc, archunit
+- `compose.yaml`: PostgreSQL 16 service only
 
-### Compilação
+### Build
 `./mvnw clean test` -> BUILD SUCCESS
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] A estrutura usa Spring Boot 3.3.x em Java 21 e foi gerada em um novo módulo `backend/`.
-- [ ] O conjunto de dependências é o do kit; não há Redis, MongoDB nem componente inicial de armazenamento temporário (`cache`).
-- [ ] Todo arquivo Docker Compose define somente um serviço PostgreSQL 16.
-- [ ] Nenhuma credencial está fixada no código; a senha da fonte de dados vem de `POSTGRES_PASSWORD`.
-- [ ] `./mvnw clean test` passa (BUILD SUCCESS) antes da entrega da estrutura.
+- [ ] The scaffold uses Spring Boot 3.3.x on Java 21 and was generated in a new `backend/` module.
+- [ ] The dependency set matches the kit; there is no Redis, MongoDB, or caching starter (`cache`).
+- [ ] Every Docker Compose file defines only a PostgreSQL 16 service.
+- [ ] No credentials are hardcoded; the datasource password comes from `POSTGRES_PASSWORD`.
+- [ ] `./mvnw clean test` passes (BUILD SUCCESS) before handing off the scaffold.

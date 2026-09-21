@@ -1,37 +1,37 @@
-# Armadilhas dos serviços (estáveis)
+# Service gotchas (stable)
 
-Resumo por serviço das **propriedades obrigatórias pouco intuitivas**, dos **erros comuns** e dos **mapeamentos de PE**.
-Somente padrões quase imutáveis aparecem aqui. Valores dinâmicos, como versão da API, listas de SKUs e região, não estão incluídos.
+Per-service summary of **non-obvious required properties**, **common errors**, and **PE mappings**.
+Only nearly immutable patterns appear here. Dynamic values, such as API version, SKU lists, and region, are not included.
 
 ---
 
-## 1. Propriedades obrigatórias (a ausência causa falha na implantação ou problemas funcionais)
+## 1. Required properties (omission causes deployment failure or functional issues)
 
-| Serviço | Propriedade obrigatória | Resultado da ausência | Observações |
+| Service | Required property | Result of omission | Notes |
 |---------|------------------|-------------------|-------|
-| ADLS Gen2 | `isHnsEnabled: true` | Torna-se Blob Storage comum. Não é reversível | Exige `kind: 'StorageV2'` |
-| Storage Account | Nome sem caracteres especiais nem hifens | Falha na implantação | Somente letras minúsculas e números, de 3 a 24 caracteres |
-| Foundry (AIServices) | `customSubDomainName: foundryName` | Não é possível criar o Project nem alterar após a criação → exclua e recrie o recurso | Valor globalmente exclusivo |
-| Foundry (AIServices) | `allowProjectManagement: true` | Não é possível criar o Foundry Project | `kind: 'AIServices'` |
-| Foundry (AIServices) | `identity: { type: 'SystemAssigned' }` | Falha na criação do Project | |
-| Foundry Project | Deve ser criado em conjunto com o recurso Foundry | Não pode ser usado pelo portal | `accounts/projects` |
-| Key Vault | `enableRbacAuthorization: true` | Risco de uso misto de política de acesso (Access Policy) | |
-| Key Vault | `enablePurgeProtection: true` | Obrigatório em produção | |
-| Fabric Capacity | `administration.members` obrigatório | Falha na implantação | E-mail do administrador |
-| Sub-rede de PE | `privateEndpointNetworkPolicies: 'Disabled'` | Falha na implantação do PE | |
-| DNS Zone de PE | `registrationEnabled: false` (VNet Link) | Possível conflito de DNS | |
-| Configuração de PE | Conjunto de três componentes (PE + DNS Zone + VNet Link + Zone Group) | A resolução de DNS falha mesmo com o PE presente | |
+| ADLS Gen2 | `isHnsEnabled: true` | Becomes regular Blob Storage. Not reversible | Requires `kind: 'StorageV2'` |
+| Storage Account | Name without special characters or hyphens | Deployment fails | Lowercase letters and numbers only, 3 to 24 characters |
+| Foundry (AIServices) | `customSubDomainName: foundryName` | Cannot create the Project or change after creation -> delete and recreate the resource | Globally unique value |
+| Foundry (AIServices) | `allowProjectManagement: true` | Cannot create the Foundry Project | `kind: 'AIServices'` |
+| Foundry (AIServices) | `identity: { type: 'SystemAssigned' }` | Project creation fails | |
+| Foundry Project | Must be created together with the Foundry resource | Cannot be used through the portal | `accounts/projects` |
+| Key Vault | `enableRbacAuthorization: true` | Risk of mixed Access Policy usage | |
+| Key Vault | `enablePurgeProtection: true` | Required in production | |
+| Fabric Capacity | `administration.members` required | Deployment fails | Administrator email |
+| PE subnet | `privateEndpointNetworkPolicies: 'Disabled'` | PE deployment fails | |
+| PE DNS Zone | `registrationEnabled: false` (VNet Link) | Possible DNS conflict | |
+| PE configuration | Three-component set (PE + DNS Zone + VNet Link + Zone Group) | DNS resolution fails even with the PE present | |
 
 ---
 
-## 2. Mapeamento de `groupId` de endpoint privado (PE) e DNS Zone (principais serviços)
+## 2. Private Endpoint (PE) `groupId` and DNS Zone mapping (core services)
 
-Os mapeamentos abaixo são estáveis, mas confirme-os novamente no documento de integração de DNS de PE indicado em `azure-dynamic-sources.md` ao adicionar novos serviços.
+The mappings below are stable, but reconfirm them in the PE DNS integration document listed in `azure-dynamic-sources.md` when adding new services.
 
-| Serviço | groupId | Private DNS Zone |
+| Service | groupId | Private DNS Zone |
 |---------|---------|-----------------|
 | Azure OpenAI / CognitiveServices | `account` | `privatelink.cognitiveservices.azure.com` |
-| ⚠️ (adicional para Foundry/AIServices) | `account` | `privatelink.openai.azure.com` ← **As duas zonas devem estar no DNS Zone Group. Sem esta zona, a resolução de DNS da API OpenAI falha** |
+| (additional for Foundry/AIServices) | `account` | `privatelink.openai.azure.com` - **Both zones must be in the DNS Zone Group. Without this zone, OpenAI API DNS resolution fails** |
 | Azure AI Search | `searchService` | `privatelink.search.windows.net` |
 | Storage (Blob/ADLS) | `blob` | `privatelink.blob.core.windows.net` |
 | Storage (DFS/ADLS Gen2) | `dfs` | `privatelink.dfs.core.windows.net` |
@@ -44,72 +44,72 @@ Os mapeamentos abaixo são estáveis, mas confirme-os novamente no documento de 
 | API Management | `Gateway` | `privatelink.azure-api.net` |
 | Event Hub | `namespace` | `privatelink.servicebus.windows.net` |
 | Service Bus | `namespace` | `privatelink.servicebus.windows.net` |
-| Monitor (AMPLS) | ⚠️ Configuração complexa, consulte abaixo | ⚠️ Exige várias DNS Zones, consulte abaixo |
+| Monitor (AMPLS) | Complex configuration, see below | Requires multiple DNS Zones, see below |
 
-> **Observação sobre o ADLS Gen2**: quando `isHnsEnabled: true`, **os PEs `blob` e `dfs` são obrigatórios**.
+> **ADLS Gen2 note**: when `isHnsEnabled: true`, **both `blob` and `dfs` PEs are required**.
 >
-> - Somente com o PE `blob`, a API Blob funciona, mas as operações do lago de dados (Data Lake), como criação de sistema de arquivos, manipulação de diretórios e protocolo `abfss://`, falham.
-> - PE DFS: `groupId` `dfs`, DNS Zone `privatelink.dfs.core.windows.net`
+> - With only the `blob` PE, the Blob API works, but Data Lake operations such as filesystem creation, directory manipulation, and the `abfss://` protocol fail.
+> - DFS PE: `groupId` `dfs`, DNS Zone `privatelink.dfs.core.windows.net`
 >
-> **⚠️ Observação sobre Azure Monitor Private Link (AMPLS)**: não é possível configurar Azure Monitor com um único PE e uma única DNS Zone. Ele se conecta pelo Azure Monitor Private Link Scope (AMPLS), e as **cinco DNS Zones** são obrigatórias:
+> **Azure Monitor Private Link (AMPLS) note**: Azure Monitor cannot be configured with a single PE and a single DNS Zone. It connects through Azure Monitor Private Link Scope (AMPLS), and **all five DNS Zones** are required:
 >
 > - `privatelink.monitor.azure.com`
 > - `privatelink.oms.opinsights.azure.com`
 > - `privatelink.ods.opinsights.azure.com`
 > - `privatelink.agentsvc.azure-automation.net`
-> - `privatelink.blob.core.windows.net` (para ingestão de dados do Log Analytics)
+> - `privatelink.blob.core.windows.net` (for Log Analytics data ingestion)
 >
-> Esse mapeamento é complexo e pode mudar. Sempre consulte e confirme o Microsoft Docs ao configurar um PE do Monitor:
+> This mapping is complex and may change. Always consult and confirm Microsoft Docs when configuring a Monitor PE:
 > https://learn.microsoft.com/en-us/azure/azure-monitor/logs/private-link-configure
 
 ---
 
-## 3. Lista de verificação de erros comuns
+## 3. Common error checklist
 
-| Item | ❌ Exemplo incorreto | ✅ Exemplo correto |
+| Item | Incorrect example | Correct example |
 |------|---------------------|-------------------|
-| HNS do ADLS Gen2 | `isHnsEnabled` ausente ou `false` | `isHnsEnabled: true` |
-| Sub-rede de PE | Política não configurada | `privateEndpointNetworkPolicies: 'Disabled'` |
-| DNS Zone Group | Somente o PE foi criado | PE + DNS Zone + VNet Link + DNS Zone Group |
-| Recurso Foundry | `kind: 'OpenAI'` | `kind: 'AIServices'` + `allowProjectManagement: true` |
-| Recurso Foundry | `customSubDomainName` ausente | `customSubDomainName: foundryName`, não pode ser alterado após a criação |
-| Foundry Project | Somente o Foundry existe, sem Project | Deve ser criado em conjunto |
-| Autenticação do Key Vault | Política de acesso (Access Policy) | `enableRbacAuthorization: true` |
-| Rede pública | Não configurada | `publicNetworkAccess: 'Disabled'` |
-| Nome do Storage | `st-my-storage` | `stmystorage` ou `st${uniqueString(...)}` |
-| Versão da API | Copiada de uma conversa ou erro anterior | Verifique a versão estável mais recente no Microsoft Docs |
-| Região | Valor fixo (`'eastus'`) | Passe como parâmetro (`param location`) |
-| Valores confidenciais | Texto não criptografado em `.bicepparam` | `@secure()` + referência do Key Vault |
+| ADLS Gen2 HNS | `isHnsEnabled` missing or `false` | `isHnsEnabled: true` |
+| PE subnet | Policy not configured | `privateEndpointNetworkPolicies: 'Disabled'` |
+| DNS Zone Group | Only the PE was created | PE + DNS Zone + VNet Link + DNS Zone Group |
+| Foundry resource | `kind: 'OpenAI'` | `kind: 'AIServices'` + `allowProjectManagement: true` |
+| Foundry resource | `customSubDomainName` missing | `customSubDomainName: foundryName`, cannot be changed after creation |
+| Foundry Project | Only Foundry exists, no Project | Must be created together |
+| Key Vault authentication | Access Policy | `enableRbacAuthorization: true` |
+| Public network | Not configured | `publicNetworkAccess: 'Disabled'` |
+| Storage name | `st-my-storage` | `stmystorage` or `st${uniqueString(...)}` |
+| API version | Copied from a previous conversation or error | Check the latest stable version in Microsoft Docs |
+| Region | Fixed value (`'eastus'`) | Pass as a parameter (`param location`) |
+| Sensitive values | Plaintext in `.bicepparam` | `@secure()` + Key Vault reference |
 
 ---
 
-## 4. Regras de decisão sobre relações entre serviços
+## 4. Decision rules for service relationships
 
-São **regras de seleção padrão**, não determinações absolutas.
+These are **default selection rules**, not absolute mandates.
 
 ### Foundry versus Azure OpenAI versus AI Hub
 
-```
-Regras padrão:
-├─ Cargas de trabalho de IA/RAG → use Microsoft Foundry (kind: 'AIServices')
-│   ├─ Crie o recurso Foundry + Foundry Project em conjunto
-│   └─ Implante o modelo no nível do recurso Foundry (accounts/deployments)
+```text
+Default rules:
+├─ AI/RAG workloads -> use Microsoft Foundry (kind: 'AIServices')
+│   ├─ Create the Foundry resource + Foundry Project together
+│   └─ Deploy the model at the Foundry resource level (accounts/deployments)
 │
-├─ Treinamento de ML/modelos de código aberto necessário → considere AI Hub (MachineLearningServices)
-│   └─ Somente mediante solicitação explícita ou necessidade de recursos sem suporte no Foundry
+├─ ML/open-source model training required -> consider AI Hub (MachineLearningServices)
+│   └─ Only upon explicit request or when capabilities unsupported by Foundry are needed
 │
-└─ Recurso autônomo do Azure OpenAI →
-    Considere somente mediante solicitação explícita ou
-    quando a documentação oficial exigir um recurso separado
+└─ Standalone Azure OpenAI resource ->
+    Consider only upon explicit request or
+    when official documentation requires a separate resource
 ```
 
-> Estas regras são um **guia de seleção padrão** que reflete as recomendações atuais da Microsoft.
-> As relações entre produtos do Azure podem mudar. Consulte o Microsoft Docs em caso de dúvida.
+> These rules are a **default selection guide** reflecting current Microsoft recommendations.
+> Azure product relationships may change. Consult Microsoft Docs when in doubt.
 
-### Monitoramento
+### Monitoring
 
-```
-Regras padrão:
-├─ Foundry (AIServices) → Application Insights não é obrigatório
-└─ AI Hub (MachineLearningServices) → Application Insights + Log Analytics são obrigatórios
+```text
+Default rules:
+├─ Foundry (AIServices) -> Application Insights is not required
+└─ AI Hub (MachineLearningServices) -> Application Insights + Log Analytics are required
 ```

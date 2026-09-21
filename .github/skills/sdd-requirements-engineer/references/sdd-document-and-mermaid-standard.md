@@ -1,21 +1,18 @@
 # SDD document and Mermaid standard
 
-Use this contract for every canonical package under `.specs/`. The repository
-instructions and executable validators remain authoritative when this reference
-and the checked-in tree differ.
+Use this contract for canonical packages under `specs/<NNN>-<feature>/` and
+supporting Stage 2 decisions. The [artifact instructions](../../../instructions/sdd-artifacts.instructions.md)
+own filenames and validation boundaries. Include only sections and diagrams
+that clarify the approved scope; do not generate a parallel artifact tree.
 
 ## Artifact responsibilities
 
 | Artifact | Required responsibility |
 | --- | --- |
-| `SPECIFICATION.md` | Canonical REQ/NFR statements, acceptance, assumptions, dependencies, open decisions, and evidence-based implementation status |
-| `ANALYSIS.md` | Gate summary, bidirectional traceability, dated evidence, findings, approval conditions, and sign-off |
-| `DESIGN.md` | Architecture, context, components, deployment, state, sequences, data, interfaces, failures, security, observability, implementation surface, delivery traceability, and phased state |
-| `TASKS.md` | Pre-gate, execution rules, dependency DAG, test mapping, phased checkboxes, completion gate, and execution ledger |
-| `TESTING.md` | Named tests, deterministic commands, failure injection, evidence contract, exit criteria, and dated verification state |
-| `DECISIONS.md` | Stable decisions, status, context, alternatives, consequences, traces, evidence, and revisit triggers |
-| `checkpoints/` | Machine-readable requirement-to-plan-to-task-to-test closure |
-| `contracts/` | Versioned API/state contracts or a reviewed non-applicability manifest |
+| `spec.md` | Canonical EARS requirements, `source_legacy`, acceptance, source register, assumptions, scope, approval, and open decisions |
+| `plan.md` | Design, applicable diagrams, decisions or ADR links, risks, test strategy, and requirement-to-component traceability |
+| `tasks.md` | Dependency order, test mapping, checkboxes, completion gate, deterministic commands, and dated execution evidence |
+| Supporting contracts and decisions | Separate files only when justified, linked from the owning artifact, with explicit applicability |
 
 ## Universal Mermaid theme
 
@@ -51,7 +48,7 @@ Keep diagrams reviewable:
 
 ## Required design portfolio
 
-When material to the feature, `DESIGN.md` includes:
+When material to the feature, `plan.md` includes:
 
 1. Architecture Overview
 2. System Context
@@ -95,14 +92,16 @@ Use one checkbox entry per task:
 ## Required validation
 
 ```bash
-python3 scripts/format-sdd-mermaid.py --check
-python3 scripts/validate-design-diagrams.py
-python3 scripts/validate-sdd-documents.py
-python3 scripts/validate-specs.py --spec-root .specs --strict
-python3 scripts/validate-spec-status.py .specs
-python3 scripts/validate-task-graph.py --all
-python3 scripts/validate-testing-evidence.py
+python3 -B .github/scripts/validate-spec-traceability.py --mode legacy
+python3 -B .github/scripts/validate-spec-traceability.py --mode tests
+python3 -B -m unittest discover -s .github/scripts/tests -v
 ```
+
+The source gate blocks invalid declarations; the test report only warns about
+missing references. Neither proves EARS correctness, source-line accuracy,
+diagram syntax, approval, or passing product tests. Review those separately.
+Render applicable diagrams using an available repository renderer and record
+the result; if no renderer is available, report rendering as not executed.
 
 Report a failing or blocked check as such. Never weaken a gate, add a baseline,
 or create empty evidence merely to obtain a green result.

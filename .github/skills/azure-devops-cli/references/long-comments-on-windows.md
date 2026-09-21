@@ -1,43 +1,43 @@
-# Publicação de comentários e corpos longos no Windows
+# Posting long comments and bodies on Windows
 
-No Windows, o comando `az` é resolvido como `az.cmd`, um programa intermediário em lote invocado pelo `cmd.exe`. A linha de comando completa tem um limite de cerca de 8.191 caracteres. Portanto, um valor longo de `--discussion`, `--description` ou `--content` pode ser truncado silenciosamente ou falhar. Detecte o interpretador de comandos antes de compor um argumento longo e escolha a abordagem adequada. Ignorar isso é o motivo mais comum para o agente gastar de 3 a 5 interações recorrendo à obtenção direta de tokens e a chamadas REST.
+On Windows, the `az` command resolves to `az.cmd`, a batch wrapper invoked by `cmd.exe`. The full command line has a limit of about 8,191 characters. Therefore, a long `--discussion`, `--description`, or `--content` value can be silently truncated or fail. Detect the shell before composing a long argument and choose the appropriate approach. Ignoring this is the most common reason an agent spends 3 to 5 interactions falling back to direct token retrieval and REST calls.
 
-## Detecte primeiro o interpretador de comandos
+## Detect the shell first
 
-| Ambiente | Sinal | Ação |
+| Environment | Signal | Action |
 |---|---|---|
-| PowerShell no Windows | `$IsWindows -eq $true` e `$PSVersionTable.PSVersion` definido | Use `azps.ps1` (veja abaixo) |
-| PowerShell no macOS/Linux | `$IsWindows -eq $false` | O `az` comum funciona, sem o programa intermediário do cmd.exe |
-| bash/zsh/sh | `$BASH_VERSION` ou `$ZSH_VERSION` definido, ou `uname` funciona | O `az` comum funciona, sem o programa intermediário do cmd.exe |
-| `cmd.exe` do Windows | `%ComSpec%` termina em `cmd.exe`, sem `$PSVersionTable` | Use `azps.ps1` se o PowerShell estiver instalado. Caso contrário, veja a alternativa com `az devops invoke` abaixo |
+| PowerShell on Windows | `$IsWindows -eq $true` and `$PSVersionTable.PSVersion` defined | Use `azps.ps1` (see below) |
+| PowerShell on macOS/Linux | `$IsWindows -eq $false` | Regular `az` works, without the cmd.exe wrapper |
+| bash/zsh/sh | `$BASH_VERSION` or `$ZSH_VERSION` defined, or `uname` works | Regular `az` works, without the cmd.exe wrapper |
+| Windows `cmd.exe` | `%ComSpec%` ends in `cmd.exe`, no `$PSVersionTable` | Use `azps.ps1` if PowerShell is installed. Otherwise, see the `az devops invoke` fallback below |
 
-## Opção 1: `azps.ps1` (PowerShell no Windows)
+## Option 1: `azps.ps1` (PowerShell on Windows)
 
-O `azps.ps1` acompanha o instalador da CLI do Azure e invoca diretamente o ponto de entrada Python. Não há o limite de comprimento do `cmd.exe`.
+`azps.ps1` ships with the Azure CLI installer and invokes the Python entry point directly. There is no `cmd.exe` length limit.
 
 ```powershell
-# Leia o corpo longo em uma variável e forneça-o diretamente. Sem problemas com aspas.
+# Read the long body into a variable and pass it directly. No quoting issues.
 $body = Get-Content -Raw .\comment.md
 azps.ps1 boards work-item update --id 1234 --discussion $body
 ```
 
-## Opção 2: opção dedicada `--file-path` quando oferecida pela CLI do Azure
+## Option 2: dedicated `--file-path` option when offered by the Azure CLI
 
-Alguns comandos têm uma opção nativa de arquivo. Prefira-a a qualquer corpo embutido:
+Some commands have a native file option. Prefer it over any inline body:
 
-- `az devops wiki page create` e `az devops wiki page update` aceitam `--file-path` (com `--encoding` opcional).
-- Use-a em qualquer interpretador de comandos, inclusive no Windows.
+- `az devops wiki page create` and `az devops wiki page update` accept `--file-path` (with optional `--encoding`).
+- Use it in any shell, including on Windows.
 
 ```bash
 az devops wiki page create --path 'My page' --wiki myproject --file-path ./page.md --encoding utf-8
 ```
 
-## Opção 3: alternativa com `az devops invoke`
+## Option 3: `az devops invoke` fallback
 
-Quando não houver `--file-path` (`--discussion` de item de trabalho, `--description` de solicitação de pull) e você não estiver no PowerShell, publique o corpo pela API REST subjacente. O `az devops invoke` é executado no ponto de entrada Python, portanto também não está sujeito ao limite do `cmd.exe`, e lê o corpo da solicitação de um arquivo com `--in-file`:
+When there is no `--file-path` (work item `--discussion`, pull request `--description`) and you are not in PowerShell, post the body through the underlying REST API. `az devops invoke` runs in the Python entry point, so it is also not subject to the `cmd.exe` limit, and reads the request body from a file with `--in-file`:
 
 ```bash
-# Publique um comentário de discussão longo no item de trabalho 1234.
+# Post a long discussion comment on work item 1234.
 # REST: POST /{project}/_apis/wit/workItems/{id}/comments?api-version=7.0-preview.3
 az devops invoke \
   --area wit --resource comments \
@@ -47,8 +47,8 @@ az devops invoke \
   --in-file ./comment.json
 ```
 
-Nesse caso, `comment.json` é `{ "text": "<long markdown body>" }`. Esta é a solução universal quando nem `azps.ps1` nem `--file-path` estão disponíveis. O próprio `az devops invoke` aceita `--in-file` nativamente.
+In this case, `comment.json` is `{ "text": "<long markdown body>" }`. This is the universal workaround when neither `azps.ps1` nor `--file-path` is available. `az devops invoke` itself supports `--in-file` natively.
 
-## Não dependa de `@<file>` para argumentos de texto simples
+## Do not rely on `@<file>` for plain text arguments
 
-A convenção `@<file>` da CLI do Azure está documentada para parâmetros JSON (consulte o [guia oficial sobre aspas](https://learn.microsoft.com/en-us/cli/azure/use-azure-cli-successfully-quoting)). Não há garantia de que ela expanda argumentos de texto simples como `--discussion` ou `--description`. Portanto, não a use como substituta das três opções acima.
+The Azure CLI's `@<file>` convention is documented for JSON parameters (see the [official quoting guide](https://learn.microsoft.com/en-us/cli/azure/use-azure-cli-successfully-quoting)). It is not guaranteed to expand plain text arguments such as `--discussion` or `--description`. Therefore, do not use it as a substitute for the three options above.

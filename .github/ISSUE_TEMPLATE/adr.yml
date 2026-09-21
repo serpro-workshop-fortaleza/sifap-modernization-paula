@@ -1,5 +1,5 @@
-name: 🧱 Registro de Decisão de Arquitetura (ADR)
-description: Documente uma decisão significativa de arquitetura ou projeto
+name: Architecture Decision Record (ADR)
+description: Document a significant architecture or design decision
 title: "[ADR] "
 labels: [ "adr", "stage-2", "architecture" ]
 projects: []
@@ -8,13 +8,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        > Use este modelo quando houver uma decisão não trivial (>1 hora para reavaliar depois).
-        > Exemplos: escolha entre monólito e microsserviços, estratégia de persistência, modelo de autenticação.
+        > Use this template for a nontrivial decision (>1 hour to revisit later).
+        > Examples: choosing between a monolith and microservices, persistence strategy, authentication model.
 
   - type: input
     id: adr-number
     attributes:
-      label: Número do ADR (sequencial)
+      label: ADR number (sequential)
       placeholder: "0007"
     validations:
       required: true
@@ -22,76 +22,76 @@ body:
   - type: input
     id: adr-title
     attributes:
-      label: Título
-      placeholder: "<título curto da decisão>"
+      label: Title
+      placeholder: "<short decision title>"
     validations:
       required: true
 
   - type: textarea
     id: context
     attributes:
-      label: Contexto
-      description: Qual problema observado motiva esta decisão?
-      placeholder: "<evidências, restrições e decisão a tomar>"
+      label: Context
+      description: What observed problem motivates this decision?
+      placeholder: "<evidence, constraints, and decision to make>"
     validations:
       required: true
 
   - type: textarea
     id: decision
     attributes:
-      label: Decisão
-      description: A mudança que estamos propondo ou que concordamos em fazer.
-      placeholder: "<decisão tomada explicitamente pela equipe>"
+      label: Decision
+      description: The change we propose or have agreed to make.
+      placeholder: "<decision explicitly made by the team>"
     validations:
       required: true
 
   - type: textarea
     id: alternatives
     attributes:
-      label: Alternativas consideradas
+      label: Alternatives considered
       placeholder: |
-        - <alternativa A> — <compensação>
-        - <alternativa B> — <compensação>
+        - <alternative A> - <trade-off>
+        - <alternative B> - <trade-off>
     validations:
       required: true
 
   - type: textarea
     id: consequences
     attributes:
-      label: Consequências
-      description: O que fica mais fácil? O que fica mais difícil? Há algum risco?
+      label: Consequences
+      description: What becomes easier? What becomes harder? Are there any risks?
       placeholder: |
-        Mais fácil: <efeito>
-        Mais difícil: <efeito>
-        Mitigação: <ação>
+        Easier: <effect>
+        Harder: <effect>
+        Mitigation: <action>
     validations:
       required: true
 
   - type: dropdown
     id: status
     attributes:
-      label: Situação
+      label: Status
       options:
-        - proposto
-        - aceito
-        - descontinuado
-        - substituído
+        - proposed
+        - accepted
+        - deprecated
+        - superseded
     validations:
       required: true
 
   - type: input
     id: supersedes
     attributes:
-      label: Substitui (número do ADR, se houver)
-      placeholder: "Não se aplica"
+      label: Supersedes (ADR number, if any)
+      placeholder: "Not applicable"
 
   - type: dropdown
     id: lead-persona
     attributes:
-      label: Persona autora
+      label: Authoring persona
       options:
-        - Arquiteto Corporativo
-        - Arquiteto de Software
-        - Líder Técnico
+        - Enterprise Architect
+        - Software Architect
+        - Technical Lead
     validations:
       required: true

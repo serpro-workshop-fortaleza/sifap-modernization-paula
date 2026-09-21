@@ -1,8 +1,8 @@
 # @DataJpaTest
 
-Teste de repositórios JPA com uma fatia isolada da camada de dados.
+Testing JPA repositories with an isolated data-layer slice.
 
-## Estrutura básica
+## Basic structure
 
 ```java
 @DataJpaTest
@@ -22,36 +22,36 @@ class OrderRepositoryTest {
 }
 ```
 
-## O que é carregado
+## What is loaded
 
-- Beans de repositório
+- Repository beans
 - EntityManager / TestEntityManager
 - DataSource
-- Gerenciador de transações
-- Nenhuma camada web, nenhum serviço e nenhum controlador
+- Transaction manager
+- No web layer, services, or controllers
 
-## Teste de consultas personalizadas
+## Testing custom queries
 
 ```java
 @Test
 void shouldFindOrdersByStatus() {
-  // Dado: uso de var para deixar o código mais limpo
+  // Given: using var for cleaner code
   var pending = new Order("PENDING");
   var completed = new Order("COMPLETED");
   entityManager.persist(pending);
   entityManager.persist(completed);
   entityManager.flush();
 
-  // Quando
+  // When
   var pendingOrders = orderRepository.findByStatus("PENDING");
 
-  // Então: uso dos métodos de coleções sequenciadas
+  // Then: using sequenced collection methods
   assertThat(pendingOrders).hasSize(1);
   assertThat(pendingOrders.getFirst().getStatus()).isEqualTo("PENDING");
 }
 ```
 
-## Teste de consultas nativas
+## Testing native queries
 
 ```java
 @Test
@@ -66,12 +66,12 @@ void shouldExecuteNativeQuery() {
 }
 ```
 
-## Teste de paginação
+## Testing pagination
 
 ```java
 @Test
 void shouldReturnPagedResults() {
-  // Insere 20 pedidos usando IntStream
+  // Inserts 20 orders using IntStream
   IntStream.range(0, 20).forEach(i -> {
     entityManager.persist(new Order("PENDING"));
   });
@@ -85,7 +85,7 @@ void shouldReturnPagedResults() {
 }
 ```
 
-## Teste de carregamento tardio
+## Testing lazy loading
 
 ```java
 @Test
@@ -94,18 +94,18 @@ void shouldLazyLoadOrderItems() {
   order.addItem(new OrderItem("Product", 2));
   entityManager.persist(order);
   entityManager.flush();
-  entityManager.clear(); // Desanexa do contexto de persistência
+  entityManager.clear(); // Detaches from the persistence context
 
   var found = orderRepository.findById(order.getId());
 
   assertThat(found).isPresent();
-  // Isto acionará o carregamento tardio
+  // This will trigger lazy loading
   assertThat(found.get().getItems()).hasSize(1);
   assertThat(found.get().getItems().getFirst().getProduct()).isEqualTo("Product");
 }
 ```
 
-## Teste de operações em cascata
+## Testing cascading operations
 
 ```java
 @Test
@@ -123,7 +123,7 @@ void shouldCascadeDelete() {
 }
 ```
 
-## Teste de métodos @Query
+## Testing @Query methods
 
 ```java
 @Query("SELECT o FROM Order o WHERE o.createdAt > :date AND o.status = :status")
@@ -149,18 +149,18 @@ void shouldFindRecentOrders() {
 }
 ```
 
-## Uso de H2 versus banco de dados real
+## Using H2 versus a real database
 
-### H2 (padrão, não recomendado para paridade com produção)
+### H2 (default, not recommended for production parity)
 
 ```java
-@DataJpaTest // Usa H2 integrado por padrão
+@DataJpaTest // Uses embedded H2 by default
 class OrderRepositoryH2Test {
-  // Rápido, mas pode não detectar problemas específicos do banco
+  // Fast, but may not catch database-specific issues
 }
 ```
 
-### Testcontainers (recomendado)
+### Testcontainers (recommended)
 
 ```java
 @DataJpaTest
@@ -173,25 +173,25 @@ class OrderRepositoryPostgresTest {
 }
 ```
 
-## Comportamento das transações
+## Transaction behavior
 
-Os testes são @Transactional por padrão e executam reversão após cada teste.
+Tests are @Transactional by default and roll back after each test.
 
 ```java
 @Test
-@Rollback(false) // Não executa reversão (raramente necessário)
+@Rollback(false) // Does not roll back (rarely needed)
 void shouldPersistData() {
   orderRepository.save(new Order("PENDING"));
-  // Os dados permanecerão no banco após o teste
+  // Data will remain in the database after the test
 }
 ```
 
-## Pontos principais
+## Key points
 
-1. Use TestEntityManager para preparar os dados
-2. Sempre execute flush() após persist() para acionar o SQL
-3. Execute clear() no gerenciador de entidades para testar o carregamento tardio
-4. Use um banco real (Testcontainers) para obter resultados precisos
-5. Teste casos de sucesso e falha
-6. Aproveite a palavra-chave var do Java 21 para declarações mais limpas
-7. Use métodos de coleções sequenciadas (getFirst(), getLast(), reversed())
+1. Use TestEntityManager to prepare data
+2. Always call flush() after persist() to trigger SQL
+3. Call clear() on the entity manager to test lazy loading
+4. Use a real database (Testcontainers) for accurate results
+5. Test success and failure cases
+6. Leverage Java 21's var keyword for cleaner declarations
+7. Use sequenced collection methods (getFirst(), getLast(), reversed())

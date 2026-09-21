@@ -1,87 +1,87 @@
 ---
 name: "tdd-workflow"
-description: "Use ao praticar desenvolvimento orientado a testes, escrever primeiro um teste com falha ou orientar o ciclo vermelho-verde-refatorar. Os gatilhos incluem \"TDD\", \"ciclo vermelho-verde-refatorar\", \"teste primeiro\", \"teste com falha\" e \"escrever um teste\"."
+description: "Use when practicing test-driven development, writing a failing test first, or guiding the red-green-refactor cycle. Triggers include \"TDD\", \"red-green-refactor cycle\", \"test first\", \"failing test\", and \"write a test\"."
 ---
-# Fluxo de TDD
+# TDD workflow
 
-## Quando invocar
+## When to Invoke
 
-- Ao iniciar um novo comportamento ou uma correção de erro.
-- Ao trabalhar em programação em par ou em grupo em código desconhecido e precisar de uma rede de segurança.
-- Quando as alterações continuam causando falhas inesperadas.
+- When starting a new behavior or bug fix.
+- When pair or mob programming on unfamiliar code and needing a safety net.
+- When changes keep causing unexpected failures.
 
-## O ciclo
+## The cycle
 
 ```text
-VERMELHO → escreva o menor teste com falha que expresse o próximo comportamento
-VERDE → escreva a menor quantidade de código que faça o teste passar
-REFATORAR → melhore o projeto enquanto os testes permanecem verdes
+RED -> write the smallest failing test that expresses the next behavior
+GREEN -> write the least code that makes the test pass
+REFACTOR -> improve the design while tests stay green
 ```
 
-Faça um commit em cada etapa verde. Cubra um comportamento por ciclo.
+Commit at each green step. Cover one behavior per cycle.
 
-## Regras
+## Rules
 
-1. **Não escreva código de produção sem um teste com falha.** Sem teste, sem alteração.
-2. **Mantenha apenas um teste com falha por vez.** Nunca tenha dois testes vermelhos.
-3. **Dê o menor passo que produza falha.** Se o primeiro teste for difícil de escrever, o projeto está indicando um problema.
-4. **Os nomes dos testes descrevem o comportamento**, não a implementação: `calculates_tax_for_tax_exempt_customer`, não `test_method1`.
-5. Use a estrutura **Dado-Quando-Então / Preparar-Agir-Verificar** no corpo do teste.
-6. **A fase de refatoração não é opcional**. Nela está a maior parte do valor.
+1. **Do not write production code without a failing test.** No test, no change.
+2. **Keep only one failing test at a time.** Never have two red tests.
+3. **Take the smallest step that fails.** If the first test is hard to write, the design is signaling a problem.
+4. **Test names describe behavior**, not implementation: `calculates_tax_for_tax_exempt_customer`, not `test_method1`.
+5. Use the **Given-When-Then / Arrange-Act-Assert** structure in the test body.
+6. **The refactoring phase is not optional**. It holds most of the value.
 
-## Como escolher o próximo teste
+## How to choose the next test
 
-Ordene os testes para orientar o projeto:
+Order tests to guide the design:
 
-- Comece pelo caso não trivial mais simples (o caso "0→1" ou o fluxo de sucesso com uma entrada).
-- Em seguida, adicione uma única variação (um limite, uma ramificação ou um erro).
-- Evite escrever um teste enorme que cubra tudo.
+- Start with the simplest nontrivial case (the "0->1" case or the happy path with one input).
+- Then add a single variation (a boundary, a branch, or an error).
+- Avoid writing a huge test that covers everything.
 
-## Objetos falsos e respostas programadas
+## Fakes and stubs
 
-- Use um substituto de teste apenas quando o colaborador real for lento, não determinístico ou ainda não existir.
-- Não crie objetos simulados de tipos que você não controla. Primeiro, envolva-os em uma abstração fina.
-- Um teste que simula tudo não testa nada.
+- Use a test double only when the real collaborator is slow, nondeterministic, or does not exist yet.
+- Do not mock types you do not own. Wrap them in a thin abstraction first.
+- A test that mocks everything tests nothing.
 
-## Quando o TDD é difícil, o problema costuma estar no projeto
+## When TDD is difficult, the problem is often in the design
 
-- Dificuldade para construir o objeto testado → colaboradores demais, violação do princípio de responsabilidade única (SRP).
-- Impossibilidade de criar uma asserção sem ler três outros objetos → problema na Lei de Demeter ou no encapsulamento.
-- Necessidade de simular o mundo inteiro → acoplamento oculto; introduza uma abstração.
+- Difficulty constructing the object under test: too many collaborators, violation of the single-responsibility principle (SRP).
+- Inability to make an assertion without reading three other objects: Law of Demeter or encapsulation issue.
+- Needing to mock the whole world: hidden coupling; introduce an abstraction.
 
-## Antipadrões
+## Anti-patterns
 
-- Escrever o código e depois o teste (isso é verificação, não TDD).
-- Ignorar a fase de refatoração.
-- Testes que duplicam a implementação (detectores de mudança).
-- Conjuntos de dados de teste enormes compartilhados entre arquivos, pois são frágeis.
-- Verificar detalhes de implementação (métodos privados ou strings SQL exatas).
+- Writing code and then the test (that is verification, not TDD).
+- Skipping the refactoring phase.
+- Tests that duplicate the implementation (change detectors).
+- Huge test fixtures shared across files, because they are brittle.
+- Checking implementation details (private methods or exact SQL strings).
 
-## Modelo de saída
+## Output Template
 
 ```java
-// REQ-NNN: <comportamento testado>
+// REQ-NNN: <behavior under test>
 @Test
 void calculatesTaxForTaxExemptCustomer() {
-    // Preparar
+    // Arrange
     var customer = new Customer(TAX_EXEMPT);
-    // Agir
+    // Act
     var tax = calculator.taxFor(customer);
-    // Verificar
+    // Assert
     assertThat(tax).isEqualTo(Money.ZERO);
 }
 ```
 
-Sequência de registros por comportamento: `red: adicionar teste com falha` -> `green: fazer passar` -> `refactor: <melhoria>`.
+Commit sequence per behavior: `red: add failing test` -> `green: make it pass` -> `refactor: <improvement>`.
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Nenhum código de produção foi escrito sem um teste com falha primeiro.
-- [ ] Apenas um teste fica vermelho por vez, e cada ciclo cobre um comportamento.
-- [ ] A etapa de refatoração foi executada enquanto os testes estavam verdes.
-- [ ] Os nomes dos testes descrevem o comportamento e referenciam o REQ-ID em um comentário.
+- [ ] No production code was written without a failing test first.
+- [ ] Only one test is red at a time, and each cycle covers one behavior.
+- [ ] The refactoring step was performed while tests were green.
+- [ ] Test names describe behavior and reference the REQ-ID in a comment.
 
-## Referências
+## References
 
 - [Kent Beck - Test Driven Development: By Example](https://www.oreilly.com/library/view/test-driven-development/0321146530/)
 - [GOOS - Growing Object-Oriented Software, Guided by Tests](http://www.growing-object-oriented-software.com/)

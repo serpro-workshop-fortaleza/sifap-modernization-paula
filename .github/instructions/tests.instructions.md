@@ -1,39 +1,39 @@
 ---
-description: "Use ao criar ou revisar testes automatizados, estratégia de testes, specs, lacunas de cobertura, testes de regressão e portões de qualidade."
+description: "Use when creating or reviewing automated tests, test strategy, specs, coverage gaps, regression tests, and quality gates."
 applyTo: "**/*.test.*,**/*.spec.*,**/tests/**"
 ---
 
-# Convenções de testes — JUnit, Vitest e rastreabilidade
+# Testing conventions - JUnit, Vitest, and traceability
 
-Este arquivo é ativado em qualquer arquivo de teste (`*.test.*`, `*.spec.*` ou qualquer arquivo em um path `tests/`), tanto no backend quanto no frontend. Ele ensina estrutura e nomenclatura de testes, ferramentas de backend (JUnit 5 + Testcontainers) e frontend (Vitest + Testing Library), rastreabilidade de REQ-ID e metas de cobertura. Os testes são escritos **durante** a implementação, nunca adicionados depois.
+This file activates for any test file (`*.test.*`, `*.spec.*`, or any file in a `tests/` path), in both backend and frontend. It teaches test structure and naming, backend (JUnit 5 + Testcontainers) and frontend (Vitest + Testing Library) tools, REQ-ID traceability, and coverage targets. Tests are written **during** implementation, never added afterward.
 
-## Pirâmide de testes
+## Test pyramid
 
-| Camada | Ferramentas | Proporção |
+| Layer | Tools | Proportion |
 |---|---|---|
-| Unidade (serviços, lógica pura) | JUnit 5 / Vitest, sem E/S | Maioria dos testes |
-| Integração (repositórios, componentes) | Testcontainers / Testing Library | Menos |
-| Ponta a ponta | Somente o fluxo crítico | Menor quantidade |
+| Unit (services, pure logic) | JUnit 5 / Vitest, no I/O | Most tests |
+| Integration (repositories, components) | Testcontainers / Testing Library | Fewer |
+| End-to-end | Critical workflow only | Fewest |
 
-A skill [`test-strategy`](../skills/test-strategy/SKILL.md) detém as decisões sobre o formato da pirâmide e as metas de cobertura.
+The [`test-strategy`](../skills/test-strategy/SKILL.md) skill owns decisions on pyramid shape and coverage targets.
 
-## Estrutura: Preparar-Agir-Verificar
+## Structure: Arrange-Act-Assert
 
-Cada teste possui três fases visíveis e verifica um comportamento. Simule somente limites externos, nunca o banco de dados nem a classe em teste.
+Each test has three visible phases and checks one behavior. Mock only external boundaries, never the database or the class under test.
 
 ```java
 @Test
 void should_reject_duplicate_label() { // REQ-021
-    resourceRepository.save(Resource.of("alpha", new BigDecimal("10.00"))); // Preparar
+    resourceRepository.save(Resource.of("alpha", new BigDecimal("10.00"))); // Arrange
     var request = new CreateResourceRequest("alpha", new BigDecimal("5.00"));
-    assertThatThrownBy(() -> resourceService.create(request))            // Agir
-        .isInstanceOf(ResourceConflictException.class);                  // Verificar
+    assertThatThrownBy(() -> resourceService.create(request))            // Act
+      .isInstanceOf(ResourceConflictException.class);                  // Assert
 }
 ```
 
-## Nomenclatura
+## Naming
 
-Nomeie testes como `should_<expected behavior>_when_<condition>` (backend) ou expresse a mesma intenção em `it(...)` da Testing Library (frontend).
+Name tests `should_<expected behavior>_when_<condition>` (backend) or express the same intent in Testing Library's `it(...)` (frontend).
 
 ```text
 should_return_409_when_identifier_already_exists
@@ -42,7 +42,7 @@ should_render_empty_state_when_no_resources
 
 ## Backend: JUnit 5 + Testcontainers
 
-Os testes de repositório e integração executam com PostgreSQL 16 real em contêiner, nunca H2, para que o comportamento corresponda à produção. Vincule o contêiner com `@ServiceConnection`.
+Repository and integration tests run against real containerized PostgreSQL 16, never H2, so behavior matches production. Bind the container with `@ServiceConnection`.
 
 ```java
 @Testcontainers
@@ -65,11 +65,11 @@ class ResourceRepositoryTest {
 }
 ```
 
-A lógica de negócio do backend deve incluir fluxo de sucesso, falha de validação e falha de autenticação.
+Backend business logic must include the success path, validation failure, and authentication failure.
 
 ## Frontend: Vitest + Testing Library
 
-Consulte por papel ou rótulo acessível, nunca por test-id quando existir um papel, e conduza a interação com `user-event`. Evite testes somente de snapshot.
+Query by accessible role or label, never by test-id when a role exists, and drive interaction with `user-event`. Avoid snapshot-only tests.
 
 ```tsx
 import { render, screen } from '@testing-library/react';
@@ -87,41 +87,41 @@ describe('ArchiveButton', () => {
 });
 ```
 
-## Rastreabilidade de REQ-ID
+## REQ-ID traceability
 
-Todo teste que verifica um requisito nomeia seu REQ-ID em um comentário inline. Isso alimenta o relatório não bloqueante `spec-traceability` (consulte [`sdd-artifacts.instructions.md`](sdd-artifacts.instructions.md)), que lista REQ-IDs ainda não referenciados por testes.
+Every test verifying a requirement names its REQ-ID in an inline comment. This feeds the non-blocking `spec-traceability` report (see [`sdd-artifacts.instructions.md`](sdd-artifacts.instructions.md)), which lists REQ-IDs not yet referenced by tests.
 
-## Metas de cobertura
+## Coverage targets
 
-O mínimo do repositório é **≥ 80% de linhas** e **≥ 70% de branches**; classes de serviço e lógica de negócio devem buscar valor maior (cerca de 85% de linhas). A CI executa Jacoco (backend) e Vitest `--coverage` (frontend) e informa os números. Configure os limites em `pom.xml` e na configuração do Vitest para que `verify`/`test` falhem abaixo do mínimo.
+The repository minimum is **≥ 80% line** and **≥ 70% branch coverage**; service classes and business logic should aim higher (about 85% line coverage). CI runs Jacoco (backend) and Vitest `--coverage` (frontend) and reports the numbers. Configure thresholds in `pom.xml` and the Vitest configuration so `verify`/`test` fail below the minimum.
 
 > [!NOTE]
-> Cobertura é um mínimo, não uma meta. Uma branch sem asserção não foi testada mesmo quando a linha está "coberta"; verifique o comportamento, não somente a chamada.
+> Coverage is a floor, not a goal. A branch without an assertion has not been tested even when the line is "covered"; verify behavior, not just the call.
 
-## Convenções
+## Conventions
 
-| Regra | Justificativa |
+| Rule | Rationale |
 |---|---|
-| Preparar-Agir-Verificar, um comportamento por teste | Legível e isola a falha |
-| Simule somente limites externos | Banco real via Testcontainers detecta bugs reais |
-| Nomenclatura `should_<behavior>_when_<condition>` | A intenção fica clara no relatório |
-| `// REQ-NNN` inline em testes de requisitos | Mantém ativa a rastreabilidade entre spec e teste |
-| Escritos durante a implementação | Código sem testes não é integrado |
+| Arrange-Act-Assert, one behavior per test | Readable and isolates the failure |
+| Mock only external boundaries | A real database through Testcontainers catches real bugs |
+| `should_<behavior>_when_<condition>` naming | Intent is clear in the report |
+| Inline `// REQ-NNN` in requirement tests | Keeps spec-to-test traceability active |
+| Written during implementation | Untested code is not integrated |
 
-## Faça / Não faça
+## Do / Don't
 
-| Faça | Não faça |
+| Do | Don't |
 |---|---|
-| Use Testcontainers PostgreSQL 16 | Substitua por H2 nos testes de integração |
-| Consulte por papel/rótulo | Consulte por `data-testid` quando existir um papel |
-| Verifique comportamento e branches de borda | Dependa somente de snapshots ou cobertura de linhas |
-| Escreva o teste junto com o código | Adicione testes depois que a funcionalidade estiver "pronta" |
+| Use Testcontainers PostgreSQL 16 | Substitute H2 in integration tests |
+| Query by role/label | Query by `data-testid` when a role exists |
+| Verify behavior and edge-case branches | Rely only on snapshots or line coverage |
+| Write the test alongside the code | Add tests after the feature is "done" |
 
-## Lista de verificação antes de abrir uma PR
+## PR Checklist
 
-- [ ] O comportamento novo possui testes unitários; a persistência possui teste de integração com Testcontainers
-- [ ] Os testes seguem Preparar-Agir-Verificar e a nomenclatura `should_..._when_...`
-- [ ] Os testes orientados por requisitos possuem comentário inline `// REQ-NNN`
-- [ ] A lógica de negócio cobre fluxo de sucesso, falha de validação e falha de autenticação
-- [ ] A cobertura atende ao mínimo de ≥ 80% de linhas / ≥ 70% de branches
-- [ ] Nenhum limite externo fica sem simulação e nenhuma dependência real necessária é simulada
+- [ ] New behavior has unit tests; persistence has a Testcontainers integration test
+- [ ] Tests follow Arrange-Act-Assert and `should_..._when_...` naming
+- [ ] Requirement-driven tests have an inline `// REQ-NNN` comment
+- [ ] Business logic covers the success path, validation failure, and authentication failure
+- [ ] Coverage meets the minimum of ≥ 80% lines / ≥ 70% branches
+- [ ] No external boundary is left unmocked and no required real dependency is mocked

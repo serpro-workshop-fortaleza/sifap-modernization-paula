@@ -1,80 +1,80 @@
 ---
 name: "java-junit"
-description: "Práticas recomendadas para testes unitários com JUnit 5: estrutura Preparar-Agir-Verificar, ciclo de vida, testes parametrizados e orientados a dados, asserções, isolamento com Mockito e organização. Use ao escrever ou revisar testes unitários simples com JUnit 5 para lógica de negócio Java. Para testes de fatia ou integração do Spring Boot (@WebMvcTest, @DataJpaTest, Testcontainers), use spring-boot-testing."
+description: "Best practices for JUnit 5 unit tests: Arrange-Act-Assert structure, lifecycle, parameterized and data-driven tests, assertions, Mockito isolation, and organization. Use when writing or reviewing plain JUnit 5 unit tests for Java business logic. For Spring Boot slice or integration tests (@WebMvcTest, @DataJpaTest, Testcontainers), use spring-boot-testing."
 ---
-# Práticas recomendadas do JUnit 5
+# JUnit 5 best practices
 
-Escreva testes unitários focados com JUnit 5 para a lógica de negócio da camada de servidor do SIFAP 2.0 (Java 21 + Spring Boot 3.3). Cubra abordagens padrão e orientadas a dados com isolamento por Mockito e asserções AssertJ. Para testes de fatia ou integração do Spring Boot (`@WebMvcTest`, `@DataJpaTest`, Testcontainers), use a habilidade [`spring-boot-testing`](../spring-boot-testing/SKILL.md). Para o ciclo vermelho-verde-refatorar, consulte [`tdd-workflow`](../tdd-workflow/SKILL.md).
+Write focused JUnit 5 unit tests for SIFAP 2.0 backend business logic (Java 21 + Spring Boot 3.3). Cover standard and data-driven approaches with Mockito isolation and AssertJ assertions. For Spring Boot slice or integration tests (`@WebMvcTest`, `@DataJpaTest`, Testcontainers), use the [`spring-boot-testing`](../spring-boot-testing/SKILL.md) skill. For the red-green-refactor cycle, see [`tdd-workflow`](../tdd-workflow/SKILL.md).
 
-## Quando invocar
+## When to Invoke
 
-- "Escreva testes JUnit 5 para este serviço."
-- "Adicione um teste parametrizado que cubra estes valores-limite."
-- "Revise o isolamento e os nomes destes testes unitários."
-- "Cubra os fluxos de erro deste método de negócio."
+- "Write JUnit 5 tests for this service."
+- "Add a parameterized test covering these boundary values."
+- "Review these unit tests' isolation and names."
+- "Cover this business method's error paths."
 
-## Configuração do projeto
+## Project setup
 
-- Use o layout padrão do Maven ou Gradle e coloque os testes em `src/test/java`.
-- `spring-boot-starter-test` já inclui JUnit 5 (inclusive `junit-jupiter-params`), Mockito e AssertJ no conjunto tecnológico do kit. Nenhuma dependência de teste adicional é necessária.
-- Execute os testes com `./mvnw test` (ou `./gradlew test`).
+- Use the standard Maven or Gradle layout and place tests in `src/test/java`.
+- `spring-boot-starter-test` already includes JUnit 5 (including `junit-jupiter-params`), Mockito, and AssertJ in the kit's stack. No additional test dependency is required.
+- Run tests with `./mvnw test` (or `./gradlew test`).
 
-## Estrutura dos testes
+## Test structure
 
-- As classes de teste devem ter o sufixo `Test`, por exemplo, `CalculatorTest` para uma classe `Calculator`.
-- Use `@Test` nos métodos de teste.
-- Siga o padrão Preparar-Agir-Verificar.
-- Nomeie os testes com uma convenção descritiva, como `methodName_should_expectedBehavior_when_scenario`.
-- Use `@BeforeEach` e `@AfterEach` para preparação e limpeza por teste.
-- Use `@BeforeAll` e `@AfterAll` para preparação e limpeza por classe. Esses métodos devem ser estáticos.
-- Use `@DisplayName` para fornecer um nome legível às classes e aos métodos de teste.
-- Referencie o requisito testado com um comentário `// REQ-NNN`. O kit rastreia testes até REQ-IDs.
+- Test classes must have the `Test` suffix, for example, `CalculatorTest` for a `Calculator` class.
+- Use `@Test` on test methods.
+- Follow the Arrange-Act-Assert pattern.
+- Name tests using a descriptive convention, such as `methodName_should_expectedBehavior_when_scenario`.
+- Use `@BeforeEach` and `@AfterEach` for per-test setup and cleanup.
+- Use `@BeforeAll` and `@AfterAll` for per-class setup and cleanup. These methods must be static.
+- Use `@DisplayName` to provide human-readable names for test classes and methods.
+- Reference the tested requirement with a `// REQ-NNN` comment. The kit traces tests to REQ-IDs.
 
-## Testes padrão
+## Standard tests
 
-- Mantenha cada teste focado em um único comportamento.
-- Evite testar várias condições no mesmo método de teste.
-- Crie testes independentes e idempotentes, que possam ser executados em qualquer ordem.
-- Evite interdependências entre testes.
+- Keep each test focused on a single behavior.
+- Avoid testing multiple conditions in the same test method.
+- Create independent, idempotent tests that can run in any order.
+- Avoid interdependencies between tests.
 
-## Testes orientados a dados (parametrizados)
+## Data-driven (parameterized) tests
 
-Marque o método com `@ParameterizedTest` em vez de `@Test` e forneça os argumentos com uma anotação de origem:
+Mark the method with `@ParameterizedTest` instead of `@Test` and supply arguments with a source annotation:
 
-| Origem | Uso |
+| Source | Usage |
 |---|---|
-| `@ValueSource` | Um parâmetro de literais simples (textos e números inteiros) |
-| `@CsvSource` | Linhas inline de valores separados por vírgulas (vários parâmetros) |
-| `@CsvFileSource` | Linhas carregadas de um arquivo CSV no caminho de classes |
-| `@MethodSource` | Argumentos criados por um método fábrica que retorna `Stream` ou `Collection` |
-| `@EnumSource` | Todas as constantes, ou um subconjunto nomeado, de um enum |
+| `@ValueSource` | One parameter of simple literals (strings and integers) |
+| `@CsvSource` | Inline rows of comma-separated values (multiple parameters) |
+| `@CsvFileSource` | Rows loaded from a CSV file on the classpath |
+| `@MethodSource` | Arguments created by a factory method returning `Stream` or `Collection` |
+| `@EnumSource` | All constants, or a named subset, of an enum |
 
-## Asserções
+## Assertions
 
-- Prefira o `assertThat(...)` fluente do AssertJ para produzir falhas legíveis. Ele já está no caminho de classes do kit.
-- Os métodos `org.junit.jupiter.api.Assertions` do JUnit (`assertEquals`, `assertTrue`, `assertNotNull`) continuam disponíveis.
-- Use `assertThrows` (ou `assertThatThrownBy` do AssertJ) para verificar exceções.
-- Agrupe asserções relacionadas com `assertAll` para verificar todas antes de o teste falhar.
-- Use mensagens descritivas nas asserções para esclarecer a falha.
+- Prefer AssertJ's fluent `assertThat(...)` for readable failures. It is already on the kit's classpath.
+- JUnit's `org.junit.jupiter.api.Assertions` methods (`assertEquals`, `assertTrue`, `assertNotNull`) remain available.
+- Use `assertThrows` (or AssertJ's `assertThatThrownBy`) to verify exceptions.
+- Group related assertions with `assertAll` to check all of them before the test fails.
+- Use descriptive assertion messages to clarify the failure.
 
-## Objetos simulados e isolamento
+## Mocks and isolation
 
-- Use uma estrutura de simulação como o Mockito para criar objetos simulados para as dependências.
-- Use as anotações `@Mock` e `@InjectMocks` do Mockito para simplificar a criação e a injeção de objetos simulados.
-- Use interfaces para facilitar a criação de objetos simulados.
+- Use a mocking framework such as Mockito to create mocks for dependencies.
+- Use Mockito's `@Mock` and `@InjectMocks` annotations to simplify mock creation and injection.
+- Use interfaces to make mocking easier.
 
-## Organização dos testes
+## Test organization
 
-- Agrupe os testes por funcionalidade ou componente usando pacotes.
-- Use `@Tag` para categorizar testes, por exemplo, `@Tag("fast")` e `@Tag("integration")`.
-- Use `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)` e `@Order` para controlar a ordem de execução somente quando for estritamente necessário.
-- Use `@Disabled` para ignorar temporariamente um método ou uma classe de teste e sempre informe o motivo.
-- Use `@Nested` para agrupar testes relacionados em uma classe interna aninhada.
+- Group tests by feature or component using packages.
+- Use `@Tag` to categorize tests, for example, `@Tag("fast")` and `@Tag("integration")`.
+- Use `@TestMethodOrder(MethodOrderer.OrderAnnotation.class)` and `@Order` to control execution order only when strictly necessary.
+- Use `@Disabled` to temporarily skip a test method or class and always state the reason.
+- Use `@Nested` to group related tests in a nested inner class.
 
-## Modelo de saída
+## Output Template
 
 ```java
-// REQ-042: o imposto é zero para cliente isento
+// REQ-042: tax is zero for a tax-exempt customer
 @ExtendWith(MockitoExtension.class)
 class TaxCalculatorTest {
 
@@ -82,17 +82,17 @@ class TaxCalculatorTest {
     @InjectMocks TaxCalculator calculator;
 
     @Test
-    @DisplayName("retorna imposto zero para cliente isento")
+    @DisplayName("returns zero tax for a tax-exempt customer")
     void returnsZeroForTaxExemptCustomer() {
-        // Preparar
+        // Arrange
         var customer = new Customer(Status.TAX_EXEMPT);
-        // Agir
+        // Act
         var tax = calculator.taxFor(customer);
-        // Verificar
+        // Assert
         assertThat(tax).isEqualTo(Money.ZERO);
     }
 
-    @ParameterizedTest(name = "renda {0} -> imposto {1}")
+    @ParameterizedTest(name = "income {0} -> tax {1}")
     @CsvSource({ "1000, 100", "2000, 200" })
     void appliesFlatRate(BigDecimal income, BigDecimal expected) {
         when(rateProvider.ratePercent()).thenReturn(new BigDecimal("10"));
@@ -101,11 +101,11 @@ class TaxCalculatorTest {
 }
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Cada teste verifica um comportamento e é executado independentemente dos demais, em qualquer ordem.
-- [ ] Os nomes dos testes descrevem o comportamento, e a classe contém um comentário de rastreabilidade `// REQ-NNN`.
-- [ ] Os casos-limite e os fluxos de erro estão cobertos, não apenas o fluxo de sucesso.
-- [ ] Os colaboradores estão isolados com Mockito; nenhum teste unitário usa banco de dados, relógio ou rede reais.
-- [ ] As asserções são relevantes (`assertThat` do AssertJ), não apenas "não lança exceção".
-- [ ] `./mvnw test` passa localmente antes da abertura do PR.
+- [ ] Each test checks one behavior and runs independently of the others, in any order.
+- [ ] Test names describe behavior, and the class contains a `// REQ-NNN` traceability comment.
+- [ ] Boundary cases and error paths are covered, not just the happy path.
+- [ ] Collaborators are isolated with Mockito; no unit test uses a real database, clock, or network.
+- [ ] Assertions are meaningful (AssertJ's `assertThat`), not just "does not throw".
+- [ ] `./mvnw test` passes locally before opening the PR.

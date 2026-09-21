@@ -27,6 +27,12 @@ Turn incomplete product intent or existing design evidence into atomic EARS requ
 
 Select the smallest mode that satisfies the request. Do not generate the full artifact set for a single-requirement review.
 
+## SIFAP Repository Contract
+
+Read [SDD artifact instructions](../../instructions/sdd-artifacts.instructions.md) first. In this kit, `Requirements` owns `specs/<NNN>-<feature>/spec.md`; `Full SDD` means the approved `spec.md`, `plan.md`, and `tasks.md` package, not ten extra files. Keep sources and acceptance in `spec.md`, design and decisions in `plan.md` or linked ADRs, and test mapping and execution evidence in `tasks.md`. The extended templates below are optional reference sections, not additional mandatory deliverables.
+
+Use `REQ-NNN`, `AC-REQ-NNN-NN`, and a valid `source_legacy:` for new SIFAP requirements. Preserve existing identifiers and standalone specifications. Do not create `.specs/` or rename existing artifacts. Only require executable checks that exist in the checked-in tree; text validation is not runtime or approval evidence.
+
 ## Source and evidence policy
 
 Use this precedence order:
@@ -68,7 +74,7 @@ Assign each source a stable `SRC-###` identifier. A derived artifact is not the 
 4. Author or normalize requirements.
    - Read the [EARS notation reference](references/ears-notation.md) before writing normative requirements.
    - Use the [FRD template](references/frd-template.md) and [NFRD template](references/nfrd-template.md) when those artifacts are in scope.
-   - Assign stable IDs such as `FR-AUTH-001`, `NFR-SECURITY-001`, and `AC-FR-AUTH-001-01`.
+   - Follow the repository ID scheme: `REQ-NNN` and `AC-REQ-NNN-NN` for new SIFAP requirements. Preserve existing IDs; generic template IDs are not a migration instruction.
    - Write one observable system response per EARS statement. Split compound behavior.
    - Keep functional requirements implementation-neutral. Put genuine technology constraints in the NFRD with rationale and source evidence.
    - Give every requirement a priority, source, rationale, acceptance signal, verification method, and lifecycle status.
@@ -84,8 +90,8 @@ Assign each source a stable `SRC-###` identifier. A derived artifact is not the 
    - Use sequential feature folders such as `001-feature-name` only when starting or following that repository convention.
 
 6. Enforce end-to-end traceability.
-   - Give every active requirement one explicit row in `SOURCE_TRACEABILITY.md`.
-   - Map each active requirement to design components, tasks, acceptance criteria, and planned or executed verification in `CROSS_ANALYSIS.md`.
+   - Give every active requirement an explicit source mapping in `spec.md` and retain its `source_legacy:` declaration.
+   - Map each active requirement to design components in `plan.md` and tasks, acceptance criteria, and planned or executed verification in `tasks.md`. Separate traceability files are optional when the package needs them.
    - Reject orphan requirements, orphan design elements, orphan tasks, and tests with no governing requirement.
    - Record transferred, superseded, split, merged, or retired IDs in a disposition table. Never silently renumber stable requirements.
    - Preserve the same normative meaning across FRD/NFRD, specification, design, tasks, and tests. Link by ID instead of copying text that can drift.
@@ -95,7 +101,7 @@ Assign each source a stable `SRC-###` identifier. A derived artifact is not the 
    - Use the [anti-pattern catalog](references/anti-patterns.md) to repair defects before delivery.
    - Keep artifacts `Draft` or `Ready for review` until an accountable reviewer approves them.
    - Use `Implemented` or `Verified` only when repository or execution evidence supports the claim.
-   - Run `python3 scripts/format-sdd-mermaid.py --check`, `python3 scripts/validate-design-diagrams.py`, and `python3 scripts/validate-sdd-documents.py` for any changed canonical package.
+   - Run `python3 -B .github/scripts/validate-spec-traceability.py` for changed specifications. The legacy-source check blocks failures; missing test references only warn. Review EARS meaning, approvals, and applicable diagram rendering separately. With no execution tool, report the command as not executed.
    - Hand off only the approved scope, artifact paths, dependency order, gate results, and unresolved blockers. Do not start implementation as part of this skill.
 
 ## EARS requirement contract
@@ -104,11 +110,11 @@ Every normative requirement record contains:
 
 | Field | Rule |
 | --- | --- |
-| ID | Stable, unique, domain-scoped |
+| ID | Stable and unique; follow the repository's existing ID scheme |
 | Pattern | Exactly one of ubiquitous, event-driven, state-driven, optional, unwanted, or complex |
 | Statement | Canonical EARS clause order with `shall` and one observable response |
 | Priority | P0, P1, P2, or P3 with release-impact rationale |
-| Source | `SRC-###` evidence or an explicit greenfield assumption |
+| Source | Primary evidence and `source_legacy:`; optional `SRC-###` references supplement them |
 | Rationale | Why the behavior or quality constraint is needed |
 | Acceptance | At least one pass/fail signal |
 | Verification | Planned test, inspection, analysis, demonstration, or measurement |
@@ -191,12 +197,12 @@ Return exactly this structure:
 - [ ] FRD and NFRD content is complete for every applicable category.
 - [ ] SDD artifacts are internally consistent and proportional to scope.
 - [ ] Every Mermaid diagram uses the universal light theme and every graph-like diagram carries the canonical neutral classes.
-- [ ] `DESIGN.md` maps requirements through components, tasks, dependencies, tests/evidence, and current-versus-target state.
-- [ ] `TASKS.md` checkboxes, DAG, test map, and verification ledger agree; partial implementation is not checked as complete.
+- [ ] `plan.md` maps requirements through components, tasks, dependencies, tests/evidence, and current-versus-target state.
+- [ ] `tasks.md` checkboxes, applicable DAG, test map, and verification ledger agree; partial implementation is not checked as complete.
 - [ ] Every active requirement traces from source through design, tasks, acceptance, and verification.
 - [ ] Requirement lifecycle changes preserve IDs or include explicit dispositions.
 - [ ] No metric, approval, compatibility claim, or current platform fact is fabricated.
 - [ ] Every applicable detailed check in the [unified quality gates](references/quality-gates.md) passes or is reported as a blocker.
 - [ ] The response follows `## Output template` exactly.
 - [ ] Every bundled resource referenced by this skill exists.
-- [ ] `validate-design-diagrams.py` and `validate-sdd-documents.py` pass for the changed package.
+- [ ] The checked-in traceability CLI passes its blocking check; warnings and manual or runtime validation gaps are reported explicitly.

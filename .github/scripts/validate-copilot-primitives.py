@@ -1,41 +1,37 @@
 #!/usr/bin/env python3
-"""Valida primitivas do GitHub Copilot e políticas de governança do repositório.
+"""Validate GitHub Copilot primitives and repository governance policies.
 
-Esta é a camada de avaliação/governança do harness de agentes do
-datacorp-mm-team-kit. Ela transforma regras antes aplicadas apenas pela memória
-das pessoas em uma verificação automatizada, para que primitivas quebradas falhem de
-forma visível, em vez de silenciosa.
+This is the evaluation and governance layer of the datacorp-mm-team-kit
+agent harness. It turns rules previously enforced through human memory into
+automated checks, so broken primitives fail visibly rather than silently.
 
-O que é verificado
+Checks
+------
+1. Frontmatter schemas for agents, prompts, instructions, and skills.
+2. Referential integrity: prompt -> agent, agent handoffs, and relative
+    Markdown links in .github/.
+3. Hook definitions: JSON validity, version, event names, handler types,
+    and the existence and executable permission of every referenced script.
+4. Repository policy: no markdownlint pragmas, incorrect event names,
+    competing assistant/IDE recommendations, or stale directory names.
+5. Structure: every Markdown file in .github/ ends with exactly one newline
+    and contains exactly one H1.
+6. Body sections: every agent, prompt, skill, and instruction has its
+    required `## ` sections (in canonical order for prompts), following
+    the reference primitives.
+
+Design constraints
 ------------------
-1. Esquema do frontmatter de agentes, prompts, instruções e habilidades.
-2. Integridade referencial: prompt -> agente, handoffs de agentes e links
-   relativos de Markdown em .github/.
-3. Definições de ganchos (`hooks`): validade do JSON, versão, nomes de eventos,
-   tipos de manipuladores e existência e permissão de execução de todo script referenciado.
-4. Política do repositório: ausência de pragmas do markdownlint, de nomes
-   incorretos para o evento, de recomendações de assistentes/IDEs concorrentes e
-   de nomes obsoletos de diretórios.
-5. Estrutura: todo arquivo Markdown em .github/ termina com exatamente uma
-   quebra de linha e contém exatamente um H1.
-6. Seções do corpo: todo agente, prompt, habilidade e instrução contém as seções
-   `## ` obrigatórias para seu tipo de primitiva (prompts também na ordem
-   canônica), de acordo com as primitivas de referência.
+- Python 3.11+, standard library only. CI must not need `pip install`, so
+  a small tolerant parser reads YAML frontmatter instead of PyYAML.
+- Files are enumerated with `git ls-files` so the validator sees exactly
+  what CI checks out (tracked files), ignoring untracked temporary files.
 
-Restrições de projeto
----------------------
-- Python 3.11+, somente biblioteca padrão. A CI não deve precisar de
-  `pip install`, portanto o frontmatter YAML é lido por um pequeno parser
-  tolerante, em vez de PyYAML.
-- Os arquivos são enumerados com `git ls-files` para que o validador veja
-  exatamente o conteúdo obtido pela CI (arquivos versionados), ignorando
-  arquivos temporários não versionados.
-
-Código de saída
----------------
-Encerra com código diferente de zero quando encontra qualquer violação de nível
-de erro. Avisos não reprovam a verificação. Uma anotação `::error`/`::warning` do
-GitHub Actions é impressa para cada ocorrência, seguida por um resumo agrupado.
+Exit code
+---------
+Exit nonzero for any error-level violation. Warnings do not fail the check.
+Each finding emits a GitHub Actions `::error`/`::warning` annotation,
+followed by a grouped summary.
 """
 
 from __future__ import annotations
@@ -50,14 +46,14 @@ from pathlib import Path
 SCRIPT_PATH = Path(__file__).resolve()
 REPO_ROOT = SCRIPT_PATH.parents[2]
 
-# Caminhos POSIX relativos ao repositório para este script e sua documentação
-# complementar. Eles são isentos das verificações de política de conteúdo abaixo
-# porque contêm legitimamente os literais proibidos (como regexes e documentação).
+# Repository-relative POSIX paths for this script and its companion document.
+# They are exempt from content-policy checks because they legitimately contain
+# forbidden literals in regexes and documentation.
 SCRIPT_RELPATH = os.path.relpath(SCRIPT_PATH, REPO_ROOT).replace(os.sep, "/")
 DOC_RELPATH = "docs/copilot-primitive-validation.md"
 POLICY_EXEMPT_FILES = {SCRIPT_RELPATH, DOC_RELPATH}
 
-# --- Esquemas oficiais de frontmatter --------------------------------------
+# --- Official frontmatter schemas -----------------------------------------
 
 AGENT_ALLOWED_KEYS = {
     "name", "description", "tools", "model", "handoffs", "mcp-servers",
@@ -66,15 +62,15 @@ AGENT_ALLOWED_KEYS = {
 }
 AGENT_REQUIRED_KEYS = {"description"}
 AGENT_RETIRED_KEYS = {
-    "infer": "chave de frontmatter obsoleta 'infer' (removida do esquema de agentes)",
+    "infer": "retired frontmatter key 'infer' (removed from the agent schema)",
 }
 
 PROMPT_ALLOWED_KEYS = {"name", "description",
                        "agent", "model", "tools", "argument-hint"}
 PROMPT_REQUIRED_KEYS: set[str] = set()
 PROMPT_RETIRED_KEYS = {
-    "mode": "chave obsoleta 'mode' (sintaxe de modo de conversa substituída por 'agent')",
-    "tested_with": "chave inválida 'tested_with' (não faz parte do esquema de prompts)",
+    "mode": "retired key 'mode' (chat-mode syntax replaced by 'agent')",
+    "tested_with": "invalid key 'tested_with' (not part of the prompt schema)",
 }
 
 INSTRUCTION_ALLOWED_KEYS = {"applyTo", "name", "description", "excludeAgent"}
@@ -84,7 +80,7 @@ INSTRUCTION_RETIRED_KEYS: dict[str, str] = {}
 SKILL_NONSTANDARD_KEYS = {"license",
                           "allowed-tools", "compatibility", "metadata"}
 
-# --- Esquema de hooks -------------------------------------------------------
+# --- Hook schema ----------------------------------------------------------
 
 HOOK_EVENTS = {
     "sessionStart", "sessionEnd", "userPromptSubmitted", "userPromptTransformed",
@@ -94,15 +90,15 @@ HOOK_EVENTS = {
 }
 HOOK_TYPES = {"command", "http", "prompt"}
 
-# --- Política do repositório -----------------------------------------------
+# --- Repository policy ----------------------------------------------------
 
 STALE_PATHS = ["01-arqueologia", "02-spec-moderna",
                "06-agentes-de-estagio", "legado-sifap"]
 
-# Arquivos que podem manter legitimamente um pragma inline do markdownlint. Nos
-# demais casos, .markdownlint-cli2.jsonc na raiz é a fonte única da verdade.
+# Files allowed to retain an inline markdownlint pragma. Otherwise the root
+# .markdownlint-cli2.jsonc is the single source of truth.
 PRAGMA_ALLOWED_FILES = {"docs/adr/0000-template.md", "docs/DOC-STYLE-GUIDE.md"}
-# Arquivos que documentam a proibição de nomes do evento e, por isso, citam as palavras proibidas.
+# Files documenting the event-name prohibition may quote the forbidden words.
 TERMINOLOGY_EXEMPT_FILES = {"docs/DOC-STYLE-GUIDE.md"} | POLICY_EXEMPT_FILES
 
 COMPETING_TOOLS = [
@@ -168,7 +164,7 @@ INTERROGATIVE_RE = re.compile(
     r"(?:eu\s+)?(?:posso|podemos|pode|devo|devemos|deveria|poderia)\b|"
     r"\bwhat about\b|\bis it ok\b|\be quanto a\b|\bestá tudo bem\b|\?)"
 )
-RECOMMEND_WINDOW = 40  # caracteres antes do nome da ferramenta que podem conter o verbo
+RECOMMEND_WINDOW = 40  # Characters before a tool name that may contain the verb
 HARD_CLAUSE_BOUNDARIES = ";!?"
 CONTRAST_BOUNDARY_RE = re.compile(
     r",\s+(?:mas|porém|contudo|todavia|portanto|logo|então|but|however|yet|so|"
@@ -182,7 +178,7 @@ PERIOD_ABBREVIATIONS = {
 
 
 class Reporter:
-    """Coleta ocorrências, emite anotações do GitHub e imprime um resumo."""
+    """Collect findings, emit GitHub annotations, and print a summary."""
 
     def __init__(self) -> None:
         self.findings: list[dict] = []
@@ -192,7 +188,7 @@ class Reporter:
             {"level": level, "check": check, "file": file,
                 "line": line, "message": message}
         )
-        location = file if file else "repositório"
+        location = file if file else "repository"
         annotation = f"::{level} file={file}" if file else f"::{level} "
         if file and line:
             annotation += f",line={line}"
@@ -218,11 +214,11 @@ class Reporter:
 
     def summarize(self) -> None:
         print("\n" + "=" * 72)
-        print("Resumo da validação das primitivas do Copilot")
+        print("Copilot primitive validation summary")
         print("=" * 72)
         if not self.findings:
             print(
-                "Nenhum problema encontrado. Todas as primitivas e políticas do Copilot foram aprovadas.")
+                "No issues found. All Copilot primitives and policies passed.")
             return
         by_check: dict[str, dict[str, int]] = {}
         for finding in self.findings:
@@ -232,21 +228,21 @@ class Reporter:
         for check in sorted(by_check):
             counts = by_check[check]
             print(
-                f"  {check:<24} {counts['error']:>3} erro(s)"
-                f"  {counts['warning']:>3} aviso(s)"
+                f"  {check:<24} {counts['error']:>3} error(s)"
+                f"  {counts['warning']:>3} warning(s)"
             )
         print("-" * 72)
         print(
-            f"  {'TOTAL':<24} {self.error_count:>3} erro(s)  {self.warning_count:>3} aviso(s)")
+            f"  {'TOTAL':<24} {self.error_count:>3} error(s)  {self.warning_count:>3} warning(s)")
         print("=" * 72)
 
 
-# --- Utilitários de arquivos ------------------------------------------------
+# --- File utilities -------------------------------------------------------
 
 def tracked_files() -> list[str]:
-    """Retorna caminhos POSIX relativos ao repositório de arquivos versionados, como na CI.
+    """Return repository-relative POSIX paths of tracked files, as in CI.
 
-    Usa uma varredura do sistema de arquivos como alternativa quando o git não está disponível.
+    Fall back to a filesystem scan when Git is unavailable.
     """
     try:
         result = subprocess.run(
@@ -281,14 +277,14 @@ def looks_binary(data: bytes) -> bool:
     return b"\x00" in data[:8192]
 
 
-# --- Leitura do frontmatter -------------------------------------------------
+# --- Frontmatter parsing --------------------------------------------------
 
 FM_DELIM_RE = re.compile(r"^---\s*$")
 TOP_KEY_RE = re.compile(r"^([A-Za-z0-9_-]+):(.*)$")
 
 
 def split_frontmatter(text: str) -> list[str] | None:
-    """Retorna as linhas do frontmatter ou None se estiver ausente/incompleto."""
+    """Return frontmatter lines or None if missing or incomplete."""
     lines = text.split("\n")
     if lines and lines[0].startswith("\ufeff"):
         lines[0] = lines[0].lstrip("\ufeff")
@@ -301,7 +297,7 @@ def split_frontmatter(text: str) -> list[str] | None:
 
 
 def top_level_entries(fm_lines: list[str]) -> list[tuple[str, str, int]]:
-    """Retorna (chave, valor_inline, índice_no_frontmatter) para chaves de nível superior."""
+    """Return (key, inline_value, frontmatter_index) for top-level keys."""
     entries = []
     for idx, line in enumerate(fm_lines):
         if not line or line[0] in " \t#":
@@ -320,7 +316,7 @@ def unquote(value: str) -> str:
 
 
 def get_top_value(fm_lines: list[str], key: str) -> str | None:
-    """Retorna o valor escalar de uma chave de nível superior, unindo escalares em bloco."""
+    """Return a top-level scalar value, joining block scalars."""
     for idx, line in enumerate(fm_lines):
         match = TOP_KEY_RE.match(line)
         if not match or match.group(1) != key or (line[:1].isspace()):
@@ -341,7 +337,7 @@ def get_top_value(fm_lines: list[str], key: str) -> str | None:
 
 
 def handoff_agents(fm_lines: list[str]) -> list[tuple[str, int]]:
-    """Retorna (valor_do_agente, índice) para cada agente nomeado no bloco handoffs."""
+    """Return (agent_value, index) for each agent named in the handoffs block."""
     results = []
     in_block = False
     for idx, line in enumerate(fm_lines):
@@ -357,11 +353,11 @@ def handoff_agents(fm_lines: list[str]) -> list[tuple[str, int]]:
 
 
 def fm_line_number(idx: int) -> int:
-    """Converte um índice do conteúdo do frontmatter em número de linha baseado em 1."""
-    return idx + 2  # a linha 1 é o '---' de abertura
+    """Convert a frontmatter content index to a 1-based line number."""
+    return idx + 2  # Line 1 is the opening '---'
 
 
-# --- Verificações de esquema ------------------------------------------------
+# --- Schema checks --------------------------------------------------------
 
 def check_closed_schema(
     rel: str,
@@ -381,12 +377,12 @@ def check_closed_schema(
         elif key not in allowed:
             reporter.error(
                 check, rel, fm_line_number(idx),
-                f"chave de frontmatter desconhecida '{key}' (permitidas: {', '.join(sorted(allowed))})",
+                f"unknown frontmatter key '{key}' (allowed: {', '.join(sorted(allowed))})",
             )
     for key in sorted(required):
         if key not in seen:
             reporter.error(
-                check, rel, 1, f"chave obrigatória ausente no frontmatter: '{key}'")
+                check, rel, 1, f"missing required frontmatter key: '{key}'")
 
 
 def check_agents(agent_files: list[str], reporter: Reporter) -> None:
@@ -395,7 +391,7 @@ def check_agents(agent_files: list[str], reporter: Reporter) -> None:
         fm_lines = split_frontmatter(read_text(rel))
         if fm_lines is None:
             reporter.error("agents", rel, 1,
-                           "frontmatter YAML ausente ou incompleto")
+                           "missing or incomplete YAML frontmatter")
             continue
         check_closed_schema(
             rel, fm_lines, AGENT_ALLOWED_KEYS, AGENT_REQUIRED_KEYS,
@@ -409,7 +405,7 @@ def check_prompts(prompt_files: list[str], valid_agent_ids: set[str], reporter: 
         fm_lines = split_frontmatter(read_text(rel))
         if fm_lines is None:
             reporter.error("prompts", rel, 1,
-                           "frontmatter YAML ausente ou incompleto")
+                           "missing or incomplete YAML frontmatter")
             continue
         check_closed_schema(
             rel, fm_lines, PROMPT_ALLOWED_KEYS, PROMPT_REQUIRED_KEYS,
@@ -419,7 +415,7 @@ def check_prompts(prompt_files: list[str], valid_agent_ids: set[str], reporter: 
         if agent_value and agent_value not in valid_agent_ids:
             reporter.error(
                 "referential-integrity", rel, 1,
-                f'agent: "{agent_value}" não corresponde a nenhum agente em .github/agents/',
+                f'agent: "{agent_value}" does not match any agent in .github/agents/',
             )
 
 
@@ -429,7 +425,7 @@ def check_instructions(instruction_files: list[str], reporter: Reporter) -> None
         fm_lines = split_frontmatter(read_text(rel))
         if fm_lines is None:
             reporter.error("instructions", rel, 1,
-                           "frontmatter YAML ausente ou incompleto")
+                           "missing or incomplete YAML frontmatter")
             continue
         check_closed_schema(
             rel, fm_lines, INSTRUCTION_ALLOWED_KEYS, INSTRUCTION_REQUIRED_KEYS,
@@ -439,8 +435,8 @@ def check_instructions(instruction_files: list[str], reporter: Reporter) -> None
         if apply_to is not None and apply_to.strip() == "**":
             reporter.error(
                 "instructions", rel, 1,
-                "applyTo: \"**\" injeta este arquivo em todas as solicitações e consome a "
-                "janela de contexto; restrinja-o a globs concretos",
+                "applyTo: \"**\" injects this file into every request and consumes the "
+                "context window; restrict it to concrete globs",
             )
 
 
@@ -451,52 +447,51 @@ def check_skills(skill_files: list[str], reporter: Reporter) -> None:
         fm_lines = split_frontmatter(read_text(rel))
         if fm_lines is None:
             reporter.error("skills", rel, 1,
-                           "frontmatter YAML ausente ou incompleto")
+                           "missing or incomplete YAML frontmatter")
             continue
         seen = {key: idx for key, _inline, idx in top_level_entries(fm_lines)}
         for key in ("name", "description"):
             if key not in seen:
                 reporter.error("skills", rel, 1,
-                               f"chave obrigatória ausente no frontmatter: '{key}'")
+                               f"missing required frontmatter key: '{key}'")
         for key in sorted(SKILL_NONSTANDARD_KEYS):
             if key in seen:
                 reporter.error(
                     "skills", rel, fm_line_number(seen[key]),
-                    f"chave não padronizada no frontmatter da habilidade: '{key}'",
+                    f"nonstandard skill frontmatter key: '{key}'",
                 )
         name = get_top_value(fm_lines, "name")
         if name is not None:
             if name != dirname:
                 reporter.error(
                     "skills", rel, fm_line_number(seen.get("name", 0)),
-                    f"o nome da habilidade '{name}' deve ser igual ao nome do diretório '{dirname}' "
-                    "(uma divergência faz a habilidade falhar silenciosamente ao carregar)",
+                    f"skill name '{name}' must match directory name '{dirname}' "
+                    "(a mismatch makes the skill silently fail to load)",
                 )
             if not re.fullmatch(r"[a-z0-9-]+", name):
                 reporter.error(
                     "skills", rel, fm_line_number(seen.get("name", 0)),
-                    f"o nome da habilidade '{name}' deve conter somente letras minúsculas, dígitos e hifens",
+                    f"skill name '{name}' must contain only lowercase letters, digits, and hyphens",
                 )
             if len(name) > 64:
                 reporter.error(
                     "skills", rel, fm_line_number(seen.get("name", 0)),
-                    f"o nome da habilidade tem {len(name)} caracteres; o limite é 64",
+                    f"skill name has {len(name)} characters; the limit is 64",
                 )
         description = get_top_value(fm_lines, "description")
         if description is not None and len(description) > 1024:
             reporter.error(
                 "skills", rel, fm_line_number(seen.get("description", 0)),
-                f"a descrição da habilidade tem {len(description)} caracteres; o limite é 1024",
+                f"skill description has {len(description)} characters; the limit is 1024",
             )
 
 
 def build_agent_registry(agent_files: list[str], reporter: Reporter) -> set[str]:
-    """Identificadores válidos de agentes, obtidos dos arquivos presentes em .github/agents/.
+    """Get valid agent identifiers from files in .github/agents/.
 
-    O id canônico é o `name:` do frontmatter, com fallback para o nome-base do
-    arquivo quando `name:` está ausente. Quando ambos estão presentes, devem ser
-    iguais; uma divergência é relatada porque um prompt vinculado por uma grafia
-    não encontraria silenciosamente a outra.
+    The canonical ID is the frontmatter `name:`, falling back to the file stem
+    when `name:` is absent. When both exist, they must match; a mismatch is
+    reported because a prompt using one spelling would silently miss the other.
     """
     ids: set[str] = set()
     for rel in agent_files:
@@ -510,8 +505,8 @@ def build_agent_registry(agent_files: list[str], reporter: Reporter) -> set[str]
                 if name != stem:
                     reporter.error(
                         "referential-integrity", rel, 1,
-                        f"o nome do agente '{name}' não corresponde ao nome-base do arquivo '{stem}'; "
-                        "renomeie para que o nome declarado e o arquivo sejam iguais",
+                        f"agent name '{name}' does not match file stem '{stem}'; "
+                        "rename them so the declared name and file match",
                     )
     return ids
 
@@ -525,53 +520,53 @@ def check_handoffs(agent_files: list[str], valid_agent_ids: set[str], reporter: 
             if agent_value not in valid_agent_ids:
                 reporter.error(
                     "referential-integrity", rel, fm_line_number(idx),
-                    f"o handoff aponta para o agente '{agent_value}', que não existe em .github/agents/",
+                    f"handoff targets agent '{agent_value}', which does not exist in .github/agents/",
                 )
 
 
-# --- Verificações de ganchos ------------------------------------------------
+# --- Hook checks ----------------------------------------------------------
 
 def check_hooks(hook_files: list[str], subdir_hook_files: list[str], reporter: Reporter) -> None:
     for rel in subdir_hook_files:
         reporter.warning(
             "hooks", rel, 1,
-            "hooks.json em um subdiretório não é descoberto; somente arquivos "
-            ".github/hooks/NAME.json no nível raiz são carregados",
+            "hooks.json in a subdirectory is not discovered; only root-level "
+            ".github/hooks/NAME.json files are loaded",
         )
     for rel in hook_files:
         try:
             data = json.loads(read_text(rel))
         except json.JSONDecodeError as exc:
             reporter.error("hooks", rel, exc.lineno,
-                           f"JSON inválido: {exc.msg}")
+                           f"invalid JSON: {exc.msg}")
             continue
         if data.get("version") != 1:
             reporter.error(
-                "hooks", rel, 1, f"a 'version' do gancho deve ser 1 (encontrado {data.get('version')!r})")
+                "hooks", rel, 1, f"hook 'version' must be 1 (found {data.get('version')!r})")
         hooks = data.get("hooks")
         if not isinstance(hooks, dict):
             reporter.error("hooks", rel, 1,
-                           "o arquivo de gancho deve conter um objeto 'hooks'")
+                           "hook file must contain a 'hooks' object")
             continue
         for event, handlers in hooks.items():
             if event not in HOOK_EVENTS:
                 reporter.error("hooks", rel, 1,
-                               f"evento de gancho desconhecido: '{event}'")
+                               f"unknown hook event: '{event}'")
             if not isinstance(handlers, list):
                 reporter.error(
-                    "hooks", rel, 1, f"o evento '{event}' deve mapear para uma lista de manipuladores")
+                    "hooks", rel, 1, f"event '{event}' must map to a list of handlers")
                 continue
             for handler in handlers:
                 if not isinstance(handler, dict):
                     reporter.error("hooks", rel, 1,
-                                   f"o evento '{event}' tem um manipulador que não é objeto")
+                                   f"event '{event}' has a handler that is not an object")
                     continue
                 handler_type = handler.get("type")
                 if handler_type not in HOOK_TYPES:
                     reporter.error(
                         "hooks", rel, 1,
-                        f"o manipulador do evento '{event}' tem o tipo {handler_type!r}; "
-                        f"deve ser um de {', '.join(sorted(HOOK_TYPES))}",
+                        f"handler for event '{event}' has type {handler_type!r}; "
+                        f"expected one of {', '.join(sorted(HOOK_TYPES))}",
                     )
                 for shell_key in ("bash", "powershell"):
                     value = handler.get(shell_key)
@@ -582,16 +577,16 @@ def check_hooks(hook_files: list[str], subdir_hook_files: list[str], reporter: R
                     if not script_path.is_file():
                         reporter.error(
                             "hooks", rel, 1,
-                            f"o script {shell_key} '{script}' do evento '{event}' não existe",
+                            f"{shell_key} script '{script}' for event '{event}' does not exist",
                         )
                     elif not os.access(script_path, os.X_OK):
                         reporter.error(
                             "hooks", rel, 1,
-                            f"o script {shell_key} '{script}' do evento '{event}' não é executável",
+                            f"{shell_key} script '{script}' for event '{event}' is not executable",
                         )
 
 
-# --- Estrutura e links de Markdown -----------------------------------------
+# --- Markdown structure and links -----------------------------------------
 
 H1_RE = re.compile(r"^ {0,3}#(?:[ \t].*)?$")
 FENCE_RE = re.compile(r"^( {0,3})(`{3,}|~{3,})(.*)$")
@@ -602,12 +597,11 @@ URI_SCHEME_RE = re.compile(r"^[A-Za-z][A-Za-z0-9+.\-]*:")
 
 
 def fence_mask(lines: list[str]) -> list[bool]:
-    """Marca linhas de blocos de código cercados, de acordo com CommonMark.
+    """Mark fenced code block lines according to CommonMark.
 
-    Um delimitador de fechamento deve repetir o caractere de abertura, ter pelo
-    menos o mesmo comprimento e não conter uma string de informações. Isso evita
-    que um delimitador interno ```lang (que tem uma string de informações) seja
-    confundido com o fechamento de um bloco externo ```.
+    A closing delimiter must repeat the opening character, be at least as long,
+    and have no info string. This prevents an inner ```lang delimiter (which
+    has an info string) from being mistaken for the end of an outer ``` block.
     """
     mask = [False] * len(lines)
     in_fence = False
@@ -636,7 +630,7 @@ def fence_mask(lines: list[str]) -> list[bool]:
 
 
 def frontmatter_end(lines: list[str]) -> int:
-    """Índice da primeira linha após o frontmatter YAML, ou 0 se não houver."""
+    """Return the first line index after YAML frontmatter, or 0 if absent."""
     if not lines or lines[0].strip() != "---":
         return 0
     for i in range(1, len(lines)):
@@ -646,12 +640,11 @@ def frontmatter_end(lines: list[str]) -> int:
 
 
 def iter_prose(rel: str):
-    """Produz (número_da_linha, texto) somente para linhas de prosa.
+    """Yield (line_number, text) for prose lines only.
 
-    Linhas de blocos de código cercados são ignoradas e trechos de código inline
-    são removidos, para que as verificações de política de conteúdo sinalizem
-    ocorrências ativas/em prosa de um padrão proibido, em vez de exemplos citados
-    dentro de código (documentação da própria regra).
+    Skip fenced code blocks and remove inline code so content-policy checks
+    flag active prose occurrences of a forbidden pattern rather than quoted
+    code examples documenting the rule itself.
     """
     lines = read_text(rel).split("\n")
     mask = fence_mask(lines)
@@ -665,10 +658,10 @@ def check_markdown_structure(rel: str, reporter: Reporter) -> None:
     data = read_bytes(rel)
     if not data.endswith(b"\n"):
         reporter.error("markdown-structure", rel, None,
-                       "o arquivo deve terminar com exatamente uma quebra de linha")
+                       "file must end with exactly one newline")
     elif data.endswith(b"\n\n"):
         reporter.error("markdown-structure", rel, None,
-                       "o arquivo tem mais de uma quebra de linha no final")
+                       "file has more than one trailing newline")
 
     lines = data.decode("utf-8", "replace").split("\n")
     mask = fence_mask(lines)
@@ -680,12 +673,12 @@ def check_markdown_structure(rel: str, reporter: Reporter) -> None:
     ]
     if len(h1_lines) == 0:
         reporter.error("markdown-structure", rel, None,
-                       "o arquivo não tem título H1 (esperado: exatamente um)")
+                       "file has no H1 heading (expected: exactly one)")
     elif len(h1_lines) > 1:
         reporter.error(
             "markdown-structure", rel, h1_lines[1],
-            f"o arquivo tem {len(h1_lines)} títulos H1 (esperado: exatamente um); "
-            f"H1 excedente na linha {h1_lines[1]}",
+            f"file has {len(h1_lines)} H1 headings (expected: exactly one); "
+            f"extra H1 at line {h1_lines[1]}",
         )
 
 
@@ -725,89 +718,87 @@ def _check_link_target(rel: str, lineno: int, target: str, base_dir: Path, repor
     if not os.path.exists(os.path.normpath(candidate)):
         reporter.error(
             "referential-integrity", rel, lineno,
-            f"link relativo quebrado '{target}' (é resolvido para um caminho inexistente)",
+            f"broken relative link '{target}' (resolves to a nonexistent path)",
         )
 
 
-# --- Verificações da estrutura do corpo das primitivas ----------------------
+# --- Primitive body structure checks --------------------------------------
 #
-# O frontmatter informa ao carregador como conectar uma primitiva; as seções
-# `## ` do corpo são o contrato lido por pessoas. As primitivas de referência
-# (o agente archaeologist, os prompts de estágio/persona e as habilidades e instruções
-# nativas) compartilham um esqueleto fixo de seções. Estas verificações transformam
-# essa convenção em uma verificação, para que uma primitiva que omita silenciosamente
-# "O que NÃO farei" ou "Critérios de qualidade" falhe de forma visível, em vez de
-# divergir. As ocorrências ficam na categoria `primitive-structure`. Blocos de
-# código cercados e frontmatter YAML são ignorados (pela mesma máscara de blocos
-# e pelo mesmo detector de frontmatter usados em outros pontos), para que linhas
-# `## ` em modelos de exemplo nunca sejam confundidas com seções reais do documento.
+# Frontmatter tells the loader how to connect a primitive; body `## ` sections
+# are the human-readable contract. Reference primitives (the archaeologist
+# agent, stage/persona prompts, and native skills and instructions) share a
+# fixed set of sections. These checks enforce that convention so omitting
+# "What I Will NOT Do" or "Quality Gate" fails visibly instead of drifting.
+# Findings use the `primitive-structure` category. Fenced blocks and YAML
+# frontmatter are ignored using the same detectors as elsewhere, so `## `
+# lines in example templates never count as real document sections.
 
 STRUCTURE_CHECK = "primitive-structure"
 
 H2_RE = re.compile(r"^ {0,3}##(?!#)[ \t]+(.+?)[ \t]*$")
 ATX_CLOSING_RE = re.compile(r"[ \t]+#+[ \t]*$")
 
-# Agentes: somente presença. O archaeologist de referência coloca a seção de
-# definição de pronto antes de "Prompts disponíveis", enquanto os agentes de
-# persona a colocam depois; por isso, a ordem das seções não é imposta.
+# Agents: presence only. The reference archaeologist puts the definition of
+# done before "Available Prompts", while persona agents put it afterward;
+# therefore section order is not enforced.
 AGENT_REQUIRED_SECTIONS = [
-    ("Missão", {"Missão", "Mission"}),
-    ("Personas líderes", {"Personas líderes", "Leading Personas"}),
-    ("Princípios operacionais", {
+    ("Mission", {"Missão", "Mission"}),
+    ("Leading Personas", {"Personas líderes", "Leading Personas"}),
+    ("Operating Principles", {
      "Princípios operacionais", "Operating Principles"}),
-    ("O que este agente sabe", {
+    ("What This Agent Knows", {
      "O que este agente sabe", "What This Agent Knows"}),
-    ("O que este agente NÃO sabe", {
+    ("What This Agent Does NOT Know", {
      "O que este agente NÃO sabe", "What This Agent Does NOT Know"}),
-    ("Prompts disponíveis", {"Prompts disponíveis", "Available Prompts"}),
-    ("Antipadrões que este agente rejeita", {
+    ("Available Prompts", {"Prompts disponíveis", "Available Prompts"}),
+    ("Anti-Patterns This Agent Rejects", {
         "Antipadrões que este agente rejeita",
         "Anti-Patterns This Agent Rejects"}),
 ]
-# O archaeologist usa "Definição de pronto do Estágio 1"; agentes de persona
-# usam apenas "Definição de pronto".
+# The archaeologist uses "Stage 1 Definition of Done"; persona agents use
+# "Definition of Done". Retain Portuguese aliases for translated editions.
 AGENT_DOD_TITLES = {"Definição de pronto", "Definition of Done"}
 AGENT_DOD_PT_BR_PREFIX = "Definição de pronto do Estágio "
-# É comum, mas não universal; portanto, a ausência gera aviso, não erro.
+# Common but not universal; absence produces a warning, not an error.
 AGENT_RECOMMENDED_SECTIONS = [
     ("SDD Workflow", {"SDD Workflow", "Integração com o Spec-Kit"})
 ]
 
-# Prompts: presença E ordem relativa canônica. Seções extras (por exemplo, um
-# bloco "## Regras de <arquivo>" entre "Formato da saída" e "Definição de pronto")
-# são permitidas e simplesmente ignoradas pela verificação de ordem.
+# Prompts: presence AND canonical relative order. Extra sections (such as
+# "## Rules for <file>" between "Output Format" and "Definition of Done")
+# are allowed and ignored by the order check.
 PROMPT_REQUIRED_SECTIONS = [
-    ("Objetivo", {"Objetivo", "Objective"}),
-    ("Quando usar", {
+    ("Objective", {"Objetivo", "Objective"}),
+    ("When to Invoke", {
      "Quando invocar", "Quando usar", "When to Invoke", "When to Use"}),
-    ("Pré-condições", {"Pré-condições", "Preconditions"}),
-    ("Entradas que a equipe deve fornecer", {
+    ("Preconditions", {"Pré-condições", "Preconditions"}),
+    ("Inputs the Team Must Provide", {
      "Entradas que a equipe deve fornecer", "Inputs the Team Must Provide"}),
-    ("O que farei", {"O que farei", "What I Will Do"}),
-    ("O que não farei", {
+    ("What I Will Do", {"O que farei", "What I Will Do"}),
+    ("What I Will NOT Do", {
      "O que NÃO farei", "O que não farei", "What I Will NOT Do"}),
-    ("Formato da saída", {"Formato da saída", "Output Format"}),
-    ("Definição de pronto", {"Definição de pronto", "Definition of Done"}),
-    ("Corpo do prompt", {"Corpo do prompt", "Prompt Body"}),
-    ("Exemplo de chamada", {
+    ("Output Format", {"Formato da saída", "Output Format"}),
+    ("Definition of Done", {"Definição de pronto", "Definition of Done"}),
+    ("Prompt Body", {"Corpo do prompt", "Prompt Body"}),
+    ("Example Invocation", {
      "Exemplo de invocação", "Exemplo de chamada", "Example Invocation"}),
 ]
 
-# Habilidades: comparação sem diferenciar maiúsculas de minúsculas, pois habilidades
-# nativas usam caixa de frase, enquanto algumas importações usam caixa de título.
+# Skills: case-insensitive comparison because native skills use sentence case
+# while some imported skills use title case.
 SKILL_REQUIRED_SECTIONS = [
-    ("Quando usar", {"Quando usar", "Quando invocar",
+    ("When to Invoke", {"Quando usar", "Quando invocar",
      "When to Use", "When to Invoke"}),
-    ("Modelo de saída", {"Modelo de saída", "Output Template"}),
-    ("Critérios de qualidade", {
+    ("Output Template", {"Modelo de saída", "Output Template"}),
+    ("Quality Gate", {
      "Critério de qualidade", "Critérios de qualidade", "Quality Gate"}),
 ]
 
-# Instruções: somente presença, com correspondência exata do título.
+# Instructions: presence only, with exact heading matches.
 INSTRUCTION_REQUIRED_SECTIONS = [
-    ("Convenções", {"Convenções", "Conventions"}),
-    ("Faça / Não faça", {"Faça / Não faça", "Do / Don't"}),
-    ("Lista de verificação antes de abrir uma PR", {
+    ("Conventions", {"Convenções", "Conventions"}),
+    ("Do / Don't", {"Faça / Não faça", "Do / Don't"}),
+    ("PR Checklist", {
         "Lista de verificação antes de abrir uma PR",
         "PR Checklist",
     }),
@@ -815,11 +806,10 @@ INSTRUCTION_REQUIRED_SECTIONS = [
 
 
 def h2_sections(rel: str) -> list[tuple[str, int]]:
-    """Retorna (título, linha baseada em 1) para cada título ## real em um arquivo Markdown.
+    """Return (title, 1-based line) for every real ## heading in Markdown.
 
-    Reutiliza a máscara de blocos cercados e o detector de frontmatter para que
-    linhas ## dentro de blocos de exemplo ou do frontmatter YAML não sejam
-    contabilizadas como seções.
+    Reuse the fence mask and frontmatter detector so ## lines inside example
+    blocks or YAML frontmatter do not count as sections.
     """
     lines = read_text(rel).split("\n")
     mask = fence_mask(lines)
@@ -844,7 +834,7 @@ def _report_missing_sections(
     for section, aliases in required:
         if present.isdisjoint(aliases):
             reporter.error(
-                STRUCTURE_CHECK, rel, None, f"seção obrigatória ausente: '## {section}'"
+                STRUCTURE_CHECK, rel, None, f"missing required section: '## {section}'"
             )
 
 
@@ -864,15 +854,15 @@ def check_agent_structure(rel: str, reporter: Reporter) -> None:
     if not has_definition_of_done:
         reporter.error(
             STRUCTURE_CHECK, rel, None,
-            "seção obrigatória de definição de pronto ausente "
-            "(por exemplo, '## Definição de pronto' ou "
-            "'## Definição de pronto do Estágio 1')",
+            "missing required definition-of-done section "
+            "(for example, '## Definition of Done' or "
+            "'## Stage 1 Definition of Done')",
         )
     for section, aliases in AGENT_RECOMMENDED_SECTIONS:
         if present.isdisjoint(aliases):
             reporter.warning(
                 STRUCTURE_CHECK, rel, None,
-                f"seção recomendada ausente: '## {section}'",
+                f"missing recommended section: '## {section}'",
             )
 
 
@@ -881,10 +871,9 @@ def check_prompt_structure(rel: str, reporter: Reporter) -> None:
     present = {title for title, _ in sections}
     _report_missing_sections(rel, present, PROMPT_REQUIRED_SECTIONS, reporter)
 
-    # Verifica se as seções obrigatórias aparecem na ordem relativa canônica.
-    # Percorre os títulos do documento e acompanha a seção obrigatória de maior
-    # posição já vista; uma seção com posição menor aparece tarde demais e é
-    # relatada em relação à seção que deveria ter antecedido.
+    # Check that required sections appear in canonical relative order.
+    # Track the highest required section rank encountered; a lower-ranked
+    # section appearing later is reported against the section it should precede.
     canonical = {
         alias: (index, name)
         for index, (name, aliases) in enumerate(PROMPT_REQUIRED_SECTIONS)
@@ -903,7 +892,7 @@ def check_prompt_structure(rel: str, reporter: Reporter) -> None:
         if rank < highest_rank:
             reporter.error(
                 STRUCTURE_CHECK, rel, lineno,
-                f"a seção '## {canonical_title}' está fora de ordem: deve aparecer antes de "
+                f"section '## {canonical_title}' is out of order: it must appear before "
                 f"'## {highest_title}'",
             )
             return
@@ -918,11 +907,11 @@ def check_skill_structure(rel: str, reporter: Reporter) -> None:
         lower_aliases = {alias.lower() for alias in aliases}
         if set(lower_titles).isdisjoint(lower_aliases):
             reporter.error(
-                STRUCTURE_CHECK, rel, None, f"seção obrigatória ausente: '## {section}'"
+                STRUCTURE_CHECK, rel, None, f"missing required section: '## {section}'"
             )
-    # Uma habilidade em conformidade coloca pelo menos uma seção de procedimento entre
-    # seu gatilho ("Quando usar") e seu "Modelo de saída". Uma distância de um
-    # significa que os dois títulos são adjacentes (sem procedimento); isso gera aviso.
+    # A compliant skill has at least one procedure section between its trigger
+    # ("When to Invoke") and "Output Template". A distance of one means adjacent
+    # headings with no procedure, which produces a warning.
     trigger_aliases = {alias.lower()
                        for alias in SKILL_REQUIRED_SECTIONS[0][1]}
     output_aliases = {alias.lower() for alias in SKILL_REQUIRED_SECTIONS[1][1]}
@@ -934,8 +923,8 @@ def check_skill_structure(rel: str, reporter: Reporter) -> None:
         if last - first < 2:
             reporter.warning(
                 STRUCTURE_CHECK, rel, sections[last][1],
-                "não há seção de procedimento entre '## Quando usar' e "
-                "'## Modelo de saída'; documente as etapas executadas pela habilidade",
+                "no procedure section between '## When to Invoke' and "
+                "'## Output Template'; document the steps performed by the skill",
             )
 
 
@@ -945,15 +934,15 @@ def check_instruction_structure(rel: str, reporter: Reporter) -> None:
         rel, present, INSTRUCTION_REQUIRED_SECTIONS, reporter)
 
 
-# --- Verificações de política do repositório --------------------------------
+# --- Repository policy checks ---------------------------------------------
 
 PRAGMA_RE = re.compile(r"<!--\s*markdownlint-disable")
-# O evento é uma imersão. "hackath?on" também cobre a grafia incorreta "hackaton";
-# uma regex anterior, `hackat[o]?on`, não correspondia a nenhuma das duas grafias.
+# The event is an immersion. "hackath?on" also covers the misspelling "hackaton";
+# an earlier regex, `hackat[o]?on`, matched neither spelling.
 EVENT_TERM_RE = re.compile(r"hackath?ons?|workshops?", re.IGNORECASE)
-# Identificadores reais que contêm legitimamente uma palavra proibida: slugs de
-# organização e Enterprise do GitHub, um repositório ativo e uma tag do Azure
-# aplicada ao laboratório.
+# Real identifiers that legitimately contain a forbidden word: GitHub
+# organization and enterprise slugs, an active repository, and an Azure tag
+# applied to the lab.
 EVENT_TERM_ALLOWED_RE = re.compile(
     r"workshop-gbb|software-gbb-workshops|workshop-datacorp|"
     r"workshop-legacy-modernization|team=workshop-XX"
@@ -969,8 +958,8 @@ def check_pragmas(markdown_files: list[str], reporter: Reporter) -> None:
             if PRAGMA_RE.search(line):
                 reporter.error(
                     "policy-pragma", rel, lineno,
-                    "pragma inline do markdownlint é proibido; o arquivo "
-                    ".markdownlint-cli2.jsonc da raiz é a fonte única da verdade",
+                    "inline markdownlint pragmas are forbidden; the root "
+                    ".markdownlint-cli2.jsonc is the single source of truth",
                 )
 
 
@@ -979,17 +968,17 @@ GLOBAL_INSTRUCTIONS_MAX_LINES = 100
 
 
 def check_global_instructions_size(reporter: Reporter) -> None:
-    """Limita o arquivo de instruções do repositório: ele é injetado em toda solicitação."""
+    """Limit repository instructions, which are injected into every request."""
     if not (REPO_ROOT / GLOBAL_INSTRUCTIONS).is_file():
         return
     count = len(read_text(GLOBAL_INSTRUCTIONS).splitlines())
     if count > GLOBAL_INSTRUCTIONS_MAX_LINES:
         reporter.error(
             "global-instructions-size", GLOBAL_INSTRUCTIONS, count,
-            f"{count} linhas excedem o limite de {GLOBAL_INSTRUCTIONS_MAX_LINES} linhas; "
-            "este arquivo é carregado em toda solicitação ao Copilot. Mova regras específicas "
-            "de caminhos para .github/instructions/*.instructions.md "
-            "(consulte .github/PRIMITIVE-STANDARD.md)",
+            f"{count} lines exceed the {GLOBAL_INSTRUCTIONS_MAX_LINES}-line limit; "
+            "this file loads in every Copilot request. Move path-specific rules "
+            "to .github/instructions/*.instructions.md "
+            "(see .github/PRIMITIVE-STANDARD.md)",
         )
 
 
@@ -1003,8 +992,8 @@ def check_event_terminology(text_files: list[str], reporter: Reporter) -> None:
             if EVENT_TERM_RE.search(EVENT_TERM_ALLOWED_RE.sub("", line)):
                 reporter.error(
                     "policy-event-term", rel, lineno,
-                    "chame o evento de imersão; \"workshop\", \"hackathon\" "
-                    "e \"hackaton\" são proibidos",
+                    "call the event an immersion; \"workshop\", \"hackathon\" "
+                    "and \"hackaton\" are forbidden",
                 )
 
 
@@ -1019,8 +1008,8 @@ def check_stale_paths(text_files: list[str], reporter: Reporter) -> None:
             if match:
                 reporter.error(
                     "policy-stale-path", rel, lineno,
-                    f"nome de diretório obsoleto '{match.group(0)}' (o repositório foi renomeado; "
-                    "atualize para o caminho atual)",
+                    f"stale directory name '{match.group(0)}' (the repository was renamed; "
+                    "update to the current path)",
                 )
 
 
@@ -1052,14 +1041,14 @@ def _scan_competing_line(rel: str, lineno: int, line: str, reporter: Reporter) -
             continue
         reporter.error(
             "policy-competing-tool", rel, lineno,
-            f"parece recomendar '{match.group(1)}'; somente a cadeia de ferramentas "
-            "aprovada (VS Code + GitHub Copilot) pode ser recomendada",
+            f"appears to recommend '{match.group(1)}'; only the approved toolchain "
+            "(VS Code + GitHub Copilot) may be recommended",
         )
         return
 
 
 def _recommendation_clause(line: str, start: int, end: int) -> tuple[str, int]:
-    """Isola a oração que contém a ferramenta e retorna seu deslocamento local."""
+    """Isolate the clause containing the tool and return its local offset."""
     cuts = _clause_cuts(line)
     left = max(position for position in cuts if position <= start)
     right = min(position for position in cuts if position >= end)
@@ -1097,7 +1086,7 @@ def _is_sentence_period(line: str, index: int) -> bool:
     return token not in PERIOD_ABBREVIATIONS
 
 
-# --- Seletores de conjuntos de arquivos ------------------------------------
+# --- File set selectors ---------------------------------------------------
 
 def match(rel: str, pattern: str) -> bool:
     return re.match(pattern, rel) is not None
@@ -1105,10 +1094,9 @@ def match(rel: str, pattern: str) -> bool:
 
 def main() -> int:
     reporter = Reporter()
-    # Um checkout novo da CI materializa todos os arquivos versionados, mas uma
-    # árvore local pode listar arquivos que uma renomeação concorrente deixou no
-    # índice, embora não existam no disco. Restringe aos arquivos existentes para
-    # que a verificação nunca falhe ao tentar acessá-los.
+    # A fresh CI checkout materializes every tracked file, but a local tree may
+    # list files left in the index by a concurrent rename after removal on disk.
+    # Restrict checks to existing files so reading them never fails.
     files = [f for f in tracked_files() if (REPO_ROOT / f).is_file()]
 
     agent_files = [f for f in files if match(
@@ -1141,9 +1129,9 @@ def main() -> int:
     check_hooks(hook_files, subdir_hook_files, reporter)
 
     for rel in github_markdown:
-        # Os modelos de solicitação, alteração e discussão do GitHub intencionalmente não têm
-        # H1: o `name:` do frontmatter fornece o título renderizado pelo GitHub.
-        # Seus links ainda são verificados.
+        # GitHub issue, pull request, and discussion templates intentionally
+        # omit H1: frontmatter `name:` supplies the title rendered by GitHub.
+        # Their links are still checked.
         if not match(rel, r"\.github/(ISSUE_TEMPLATE|PULL_REQUEST_TEMPLATE|DISCUSSION_TEMPLATE)(/|\.md$)"):
             check_markdown_structure(rel, reporter)
         check_markdown_links(rel, reporter)
@@ -1157,11 +1145,11 @@ def main() -> int:
     reporter.summarize()
 
     counts = (
-        f"agentes={len(agent_files)} prompts={len(prompt_files)} "
-        f"instruções={len(instruction_files)} habilidades={len(skill_files)} "
-        f"ganchos={len(hook_files)} markdown-github={len(github_markdown)}"
+        f"agents={len(agent_files)} prompts={len(prompt_files)} "
+        f"instructions={len(instruction_files)} skills={len(skill_files)} "
+        f"hooks={len(hook_files)} markdown-github={len(github_markdown)}"
     )
-    print(f"Verificados: {counts}")
+    print(f"Checked: {counts}")
     return 1 if reporter.error_count else 0
 
 

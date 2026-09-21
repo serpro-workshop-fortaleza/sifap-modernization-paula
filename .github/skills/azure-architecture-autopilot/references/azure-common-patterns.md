@@ -1,36 +1,36 @@
-# Padrões comuns do Azure (estáveis)
+# Common Azure patterns (stable)
 
-Este arquivo contém somente **padrões quase imutáveis** recorrentes nos serviços do Azure.
-Informações dinâmicas, como versão da API, SKU e região, não aparecem aqui → consulte `azure-dynamic-sources.md`.
+This file contains only **nearly immutable patterns** recurring across Azure services.
+Dynamic information, such as API version, SKU, and region, does not appear here -> see `azure-dynamic-sources.md`.
 
 ---
 
-## 1. Padrões de isolamento de rede
+## 1. Network isolation patterns
 
-### Conjunto de três componentes do endpoint privado (Private Endpoint)
+### Private Endpoint three-component set
 
-Todos os serviços que usam PE devem ter estes três componentes configurados:
+All services using PE must have these three components configured:
 
-1. **Private Endpoint**: colocado em pe-subnet
+1. **Private Endpoint**: placed in pe-subnet
 2. **Private DNS Zone** + **VNet Link** (`registrationEnabled: false`)
-3. **DNS Zone Group**: vinculado ao PE
+3. **DNS Zone Group**: linked to the PE
 
-> Se qualquer componente estiver ausente, a resolução de DNS falhará mesmo com o PE presente, o que impedirá a conexão.
+> If any component is missing, DNS resolution will fail even with the PE present, preventing connection.
 
-### Configurações obrigatórias da sub-rede de PE
+### Required PE subnet settings
 
 ```bicep
 resource peSubnet 'Microsoft.Network/virtualNetworks/subnets' = {
   properties: {
-    addressPrefix: peSubnetPrefix              // ← CIDR como parâmetro para evitar conflitos com redes existentes
-    privateEndpointNetworkPolicies: 'Disabled'  // ← Obrigatório. A implantação do PE falha sem esta configuração
+    addressPrefix: peSubnetPrefix              // CIDR as a parameter to avoid conflicts with existing networks
+    privateEndpointNetworkPolicies: 'Disabled'  // Required. PE deployment fails without this setting
   }
 }
 ```
 
-### Padrão de publicNetworkAccess
+### publicNetworkAccess pattern
 
-Os serviços que usam PE devem incluir:
+Services using PE must include:
 
 ```bicep
 properties: {
@@ -43,49 +43,49 @@ properties: {
 
 ---
 
-## 2. Padrões de segurança
+## 2. Security patterns
 
 ### Key Vault
 
 ```bicep
 properties: {
-  enableRbacAuthorization: true    // Não use o método de política de acesso (Access Policy)
+  enableRbacAuthorization: true    // Do not use the Access Policy method
   enableSoftDelete: true
   softDeleteRetentionInDays: 90
   enablePurgeProtection: true
 }
 ```
 
-### Identidade gerenciada (Managed Identity)
+### Managed Identity
 
-Quando serviços de IA acessarem outros recursos:
+When AI services access other resources:
 
 ```bicep
 identity: {
-  type: 'SystemAssigned'  // ou 'UserAssigned'
+  type: 'SystemAssigned'  // or 'UserAssigned'
 }
 ```
 
-### Informações confidenciais
+### Sensitive information
 
-- Use o decorador `@secure()`
-- Não armazene texto não criptografado em arquivos `.bicepparam`
-- Use referências do Key Vault
+- Use the `@secure()` decorator
+- Do not store plaintext in `.bicepparam` files
+- Use Key Vault references
 
 ---
 
-## 3. Convenções de nomenclatura (baseadas no CAF)
+## 3. Naming conventions (CAF-based)
 
-```
-rg-{project}-{env}          Grupo de recursos (Resource Group)
+```text
+rg-{project}-{env}          Resource Group
 vnet-{project}-{env}        Virtual Network
-st{project}{env}             Storage Account (sem caracteres especiais; somente letras minúsculas e números)
+st{project}{env}             Storage Account (no special characters; lowercase letters and numbers only)
 kv-{project}-{env}           Key Vault
 srch-{project}-{env}         AI Search
 foundry-{project}-{env}      Cognitive Services (Foundry)
 ```
 
-> Prevenção de colisões de nomes: recomenda-se usar `uniqueString(resourceGroup().id)`
+> Name collision prevention: using `uniqueString(resourceGroup().id)` is recommended
 >
 > ```bicep
 > param storageName string = 'st${uniqueString(resourceGroup().id)}'
@@ -93,35 +93,35 @@ foundry-{project}-{env}      Cognitive Services (Foundry)
 
 ---
 
-## 4. Estrutura dos módulos Bicep
+## 4. Bicep module structure
 
-```
+```text
 <project>/
-├── main.bicep              # Orquestração: chamadas de módulos + passagem de parâmetros
-├── main.bicepparam         # Valores específicos do ambiente (sem informações confidenciais)
+├── main.bicep              # Orchestration: module calls + parameter passing
+├── main.bicepparam         # Environment-specific values (no sensitive information)
 └── modules/
-    ├── network.bicep           # VNet, sub-rede
-    ├── <service>.bicep         # Módulos por serviço
+  ├── network.bicep           # VNet, subnet
+  ├── <service>.bicep         # Per-service modules
     ├── keyvault.bicep          # Key Vault
-    └── private-endpoints.bicep # Todos os PEs + DNS Zone + VNet Link
+  └── private-endpoints.bicep # All PEs + DNS Zone + VNet Link
 ```
 
-### Gerenciamento de dependências
+### Dependency management
 
 ```bicep
-// ✅ Correto: dependência implícita por referência de recurso
+// Correct: implicit dependency through resource reference
 resource project '...' = {
   properties: {
-    parentId: foundry.id  // referência a foundry → implanta foundry primeiro automaticamente
+  parentId: foundry.id  // reference to foundry -> automatically deploys foundry first
   }
 }
 
-// ❌ Evite: dependsOn explícito (use somente quando necessário)
+// Avoid: explicit dependsOn (use only when needed)
 ```
 
 ---
 
-## 5. Modelo Bicep comum de PE
+## 5. Common PE Bicep template
 
 ```bicep
 // ── Private Endpoint ──
@@ -134,7 +134,7 @@ resource pe 'Microsoft.Network/privateEndpoints@<fetch>' = {
       name: 'pls-${serviceName}'
       properties: {
         privateLinkServiceId: serviceId
-        groupIds: ['<groupId>']  // ← Varia conforme o serviço. Consulte service-gotchas.md
+        groupIds: ['<groupId>']  // Varies by service. See service-gotchas.md
       }
     }]
   }
@@ -142,7 +142,7 @@ resource pe 'Microsoft.Network/privateEndpoints@<fetch>' = {
 
 // ── Private DNS Zone ──
 resource dnsZone 'Microsoft.Network/privateDnsZones@<fetch>' = {
-  name: '<dnsZoneName>'  // ← Varia conforme o serviço
+  name: '<dnsZoneName>'  // Varies by service
   location: 'global'
 }
 
@@ -153,7 +153,7 @@ resource vnetLink 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@<fetch>
   location: 'global'
   properties: {
     virtualNetwork: { id: vnetId }
-    registrationEnabled: false  // ← Deve ser false
+    registrationEnabled: false  // Must be false
   }
 }
 
@@ -170,4 +170,4 @@ resource dnsGroup 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@<fetc
 }
 ```
 
-> `@<fetch>`: sempre verifique a versão estável mais recente da API no Microsoft Docs antes da implantação.
+> `@<fetch>`: always check the latest stable API version in Microsoft Docs before deployment.

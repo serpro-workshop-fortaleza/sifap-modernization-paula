@@ -1,6 +1,6 @@
 {
   "name": "software-engineering-team",
-  "description": "7 agentes especializados que cobrem todo o ciclo de vida de desenvolvimento de software, do projeto da experiência do usuário e da arquitetura à segurança e ao DevOps.",
+  "description": "7 specialized agents covering the entire software development lifecycle, from user experience and architecture design to security and DevOps.",
   "version": "1.0.0",
   "author": { "name": "Awesome Copilot Community" },
   "repository": "https://github.com/github/awesome-copilot",

@@ -1,5 +1,5 @@
-name: ✅ Tarefa de implementação
-description: Uma única tarefa de implementação com escopo definido, derivada de uma especificação
+name: Implementation task
+description: A single scoped implementation task derived from a specification
 title: "[T-NNN] "
 labels: [ "task", "stage-3" ]
 projects: []
@@ -8,13 +8,13 @@ body:
   - type: markdown
     attributes:
       value: |
-        > Use este modelo para uma tarefa de implementação por vez.
-        > As tarefas vêm de `specs/<NNN>-<feature>/tasks.md`.
+        > Use this template for one implementation task at a time.
+        > Tasks come from `specs/<NNN>-<feature>/tasks.md`.
 
   - type: input
     id: task-id
     attributes:
-      label: ID da tarefa
+      label: Task ID
       placeholder: "T-007"
     validations:
       required: true
@@ -22,7 +22,7 @@ body:
   - type: input
     id: feature-folder
     attributes:
-      label: Pasta da funcionalidade
+      label: Feature folder
       placeholder: "specs/<NNN>-<feature>/"
     validations:
       required: true
@@ -30,8 +30,8 @@ body:
   - type: input
     id: req-ids
     attributes:
-      label: REQ-IDs implementados
-      description: Lista separada por vírgulas de todos os IDs de requisitos atendidos por esta tarefa.
+      label: Implemented REQ-IDs
+      description: Comma-separated list of all requirement IDs implemented by this task.
       placeholder: "REQ-XXX, REQ-YYY"
     validations:
       required: true
@@ -39,58 +39,58 @@ body:
   - type: textarea
     id: acceptance-criteria
     attributes:
-      label: Critérios de aceitação (da especificação)
-      description: Copie de `spec.md` para que a pessoa responsável pela implementação não precise
-        alternar entre arquivos.
+      label: Acceptance criteria (from the specification)
+      description: Copy from `spec.md` so the implementer does not need to switch
+        between files.
       placeholder: |
-        - Quando <evento>, o sistema deve <comportamento verificável>.
-        - Se <condição>, o sistema NÃO deve <comportamento proibido>.
+        - When <event>, the system SHALL <verifiable behavior>.
+        - If <condition>, the system SHALL NOT <prohibited behavior>.
     validations:
       required: true
 
   - type: dropdown
     id: complexity
     attributes:
-      label: Estimativa de complexidade
+      label: Complexity estimate
       options:
         - XS (<1h)
         - S (1-2h)
         - M (2-4h)
         - L (4-8h)
-        - XL (>1 dia)
+        - XL (>1 day)
     validations:
       required: true
 
   - type: dropdown
     id: lead-persona
     attributes:
-      label: Persona líder
+      label: Lead persona
       options:
-        - Desenvolvedor
+        - Developer
         - DBA
-        - Engenheiro de QA
-        - Engenheiro de DevOps
+        - QA Engineer
+        - DevOps Engineer
     validations:
       required: true
 
   - type: textarea
     id: dependencies
     attributes:
-      label: Depende de
+      label: Depends on
       placeholder: |
-        - T-XXX (tarefa pré-requisito)
-        - ADR-XXXX (decisão relevante)
+        - T-XXX (prerequisite task)
+        - ADR-XXXX (relevant decision)
 
   - type: textarea
     id: definition-of-done
     attributes:
-      label: Definição de pronto
+      label: Definition of done
       value: |
-        - [ ] Pelo menos um teste por critério de aceitação (vermelho → verde → refatorar)
-        - [ ] Todos os métodos públicos que atendem a um `REQ-ID` têm Javadoc com `@implements REQ-NNN`
-        - [ ] A CI está verde (compilação, análise estática, verificação de tipos, testes e cobertura)
-        - [ ] A caixa correspondente em `tasks.md` está marcada
-        - [ ] O título da solicitação de alteração (PR) usa o padrão Conventional Commits e vincula esta solicitação
-        - [ ] Pelo menos uma revisão do par de personas na solicitação de alteração
+        - [ ] At least one test per acceptance criterion (red -> green -> refactor)
+        - [ ] Every public method implementing a `REQ-ID` has Javadoc with `@implements REQ-NNN`
+        - [ ] CI is green (build, static analysis, type checks, tests, and coverage)
+        - [ ] The corresponding checkbox in `tasks.md` is checked
+        - [ ] The pull request (PR) title uses Conventional Commits and links this issue
+        - [ ] At least one review from the persona pair on the pull request
     validations:
       required: true

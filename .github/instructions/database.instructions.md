@@ -1,15 +1,15 @@
 ---
-description: "Use ao escrever repositórios de banco de dados, migrações, mudanças de schema, consultas SQL, índices e alterações de dados seguras para rollback."
+description: "Use when writing database repositories, migrations, schema changes, SQL queries, indexes, and rollback-safe data changes."
 applyTo: "backend/src/main/java/**/infrastructure/**,backend/src/main/resources/db/migration/**"
 ---
 
-# Convenções de banco de dados — Migrações Flyway e repositórios
+# Database conventions - Flyway migrations and repositories
 
-Este arquivo é ativado quando você edita código de persistência em `backend/src/main/java/**/infrastructure/**` ou migrações Flyway em `backend/src/main/resources/db/migration/**`. Ele ensina higiene de migrações, segurança de consultas em repositórios, indexação e mudanças de schema seguras para rollback no PostgreSQL 16. O mapeamento de entidades e de FDT para JPA pertence a [`modular-monolith.instructions.md`](modular-monolith.instructions.md); a leitura do FDT Adabas que origina um schema pertence a [`natural-adabas.instructions.md`](natural-adabas.instructions.md).
+This file activates when you edit persistence code in `backend/src/main/java/**/infrastructure/**` or Flyway migrations in `backend/src/main/resources/db/migration/**`. It teaches migration hygiene, repository query safety, indexing, and rollback-safe schema changes in PostgreSQL 16. Entity and FDT-to-JPA mapping belong to [`modular-monolith.instructions.md`](modular-monolith.instructions.md); reading the Adabas FDT that informs a schema belongs to [`natural-adabas.instructions.md`](natural-adabas.instructions.md).
 
-## Migrações Flyway
+## Flyway migrations
 
-As migrações são versionadas, somente de avanço e imutáveis após o merge. Nomeie-as `V<n>__<snake_case_description>.sql`. Faça uma mudança lógica por arquivo. Todos os identificadores usam `snake_case`.
+Migrations are versioned, forward-only, and immutable after merge. Name them `V<n>__<snake_case_description>.sql`. Make one logical change per file. All identifiers use `snake_case`.
 
 ```sql
 -- V1__create_resource.sql
@@ -24,19 +24,19 @@ CREATE UNIQUE INDEX ux_resource_label ON resource (label);
 ```
 
 > [!WARNING]
-> Nunca edite uma migração já executada em um banco de dados compartilhado. O Flyway valida seu checksum e falhará. Corrija adiante com uma nova migração `V<n+1>__`.
+> Never edit a migration already run against a shared database. Flyway validates its checksum and will fail. Fix forward with a new `V<n+1>__` migration.
 
-## Valores monetários e precisão
+## Monetary values and precision
 
-Campos monetários e decimais compactados correspondem a `NUMERIC(precision, scale)` no PostgreSQL e `BigDecimal` no Java. Nunca use `float`, `double`, `real` ou `money`.
+Monetary and packed decimal fields map to `NUMERIC(precision, scale)` in PostgreSQL and `BigDecimal` in Java. Never use `float`, `double`, `real`, or `money`.
 
 ```sql
-amount NUMERIC(15, 2) NOT NULL -- corresponde a BigDecimal com escala 2
+amount NUMERIC(15, 2) NOT NULL -- maps to BigDecimal with scale 2
 ```
 
-## Repositórios
+## Repositories
 
-Os repositórios são interfaces Spring Data. Use métodos de consulta derivados ou `@Query` com JPQL e **parâmetros nomeados**. Nunca concatene strings, pois isso permite injeção de SQL.
+Repositories are Spring Data interfaces. Use derived query methods or `@Query` with JPQL and **named parameters**. Never concatenate strings, as that enables SQL injection.
 
 ```java
 interface ResourceRepository extends JpaRepository<Resource, UUID> {
@@ -48,13 +48,13 @@ interface ResourceRepository extends JpaRepository<Resource, UUID> {
 }
 ```
 
-- Não use `@Transactional` em repositórios; o serviço é responsável pelo limite da transação.
-- Retorne `Optional<T>` para buscas únicas, nunca `null`.
-- Em consultas nativas, ainda associe parâmetros (`:name` / `?1`); nunca interpole strings.
+- Do not use `@Transactional` on repositories; the service owns the transaction boundary.
+- Return `Optional<T>` for single lookups, never `null`.
+- In native queries, still bind parameters (`:name` / `?1`); never interpolate strings.
 
-## Índices e restrições
+## Indexes and constraints
 
-Declare unicidade, chaves estrangeiras e índices na migração, não no código da aplicação. Indexe as colunas usadas por seus repositórios em filtros e joins.
+Declare uniqueness, foreign keys, and indexes in the migration, not in application code. Index the columns your repositories use in filters and joins.
 
 ```sql
 CREATE INDEX ix_payment_resource_id ON payment (resource_id);
@@ -63,52 +63,52 @@ ALTER TABLE payment
     FOREIGN KEY (resource_id) REFERENCES resource (id);
 ```
 
-## Mudança segura para rollback (expandir / contrair)
+## Rollback-safe change (expand / contract)
 
-Nunca renomeie nem remova uma coluna na mesma release que implanta o código que a utiliza. Divida toda mudança incompatível entre releases para manter o rollback seguro.
+Never rename or drop a column in the same release that deploys code using it. Split every breaking change across releases to keep rollback safe.
 
-| Fase | Migração | Release |
+| Phase | Migration | Release |
 |---|---|---|
-| Expandir | Adicione a nova coluna anulável ou tabela | N |
-| Backfill | Copie os dados em lotes; faça gravação dupla na aplicação | N |
-| Contrair | Remova a coluna/restrição antiga quando nada mais a ler | N+1 |
+| Expand | Add the new nullable column or table | N |
+| Backfill | Copy data in batches; dual-write in the application | N |
+| Contract | Drop the old column/constraint once nothing reads it | N+1 |
 
-A skill [`safe-migration`](../skills/safe-migration/SKILL.md) detém o procedimento completo sem indisponibilidade e o checklist de backfill.
+The [`safe-migration`](../skills/safe-migration/SKILL.md) skill owns the full zero-downtime procedure and backfill checklist.
 
-## Desempenho de consultas
+## Query performance
 
-Evite consultas N+1: busque associações com `@EntityGraph` ou `join fetch` em JPQL e verifique um plano real com `EXPLAIN ANALYZE`. A skill [`query-optimization`](../skills/query-optimization/SKILL.md) detém a análise de índices e planos.
+Avoid N+1 queries: fetch associations with `@EntityGraph` or JPQL `join fetch` and check an actual plan with `EXPLAIN ANALYZE`. The [`query-optimization`](../skills/query-optimization/SKILL.md) skill owns index and plan analysis.
 
 ```java
 @EntityGraph(attributePaths = "payments")
 List<Resource> findByLabelStartingWith(String prefix);
 ```
 
-## Convenções
+## Conventions
 
-| Regra | Justificativa |
+| Rule | Rationale |
 |---|---|
-| `V<n>__snake_case.sql`, somente de avanço | Histórico determinístico e validado por checksum |
-| Tabelas e colunas em `snake_case` | PostgreSQL idiomático e estável entre ferramentas |
-| `NUMERIC` para dinheiro, `BigDecimal` no Java | Sem arredondamento binário de ponto flutuante em valores monetários |
-| JPQL / consultas derivadas com parâmetros associados | Sem injeção de SQL e portável entre dialetos |
-| Índices e FKs declarados em migrações | Schema reproduzível a partir do controle de versão |
-| Expandir-contrair para mudanças incompatíveis | Toda implantação é segura para rollback |
+| `V<n>__snake_case.sql`, forward-only | Deterministic, checksum-validated history |
+| Tables and columns in `snake_case` | Idiomatic PostgreSQL, stable across tools |
+| `NUMERIC` for money, `BigDecimal` in Java | No binary floating-point rounding in monetary values |
+| JPQL / derived queries with bound parameters | No SQL injection and portable across dialects |
+| Indexes and FKs declared in migrations | Schema reproducible from version control |
+| Expand-contract for breaking changes | Every deployment is rollback-safe |
 
-## Faça / Não faça
+## Do / Don't
 
-| Faça | Não faça |
+| Do | Don't |
 |---|---|
-| Adicione uma nova migração `V<n+1>__` para corrigir o schema | Edite uma migração já aplicada |
-| Associe todos os parâmetros | Concatene valores em SQL/JPQL |
-| Mantenha `@Transactional` no serviço | Anote repositórios como transacionais |
-| Faça backfill em lotes e depois contraia | Remova e recrie uma tabela ativa |
+| Add a new `V<n+1>__` migration to fix the schema | Edit an already applied migration |
+| Bind all parameters | Concatenate values into SQL/JPQL |
+| Keep `@Transactional` in the service | Annotate repositories as transactional |
+| Backfill in batches, then contract | Drop and recreate a live table |
 
-## Lista de verificação antes de abrir uma PR
+## PR Checklist
 
-- [ ] A migração segue `V<n>__snake_case.sql` e altera uma única coisa
-- [ ] Nenhuma migração aplicada anteriormente foi editada
-- [ ] Campos monetários/compactados usam `NUMERIC(p, s)` mapeado para `BigDecimal`
-- [ ] Toda consulta associa parâmetros; não há concatenação de strings
-- [ ] Novas colunas de filtro/join estão indexadas; as chaves estrangeiras estão declaradas
-- [ ] Mudanças incompatíveis usam expandir → backfill → contrair entre releases
+- [ ] The migration follows `V<n>__snake_case.sql` and changes one thing
+- [ ] No previously applied migration was edited
+- [ ] Monetary/packed fields use `NUMERIC(p, s)` mapped to `BigDecimal`
+- [ ] Every query binds parameters; there is no string concatenation
+- [ ] New filter/join columns are indexed; foreign keys are declared
+- [ ] Breaking changes use expand → backfill → contract across releases

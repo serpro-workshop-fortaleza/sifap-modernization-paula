@@ -2,6 +2,8 @@
 
 Use these concise templates to build a complete, traceable Spec-Driven Development package. Requirement statements use the [EARS notation](./ears-notation.md). Adapt paths and filenames to established repository conventions instead of creating a parallel structure.
 
+In SIFAP, the [artifact instructions](../../../instructions/sdd-artifacts.instructions.md) are authoritative: requirements and source traceability belong in `spec.md`, design and analysis in `plan.md`, and test mapping and execution evidence in `tasks.md`. The uppercase titles below identify reusable sections, not required extra files. Use `REQ-NNN`, `AC-REQ-NNN-NN`, and `source_legacy:` instead of generic template IDs.
+
 ## Artifact policy
 
 | Artifact | Scope | Responsibility |
@@ -23,36 +25,21 @@ Reuse an existing constitution. Create one only when the repository has no gover
 ## Suggested layout
 
 ```text
-.specs/
-  CONSTITUTION.md
+specs/
   001-feature-name/
-    SPECIFICATION.md
-    ANALYSIS.md
-    DESIGN.md
-    TASKS.md
-    TESTING.md
-    CHECKLIST.md
-    CROSS_ANALYSIS.md
-    VERIFICATION.md
-    DECISIONS.md
-    SOURCE_TRACEABILITY.md
-    checkpoints/
-      spec-to-plan.yaml
-      plan-to-tasks.yaml
-      test-coverage.yaml
-    contracts/
-      manifest.yaml
+    spec.md
+    plan.md
+    tasks.md
 ```
 
-All ten markdown artifacts, both subdirectories and every file above are
-required. `scripts/validate-spec-artifacts.py` enforces the markdown set and
-`scripts/validate-specs.py` enforces `checkpoints/` and `contracts/`.
-`CHECKLIST.md`, `CROSS_ANALYSIS.md`, `VERIFICATION.md` and
-`SOURCE_TRACEABILITY.md` are generated from the other six by
-`scripts/generate-sdd-support-artifacts.py`; author the six and run the
-generator rather than writing those four by hand.
+Keep scope approval in `02-modern-spec/scope-decisions.md` and link supporting
+ADRs or contracts only when needed. Do not invent generated files, checkpoints,
+or generators. Review the responsibilities below inside their owning kit
+artifact. The checked-in `python3 -B .github/scripts/validate-spec-traceability.py`
+command checks legacy-source declarations and reports test references; it does
+not certify the full design, diagrams, approval, or runtime behavior.
 
-Use a different layout when the repository already has one.
+Preserve existing standalone specifications and approved paths.
 
 ## CONSTITUTION.md
 
@@ -105,7 +92,9 @@ Use a different layout when the repository already has one.
 
 ## Requirements
 
-### FR-<DOMAIN>-001: <Title>
+### REQ-001: <Title>
+source_legacy: "[GREENFIELD] <team-confirmed justification, or use a legacy path>"
+
 - Pattern: <EARS pattern>
 - Priority: <P0-P3>
 - Source: <SRC-###>
@@ -113,7 +102,7 @@ Use a different layout when the repository already has one.
 > <EARS statement>
 
 **Acceptance signals**
-- AC-FR-<DOMAIN>-001-01: <pass/fail signal>
+- AC-REQ-001-01: <Given/When/Then pass/fail signal>
 
 **Verification**
 - <planned method and evidence>

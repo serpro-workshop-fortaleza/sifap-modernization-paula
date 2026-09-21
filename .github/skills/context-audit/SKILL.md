@@ -1,66 +1,66 @@
 ---
 name: "context-audit"
-description: "Use quando uma nova pessoa da engenharia entrar na equipe, durante a integração a uma base de código desconhecida ou ao auditar se a equipe compartilha um entendimento comum. Os gatilhos incluem \"integração\", \"contexto\", \"lacuna de conhecimento\", \"fator ônibus\" e \"entendimento da equipe\"."
+description: "Use when a new engineer joins the team, when onboarding to an unfamiliar codebase, or when auditing whether the team shares a common understanding. Triggers include \"onboarding\", \"context\", \"knowledge gap\", \"bus factor\", and \"team understanding\"."
 ---
-# Auditoria de contexto
+# Context audit
 
-## Quando usar
+## When to Invoke
 
-- "Uma nova pessoa desenvolvedora começa na segunda-feira. O que ela precisa saber na primeira semana?"
-- "Audite se a equipe realmente entende por que escolhemos X."
-- "Nosso fator ônibus é 1 para o módulo de faturamento. Corrija isso."
+- "A new developer starts on Monday. What do they need to know in their first week?"
+- "Audit whether the team really understands why we chose X."
+- "Our bus factor is 1 for the billing module. Fix that."
 
-## Objetivo
+## Objective
 
-Meça o entendimento compartilhado da equipe, revele o conhecimento concentrado em uma pessoa e crie um roteiro de adaptação para a primeira semana de novos integrantes.
+Measure the team's shared understanding, expose knowledge concentrated in one person, and create a first-week onboarding roadmap for new members.
 
-## Perguntas da auditoria (faça-as em particular a cada integrante)
+## Audit questions (ask each member privately)
 
-1. Você consegue desenhar a arquitetura do sistema em um quadro branco em 5 minutos?
-2. Quais são as 3 invariantes mais importantes que este sistema deve preservar?
-3. Onde está o código mais arriscado? Quem o entende melhor?
-4. O que você nunca alteraria sem uma revisão sênior? Por quê?
-5. Quais partes você evita alterar? Por quê?
+1. Can you draw the system architecture on a whiteboard in 5 minutes?
+2. What are the 3 most important invariants this system must preserve?
+3. Where is the riskiest code? Who understands it best?
+4. What would you never change without a senior review? Why?
+5. Which parts do you avoid changing? Why?
 
-Se as respostas diferirem significativamente, a equipe tem uma lacuna de contexto.
+If the answers differ significantly, the team has a context gap.
 
-## Antipadrões
+## Anti-patterns
 
-- "Nossa integração consiste apenas nos READMEs." (É insuficiente porque os READMEs omitem conhecimento tácito.)
-- Um plano para a primeira semana sem programação nem operação do sistema.
-- Nenhuma menção a invariantes ou modos de falha.
-- Conhecimento mantido apenas por profissionais seniores de engenharia, sem registro na documentação.
+- "Our onboarding consists only of READMEs." (Insufficient because READMEs omit tacit knowledge.)
+- A first-week plan without coding or operating the system.
+- No mention of invariants or failure modes.
+- Knowledge held only by senior engineers, without a documentation record.
 
-## Modelo de saída
+## Output Template
 
-### 1. Mapa de arquitetura compartilhado (1 página)
+### 1. Shared architecture map (1 page)
 
-- Diagrama Mermaid dos serviços e do fluxo de dados
-- Lista de integrações externas e de seus responsáveis
-- Lista de invariantes (regras de negócio que devem permanecer intactas)
+- Mermaid diagram of services and data flow
+- List of external integrations and their owners
+- List of invariants (business rules that must remain intact)
 
-### 2. Mapa de calor de riscos
+### 2. Risk heatmap
 
-```
-| Módulo | Criticidade | Fator ônibus | Última refatoração | Responsável |
+```markdown
+| Module | Criticality | Bus factor | Last refactoring | Owner |
 |----------|-------------|------------|----------------|-------|
-| faturamento | alta | 1 (Alex) | há 2 anos | Alex |
-| autenticação | alta | 3 | há 6 meses | equipe |
+| billing | high | 1 (Alex) | 2 years ago | Alex |
+| authentication | high | 3 | 6 months ago | team |
 ```
 
-Qualquer linha com fator ônibus igual a 1 para um módulo de alta criticidade exige uma ação P0.
+Any row with a bus factor of 1 for a high-criticality module requires a P0 action.
 
-### 3. Guia operacional da primeira semana para novos integrantes
+### 3. First-week runbook for new members
 
-- Dia 1: leia estas 5 ADRs e execute o conjunto de serviços localmente.
-- Dia 2: forme uma dupla com Alex no faturamento e envie uma melhoria de documentação.
-- Dia 3: acompanhe a rotação de plantão.
-- Dia 4: assuma uma tarefa inicial com revisão em dupla.
-- Dia 5: faça uma retrospectiva com o Líder Técnico. O que ainda não está claro?
+- Day 1: read these 5 ADRs and run the services locally.
+- Day 2: pair with Alex on billing and submit a documentation improvement.
+- Day 3: shadow the on-call rotation.
+- Day 4: take on a starter task with paired review.
+- Day 5: hold a retrospective with the Technical Lead. What is still unclear?
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] O mapa de arquitetura compartilhado, o mapa de calor de riscos e o guia operacional da primeira semana existem.
-- [ ] Cada módulo de alta criticidade com fator ônibus igual a 1 tem uma ação de correção P0.
-- [ ] O guia operacional inclui tarefas de programação e operação do sistema, não apenas leitura.
-- [ ] Uma nova pessoa da engenharia consegue entregar uma alteração de baixo risco até o fim da primeira semana, com revisão em dupla.
+- [ ] The shared architecture map, risk heatmap, and first-week runbook exist.
+- [ ] Every high-criticality module with a bus factor of 1 has a P0 remediation action.
+- [ ] The runbook includes coding and system operation tasks, not just reading.
+- [ ] A new engineer can deliver a low-risk change by the end of the first week, with paired review.

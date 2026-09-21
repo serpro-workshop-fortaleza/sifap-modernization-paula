@@ -1,22 +1,22 @@
-# Redes e replicação geográfica
+# Networking and geo-replication
 
-## Sumário
+## Contents
 
-- [Replicação geográfica](#replicação-geográfica)
-- [Redundância de zona](#redundância-de-zona)
-- [Pontos de extremidade privados (Private Link)](#pontos-de-extremidade-privados-private-link)
-- [Regras de rede pública](#regras-de-rede-pública)
-- [Pontos de extremidade de dados dedicados](#pontos-de-extremidade-de-dados-dedicados)
-- [Registro conectado](#registro-conectado)
-- [Fluxos de transferência de registros](#fluxos-de-transferência-de-registros)
+- [Geo-replication](#geo-replication)
+- [Zone redundancy](#zone-redundancy)
+- [Private endpoints (Private Link)](#private-endpoints-private-link)
+- [Public network rules](#public-network-rules)
+- [Dedicated data endpoints](#dedicated-data-endpoints)
+- [Connected registry](#connected-registry)
+- [Registry transfer pipelines](#registry-transfer-pipelines)
 
-Replicação geográfica, pontos de extremidade privados, regras de rede de IP público, pontos de extremidade de dados dedicados, registros conectados e fluxos de transferência exigem a SKU **Premium**. A redundância de zona é automática em todas as camadas.
+Geo-replication, private endpoints, public IP network rules, dedicated data endpoints, connected registries, and transfer pipelines require the **Premium** SKU. Zone redundancy is automatic on all tiers.
 
 ---
 
-## Replicação geográfica
+## Geo-replication
 
-Um registro, um servidor de autenticação e imagens fornecidas pela região mais próxima:
+One registry, one login server, and images served from the nearest region:
 
 ```bash
 az acr replication create --registry {registry} --location westeurope
@@ -24,29 +24,29 @@ az acr replication list --registry {registry} --output table
 az acr replication show --registry {registry} --name westeurope
 az acr replication delete --registry {registry} --name westeurope
 
-# Status do ponto de extremidade regional (útil para depurar notificação HTTP/replicação)
+# Regional endpoint status (useful for debugging HTTP notifications/replication)
 az acr replication update --registry {registry} --name westeurope --region-endpoint-enabled true
 ```
 
-Os envios são replicados automaticamente. Os clientes continuam baixando imagens de `{registry}.azurecr.io`, e o Traffic Manager roteia para a réplica mais próxima.
+Pushes are replicated automatically. Clients continue pulling images from `{registry}.azurecr.io`, and Traffic Manager routes to the nearest replica.
 
-## Redundância de zona
+## Zone redundancy
 
-A redundância de zona é **ativada automaticamente para todos os registros, em todas as camadas (Basic/Standard/Premium), nas regiões compatíveis com zonas de disponibilidade**. Nenhuma opção, SKU ou ação é necessária, e ela não pode ser desativada. As réplicas geográficas nas regiões compatíveis também têm redundância de zona por padrão.
+Zone redundancy is **automatically enabled for all registries, on all tiers (Basic/Standard/Premium), in regions supporting availability zones**. No option, SKU, or action is needed, and it cannot be disabled. Geo-replicas in supported regions are also zone-redundant by default.
 
-Não dependa da propriedade `zoneRedundancy` nem da opção legada `--zone-redundancy`: a propriedade é um artefato descontinuado que pode exibir `Disabled` mesmo quando o registro tem redundância de zona completa. Registros em regiões sem suporte a zonas de disponibilidade são a única exceção. Migre-os (por meio de `az acr import` ou de um fluxo de transferência) para uma região compatível.
+Do not rely on the `zoneRedundancy` property or the legacy `--zone-redundancy` option: the property is a deprecated artifact that may show `Disabled` even when the registry is fully zone-redundant. Registries in regions without availability zone support are the only exception. Migrate them (through `az acr import` or a transfer pipeline) to a supported region.
 
-## Pontos de extremidade privados (Private Link)
+## Private endpoints (Private Link)
 
 ```bash
-# 1. Desativa políticas de rede na sub-rede, se necessário, e cria o ponto de extremidade
+# 1. Disable network policies on the subnet if needed and create the endpoint
 az network private-endpoint create --resource-group {rg} --name {registry}-pe \
   --vnet-name {vnet} --subnet {subnet} \
   --private-connection-resource-id $(az acr show --name {registry} --query id --output tsv) \
   --group-ids registry \
   --connection-name {registry}-pe-conn
 
-# 2. DNS privado para resolver {registry}.azurecr.io como IP privado
+# 2. Private DNS to resolve {registry}.azurecr.io to a private IP
 az network private-dns zone create --resource-group {rg} --name privatelink.azurecr.io
 az network private-dns link vnet create --resource-group {rg} \
   --zone-name privatelink.azurecr.io --name {registry}-dns-link --virtual-network {vnet} --registration-enabled false
@@ -54,35 +54,36 @@ az network private-endpoint dns-zone-group create --resource-group {rg} \
   --endpoint-name {registry}-pe --name default \
   --private-dns-zone privatelink.azurecr.io --zone-name registry
 
-# 3. Opcionalmente, desativa por completo o acesso público
+# 3. Optionally disable public access entirely
 az acr update --name {registry} --public-network-enabled false
 
-# Gerencia aprovações de conexão
+# Manage connection approvals
 az acr private-endpoint-connection list --registry-name {registry} --output table
 az acr private-endpoint-connection approve --registry-name {registry} --name {connection}
 ```
 
-Notas:
+Notes:
 
-- Cada ponto de extremidade privado cria registros para o registro **e** seus pontos de extremidade de dados (`{registry}.{region}.data.azurecr.io`). Registros com replicação geográfica precisam de um registro de dados por região.
-- Com o acesso público desativado, os agentes padrão do ACR Tasks não conseguem acessar o registro. Use um conjunto de agentes dedicado anexado a uma sub-rede da VNet ou ative serviços confiáveis **e** a política de desvio de rede para tarefas (consulte abaixo).
+- Each private endpoint creates records for the registry **and** its data endpoints (`{registry}.{region}.data.azurecr.io`). Geo-replicated registries need one data record per region.
+- With public access disabled, default ACR Tasks agents cannot reach the registry. Use a dedicated agent pool attached to a VNet subnet or enable trusted services **and** the network bypass policy for tasks (see below).
 
-## Regras de rede pública
+## Public network rules
 
-Restrinja o acesso público a IPs específicos em vez de tornar o acesso totalmente privado (ou antes de fazê-lo):
+Restrict public access to specific IPs instead of making access fully private (or before doing so):
 
 ```bash
-# Nega por padrão e depois permite intervalos específicos
+# Deny by default, then allow specific ranges
 az acr update --name {registry} --default-action Deny
 az acr network-rule add --name {registry} --ip-address 203.0.113.0/24
 az acr network-rule list --name {registry}
 az acr network-rule remove --name {registry} --ip-address 203.0.113.0/24
 
-# Permite serviços confiáveis do Azure (por exemplo, Defender, ACI e importação de imagem) no firewall
+# Allow trusted Azure services (for example, Defender, ACI, and image import) through the firewall
 az acr update --name {registry} --allow-trusted-services true
 ```
 
-⚠️ **Desde 1º de junho de 2025, somente `--allow-trusted-services` NÃO é suficiente para ACR Tasks que usam uma identidade gerenciada atribuída pelo sistema**. Sem a política de desvio de rede para tarefas, as execuções recebem erros 403 em registros com restrição de rede. Ative-a explicitamente:
+> [!WARNING]
+> **Since June 1, 2025, `--allow-trusted-services` alone is NOT sufficient for ACR Tasks using a system-assigned managed identity**. Without the network bypass policy for tasks, runs receive 403 errors on network-restricted registries. Enable it explicitly:
 
 ```bash
 az resource update \
@@ -92,28 +93,28 @@ az resource update \
   --set properties.networkRuleBypassAllowedForTasks=true
 ```
 
-Alternativas que evitam completamente o desvio: execute as tarefas em um conjunto de agentes anexado à VNet ou execute `acr purge` localmente com o [binário acr-cli](https://github.com/azure/acr-cli). Tarefas que usam uma identidade atribuída pelo usuário não são afetadas.
+Alternatives that avoid bypass entirely: run tasks on a VNet-attached agent pool or run `acr purge` locally with the [acr-cli binary](https://github.com/azure/acr-cli). Tasks using a user-assigned identity are not affected.
 
-## Pontos de extremidade de dados dedicados
+## Dedicated data endpoints
 
-Forneça aos downloads de camadas FQDNs estáveis e específicos do registro (`{registry}.{region}.data.azurecr.io`) em vez de pontos de extremidade de armazenamento compartilhados. Isso simplifica as regras de firewall no cliente:
+Provide stable, registry-specific FQDNs for layer downloads (`{registry}.{region}.data.azurecr.io`) instead of shared storage endpoints. This simplifies client-side firewall rules:
 
 ```bash
 az acr update --name {registry} --data-endpoint-enabled true
 az acr show-endpoints --name {registry}
 ```
 
-## Registro conectado
+## Connected registry
 
-Espelho local/na borda de IoT de um registro da nuvem:
+On-premises/IoT edge mirror of a cloud registry:
 
 ```bash
-# O registro pai deve ter um ponto de extremidade de dados dedicado
+# The parent registry must have a dedicated data endpoint
 az acr update --name {registry} --data-endpoint-enabled true
 
 az acr connected-registry create --registry {registry} --name {connected-name} \
   --repository "app" "hello-world" \
-  --mode ReadOnly            # ou ReadWrite
+  --mode ReadOnly            # or ReadWrite
 
 az acr connected-registry list --registry {registry} --output table
 az acr connected-registry get-settings --registry {registry} --name {connected-name} \
@@ -121,29 +122,29 @@ az acr connected-registry get-settings --registry {registry} --name {connected-n
 az acr connected-registry deactivate --registry {registry} --name {connected-name}
 ```
 
-## Fluxos de transferência de registros
+## Registry transfer pipelines
 
-Mova imagens entre nuvens/locatários desconectados por meio de blobs de armazenamento (extensão `acrtransfer`):
+Move images between disconnected clouds/tenants through storage blobs (`acrtransfer` extension):
 
 ```bash
 az extension add --name acrtransfer
 
-# Exporta do registro de origem para um contêiner de armazenamento (token SAS no Key Vault)
+# Export from the source registry to a storage container (SAS token in Key Vault)
 az acr export-pipeline create --resource-group {rg} --registry {src-registry} \
   --name export-pipe \
   --secret-uri https://{vault}.vault.azure.net/secrets/{sas-secret} \
   --storage-container-uri https://{account}.blob.core.windows.net/{container}
 
-# Importa no destino
+# Import at the destination
 az acr import-pipeline create --resource-group {rg} --registry {dst-registry} \
   --name import-pipe \
   --secret-uri https://{vault}.vault.azure.net/secrets/{sas-secret} \
   --storage-container-uri https://{account}.blob.core.windows.net/{container}
 
-# Executa uma exportação
+# Run an export
 az acr pipeline-run create --resource-group {rg} --registry {src-registry} \
   --pipeline export-pipe --name run1 --pipeline-type export \
   --artifacts app:v1 app:v2 --storage-blob transfer-blob-1
 ```
 
-Para cópias simples na mesma nuvem, prefira `az acr import` (consulte `images-and-artifacts.md`).
+For simple copies within the same cloud, prefer `az acr import` (see `images-and-artifacts.md`).

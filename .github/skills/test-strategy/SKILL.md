@@ -1,62 +1,62 @@
 ---
 name: "test-strategy"
-description: "Use ao elaborar uma estratégia de testes, escolher o formato da pirâmide de testes, definir metas de cobertura ou avaliar investimentos em testes nas camadas unitária, de integração e de ponta a ponta (E2E). Os gatilhos incluem \"estratégia de testes\", \"pirâmide de testes\", \"meta de cobertura\", \"E2E versus integração\" e \"investimento em testes\"."
+description: "Use when designing a test strategy, choosing the test pyramid shape, setting coverage targets, or assessing testing investments across unit, integration, and end-to-end (E2E) layers. Triggers include \"test strategy\", \"test pyramid\", \"coverage target\", \"E2E versus integration\", and \"testing investment\"."
 ---
-# Estratégia de testes
+# Test strategy
 
-## Quando invocar
+## When to Invoke
 
-- "Elabore uma estratégia de testes para..."
-- "Qual deve ser a proporção de testes unitários, de integração e de ponta a ponta (E2E)?"
-- "Qual é a meta de cobertura adequada?"
-- "Audite nossa pirâmide de testes."
+- "Design a test strategy for..."
+- "What should the ratio of unit, integration, and end-to-end (E2E) tests be?"
+- "What is the appropriate coverage target?"
+- "Audit our test pyramid."
 
-## Fluxo de trabalho
+## Workflow
 
-1. **Faça o inventário** do código testado: módulos, APIs públicas, integrações externas e fluxos críticos.
-2. **Classifique o risco** por módulo (P0 / P1 / P2) com base no raio de impacto de uma falha.
-3. **Distribua a pirâmide**: use inicialmente 70% de testes unitários, 20% de integração e 10% E2E; justifique os desvios.
-4. **Defina metas de cobertura**: linha de base de 80% de cobertura de linhas e 90% para módulos P0, acompanhando a cobertura de ramificações separadamente.
-5. **Defina o orçamento de testes instáveis**: taxa máxima de 1%; qualquer valor acima disso aciona a quarentena.
-6. **Escolha as ferramentas por camada**: unitária (Vitest/JUnit/pytest), integração (Testcontainers) e E2E (Playwright).
-7. **Produza a saída**: um documento de estratégia de uma página com metas, ferramentas, limites de cobertura e regras de quarentena por camada.
+1. **Inventory** the code under test: modules, public APIs, external integrations, and critical paths.
+2. **Classify risk** by module (P0 / P1 / P2) based on the blast radius of a failure.
+3. **Distribute the pyramid**: start with 70% unit tests, 20% integration, and 10% E2E; justify deviations.
+4. **Set coverage targets**: a baseline of 80% line coverage and 90% for P0 modules, tracking branch coverage separately.
+5. **Set the flake budget**: a maximum rate of 1%; anything above triggers quarantine.
+6. **Choose tools per layer**: unit (Vitest/JUnit/pytest), integration (Testcontainers), and E2E (Playwright).
+7. **Produce the output**: a one-page strategy document with targets, tools, coverage thresholds, and quarantine rules per layer.
 
-## Heurísticas
+## Heuristics
 
-- Se um teste E2E puder ser reescrito como testes de integração e contrato, faça isso. Testes E2E são caros e instáveis.
-- Testes de contrato são melhores que objetos simulados para tudo que cruza os limites de um serviço.
-- Testes de mutação (Stryker, PIT) são a única forma honesta de detectar testes que não comprovam nada.
+- If an E2E test can be rewritten as integration and contract tests, do so. E2E tests are expensive and flaky.
+- Contract tests are better than mocks for anything crossing service boundaries.
+- Mutation testing (Stryker, PIT) is the only honest way to detect tests that prove nothing.
 
-## Antipadrões
+## Anti-patterns
 
-- Pirâmide invertida: muitos testes E2E lentos sobre poucos testes unitários.
-- Um único número global de cobertura, sem meta superior para módulos P0.
-- Limites de serviço simulados que nunca detectam uma falha real de integração.
-- Cobertura tratada como objetivo, não como indicador de confiança.
+- Inverted pyramid: many slow E2E tests on top of few unit tests.
+- A single global coverage number, without a higher target for P0 modules.
+- Mocked service boundaries that never detect a real integration failure.
+- Coverage treated as a goal, not a confidence indicator.
 
-## Modelo de saída
+## Output Template
 
 ```markdown
-## Estratégia de testes - <sistema ou módulo>
+## Test strategy - <system or module>
 
-| Camada | Distribuição-alvo | Ferramentas | Meta de cobertura |
+| Layer | Target distribution | Tools | Coverage target |
 |---|---|---|---|
-| Unitária | 70% | JUnit 5 / Vitest | 80% de linhas (90% para P0) |
-| Integração | 20% | Testcontainers | fluxos críticos |
-| E2E | 10% | Playwright | principais jornadas de usuário |
+| Unit | 70% | JUnit 5 / Vitest | 80% of lines (90% for P0) |
+| Integration | 20% | Testcontainers | critical paths |
+| E2E | 10% | Playwright | main user journeys |
 
-**Orçamento de testes instáveis**: <=1% (acima disso, quarentena)
-**Classificação de risco**: P0 <módulos> / P1 <módulos> / P2 <módulos>
+**Flake budget**: <=1% (above that, quarantine)
+**Risk classification**: P0 <modules> / P1 <modules> / P2 <modules>
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Cada módulo está classificado por risco (P0/P1/P2) e tem uma meta de cobertura.
-- [ ] A distribuição da pirâmide está definida por camada, e os desvios de 70/20/10 estão justificados.
-- [ ] Cada camada indica sua ferramenta e seu limite.
-- [ ] Há um orçamento de testes instáveis e uma regra de quarentena definidos.
+- [ ] Each module is classified by risk (P0/P1/P2) and has a coverage target.
+- [ ] The pyramid distribution is defined per layer, and deviations from 70/20/10 are justified.
+- [ ] Each layer states its tool and threshold.
+- [ ] A flake budget and quarantine rule are defined.
 
-## Referências
+## References
 
 - [Google Testing Blog - Test Sizes](https://testing.googleblog.com/2010/12/test-sizes.html)
 - [ISTQB Foundation Syllabus](https://www.istqb.org/certifications/certified-tester-foundation-level)

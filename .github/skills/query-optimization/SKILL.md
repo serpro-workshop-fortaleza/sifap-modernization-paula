@@ -1,70 +1,70 @@
 ---
 name: "query-optimization"
-description: "Use ao investigar consultas lentas, projetar índices ou revisar planos de execução. Os gatilhos incluem \"consulta lenta\", \"plano EXPLAIN\", \"índice\", \"ajuste de consulta\", \"N+1\" e \"varredura de tabela\"."
+description: "Use when investigating slow queries, designing indexes, or reviewing execution plans. Triggers include \"slow query\", \"EXPLAIN plan\", \"index\", \"query tuning\", \"N+1\", and \"table scan\"."
 ---
-# Otimização de consultas
+# Query optimization
 
-## Quando invocar
+## When to Invoke
 
-- "Esta consulta está lenta."
-- "Por que ela não está usando o índice?"
-- "Devo adicionar um índice em...?"
-- "Revise esta saída do EXPLAIN."
+- "This query is slow."
+- "Why is it not using the index?"
+- "Should I add an index on...?"
+- "Review this EXPLAIN output."
 
-## Fluxo de diagnóstico
+## Diagnostic workflow
 
-1. **Meça antes de otimizar**: capture uma linha de base (latência p50/p95, linhas examinadas, linhas retornadas e leituras lógicas).
-2. **Obtenha o plano**: `EXPLAIN (ANALYZE, BUFFERS)` no PostgreSQL, `EXPLAIN ANALYZE FORMAT=JSON` no MySQL 8 ou `SET STATISTICS IO, TIME ON` no SQL Server.
-3. **Procure causas comuns**:
+1. **Measure before optimizing**: capture a baseline (p50/p95 latency, rows examined, rows returned, and logical reads).
+2. **Get the plan**: `EXPLAIN (ANALYZE, BUFFERS)` in PostgreSQL, `EXPLAIN ANALYZE FORMAT=JSON` in MySQL 8, or `SET STATISTICS IO, TIME ON` in SQL Server.
+3. **Look for common causes**:
 
-- **Varredura sequencial ou de tabela (Seq Scan / Table Scan)** em uma tabela grande com predicado seletivo → índice ausente
-- **Estimativa de linhas com erro superior a 10×** → estatísticas desatualizadas; execute `ANALYZE`
-- **Laço aninhado (Nested Loop) com muitas linhas externas** → deveria ser uma junção por hash ou mesclagem
-- **Ordenação transferida para o disco** → `work_mem` muito baixo ou índice ausente para o ORDER BY
-- **Filtro após a junção**, em vez de aplicação antecipada (pushdown) → reescreva a consulta ou adicione um índice para o predicado
+- **Seq Scan / Table Scan** on a large table with a selective predicate: missing index
+- **Row estimate off by more than 10x**: outdated statistics; run `ANALYZE`
+- **Nested Loop with many outer rows**: should be a hash or merge join
+- **Sort spilling to disk**: `work_mem` too low or missing index for ORDER BY
+- **Filter after the join**, instead of pushdown: rewrite the query or add an index for the predicate
 
-4. **Proponha a menor alteração**: um índice, uma reescrita, uma atualização de estatísticas ou um ajuste de parâmetro.
-5. **Valide**: execute ANALYZE novamente, confirme a alteração do plano e verifique a redução da latência. Nunca "implante e torça".
+4. **Propose the smallest change**: an index, a rewrite, a statistics update, or a parameter adjustment.
+5. **Validate**: rerun ANALYZE, confirm the plan change, and verify reduced latency. Never "deploy and hope".
 
-## Heurísticas para projeto de índices
+## Index design heuristics
 
-- Coloque **primeiro as colunas de igualdade**, depois as de intervalo e, por fim, as de ordenação (regra ESR).
-- Um **índice de cobertura** (colunas INCLUDE) evita consultas ao heap em consultas com muitas leituras.
-- Um **índice parcial** atende a filtros muito seletivos em dados assimétricos (`WHERE status = 'pending'`).
-- Cada índice acrescenta custo de escrita. Justifique todos eles.
+- Put **equality columns first**, then range columns, and finally sort columns (ESR rule).
+- A **covering index** (INCLUDE columns) avoids heap lookups in read-heavy queries.
+- A **partial index** serves highly selective filters on skewed data (`WHERE status = 'pending'`).
+- Every index adds write cost. Justify each one.
 
-## Antipadrões
+## Anti-patterns
 
-- `SELECT *` em fluxos críticos: força acesso ao heap e impede índices de cobertura.
-- `WHERE func(col) = x`: impede o uso do índice; armazene uma coluna calculada ou use um índice de expressão.
-- N+1 do ORM: corrija no ORM com carregamento antecipado, não com um índice.
-- "Adicionar um índice a cada coluna": desperdiça armazenamento e torna as escritas mais lentas.
+- `SELECT *` in critical paths: forces heap access and prevents covering indexes.
+- `WHERE func(col) = x`: prevents index use; store a computed column or use an expression index.
+- ORM N+1: fix it in the ORM with eager loading, not with an index.
+- "Add an index to every column": wastes storage and slows writes.
 
-## Modelo de saída
+## Output Template
 
 ```markdown
-## Otimização de consulta - <id da consulta>
+## Query optimization - <query id>
 
-| Campo | Antes | Depois |
+| Field | Before | After |
 |---|---|---|
-| Latência p95 | <ms> | <ms> |
-| Linhas examinadas | <n> | <n> |
-| Plano | Seq Scan | Index Scan on <index> |
+| p95 latency | <ms> | <ms> |
+| Rows examined | <n> | <n> |
+| Plan | Seq Scan | Index Scan on <index> |
 
-**Alteração**: índice / reescrita / ANALYZE / parâmetro
+**Change**: index / rewrite / ANALYZE / parameter
 **DDL**: CREATE INDEX CONCURRENTLY <name> ON <table> (<cols>)
-**Validação**: a nova execução de EXPLAIN (ANALYZE, BUFFERS) confirma o novo plano
+**Validation**: rerunning EXPLAIN (ANALYZE, BUFFERS) confirms the new plan
 ```
 
-## Critérios de qualidade
+## Quality Gate
 
-- [ ] Uma linha de base (p50/p95, linhas examinadas e plano) foi capturada antes de qualquer alteração.
-- [ ] A alteração proposta é a menor que corrige o gargalo.
-- [ ] `EXPLAIN (ANALYZE, BUFFERS)` confirma a alteração do plano e a redução da latência.
-- [ ] Cada novo índice está justificado em relação ao seu custo de escrita.
+- [ ] A baseline (p50/p95, rows examined, and plan) was captured before any change.
+- [ ] The proposed change is the smallest that fixes the bottleneck.
+- [ ] `EXPLAIN (ANALYZE, BUFFERS)` confirms the plan change and reduced latency.
+- [ ] Every new index is justified against its write cost.
 
-## Referências
+## References
 
 - [Use The Index, Luke!](https://use-the-index-luke.com/)
-- [PostgreSQL - Dicas de desempenho](https://www.postgresql.org/docs/current/performance-tips.html)
+- [PostgreSQL - Performance tips](https://www.postgresql.org/docs/current/performance-tips.html)
 - [SQL Server - Query Store](https://learn.microsoft.com/sql/relational-databases/performance/monitoring-performance-by-using-the-query-store)

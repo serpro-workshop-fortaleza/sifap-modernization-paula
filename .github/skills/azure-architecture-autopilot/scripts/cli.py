@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""CLI do mecanismo de diagramas azure-architecture-autopilot."""
+"""CLI for the azure-architecture-autopilot diagram engine."""
 import argparse
 import json
 import sys
@@ -14,22 +14,22 @@ from generator import generate_diagram
 
 def main():
     parser = argparse.ArgumentParser(
-        description="Gera diagramas interativos de arquitetura do Azure",
+        description="Generate interactive Azure architecture diagrams",
         prog="azure-architecture-autopilot"
     )
-    parser.add_argument("-s", "--services", help="JSON de serviços (cadeia de texto ou caminho de arquivo)")
-    parser.add_argument("-c", "--connections", help="JSON de conexões (cadeia de texto ou caminho de arquivo)")
-    parser.add_argument("-t", "--title", default="Arquitetura do Azure", help="Título do diagrama")
-    parser.add_argument("-o", "--output", default="azure-architecture.html", help="Caminho do arquivo de saída")
+    parser.add_argument("-s", "--services", help="Services JSON (string or file path)")
+    parser.add_argument("-c", "--connections", help="Connections JSON (string or file path)")
+    parser.add_argument("-t", "--title", default="Azure Architecture", help="Diagram title")
+    parser.add_argument("-o", "--output", default="azure-architecture.html", help="Output file path")
     parser.add_argument("-f", "--format", choices=["html", "png", "both"], default="html",
-                        help="Formato de saída: html (padrão), png ou ambos (html+png)")
-    parser.add_argument("--vnet-info", default="", help="Informações de CIDR da VNet")
-    parser.add_argument("--hierarchy", default="", help="JSON da hierarquia de assinatura/RG")
+                        help="Output format: html (default), png or both (html+png)")
+    parser.add_argument("--vnet-info", default="", help="VNet CIDR information")
+    parser.add_argument("--hierarchy", default="", help="Subscription/RG hierarchy JSON")
 
     args = parser.parse_args()
 
     if not args.services or not args.connections:
-        parser.error("-s/--services e -c/--connections são obrigatórios")
+        parser.error("-s/--services and -c/--connections are required")
 
     services = _load_json(args.services, "services")
     connections = _load_json(args.connections, "connections")
@@ -48,7 +48,7 @@ def main():
         hierarchy=hierarchy,
     )
 
-    # Determina os caminhos de saída
+    # Determine output paths
     out = Path(args.output)
     html_path = out.with_suffix(".html")
     png_path = out.with_suffix(".png")
@@ -56,10 +56,10 @@ def main():
 
     if args.format in ("html", "both"):
         html_path.write_text(html, encoding="utf-8")
-        print(f"HTML salvo: {html_path}")
+        print(f"HTML saved: {html_path}")
 
     if args.format in ("png", "both"):
-        # Grava o HTML temporário e captura a tela com puppeteer/playwright
+        # Write temporary HTML and capture a screenshot with puppeteer/playwright
         tmp_html = html_path if args.format == "both" else Path(str(png_path) + ".tmp.html")
         if args.format != "both":
             tmp_html.write_text(html, encoding="utf-8")
@@ -70,21 +70,21 @@ def main():
             tmp_html.unlink()
 
         if success:
-            print(f"PNG salvo: {png_path}")
+            print(f"PNG saved: {png_path}")
         else:
-            print("AVISO: Falha ao exportar o PNG. Instale o puppeteer (npm i puppeteer) para ter suporte a PNG.", file=sys.stderr)
-            print(f"HTML salvo como alternativa: {html_path}")
+            print("WARNING: PNG export failed. Install puppeteer (npm i puppeteer) for PNG support.", file=sys.stderr)
+            print(f"HTML saved as fallback: {html_path}")
             if not html_path.exists():
                 html_path.write_text(html, encoding="utf-8")
 
 
 def _html_to_png(html_path, png_path, width=1920, height=1080):
-    """Converte HTML em PNG usando puppeteer (Node.js)."""
+    """Convert HTML to PNG using puppeteer (Node.js)."""
     node = shutil.which("node")
     if not node:
         return False
 
-    # Tenta vários locais do puppeteer
+    # Try multiple puppeteer locations
     script = f"""
 let puppeteer;
 const paths = [
@@ -94,7 +94,7 @@ const paths = [
   './node_modules/puppeteer'
 ];
 for (const p of paths) {{ try {{ puppeteer = require(p); break; }} catch(e) {{}} }}
-if (!puppeteer) {{ console.error('puppeteer não encontrado'); process.exit(1); }}
+if (!puppeteer) {{ console.error('puppeteer not found'); process.exit(1); }}
 (async () => {{
   const browser = await puppeteer.launch({{headless: 'new'}});
   const page = await browser.newPage();
@@ -113,7 +113,7 @@ if (!puppeteer) {{ console.error('puppeteer não encontrado'); process.exit(1); 
 
 
 def _load_json(value, name):
-    """Carrega JSON de uma string ou caminho de arquivo. Extrai a chave nomeada de um JSON combinado, se presente."""
+    """Load JSON from a string or file path. Extract the named key from combined JSON, if present."""
     data = None
     if os.path.isfile(value):
         with open(value, "r", encoding="utf-8") as f:
@@ -122,17 +122,17 @@ def _load_json(value, name):
         try:
             data = json.loads(value)
         except json.JSONDecodeError as e:
-            print(f"ERRO: JSON inválido para --{name}: {e}", file=sys.stderr)
+            print(f"ERROR: Invalid JSON for --{name}: {e}", file=sys.stderr)
             sys.exit(1)
 
-    # Se os dados forem um dicionário com a chave nomeada, extrai-a (suporte a arquivo JSON combinado)
+    # Extract the named key if data is a dictionary containing it (combined JSON file support)
     if isinstance(data, dict) and name in data:
         return data[name]
     return data
 
 
 def _normalize_services(services):
-    """Normaliza os campos de serviço para maior tolerância."""
+    """Normalize service fields for more tolerant input handling."""
     for svc in services:
         if isinstance(svc.get("details"), str):
             svc["details"] = [svc["details"]]
@@ -143,14 +143,14 @@ def _normalize_services(services):
             elif val in ("false", "0", "no", "off"):
                 svc["private"] = False
             else:
-                # Registra um aviso para valores inválidos
-                print(f"AVISO: Valor booleano inválido '{svc['private']}' para o campo 'private'. Usando False como padrão.", file=sys.stderr)
+                # Log a warning for invalid values
+                print(f"WARNING: Invalid boolean value '{svc['private']}' for the 'private' field. Defaulting to False.", file=sys.stderr)
                 svc["private"] = False
     return services
 
 
 def _normalize_connections(connections):
-    """Normaliza os campos de conexão para maior tolerância."""
+    """Normalize connection fields for more tolerant input handling."""
     for conn in connections:
         if "type" not in conn:
             conn["type"] = "default"

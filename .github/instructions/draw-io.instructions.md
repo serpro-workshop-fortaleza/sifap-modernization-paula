@@ -1,92 +1,92 @@
 ---
-description: "Use ao criar, editar ou revisar diagramas draw.io e XML mxGraph em arquivos .drawio, .drawio.svg ou .drawio.png."
+description: "Use when creating, editing, or reviewing draw.io diagrams and mxGraph XML in .drawio, .drawio.svg, or .drawio.png files."
 applyTo: "**/*.drawio,**/*.drawio.svg,**/*.drawio.png"
 ---
 
-# Diagramas draw.io — Convenções e restrições
+# draw.io diagrams - Conventions and constraints
 
-Este arquivo é ativado quando você abre ou edita um arquivo `.drawio`, `.drawio.svg` ou `.drawio.png`. Ele define as restrições de estrutura, estilo e nomenclatura que todo diagrama deste repositório deve cumprir para ser renderizado na primeira tentativa no VS Code com a extensão `hediet.vscode-drawio` e permanecer consistente em todo o kit. Ele ensina as invariantes que um arquivo de diagrama deve manter, mas não apresenta o passo a passo de construção. O procedimento de autoria, as receitas XML por tipo, os modelos e o script de validação ficam na [skill `draw-io-diagram-generator`](../skills/draw-io-diagram-generator/SKILL.md). Leia-a antes de gerar ou reestruturar um diagrama e não duplique suas etapas aqui.
+This file activates when you open or edit a `.drawio`, `.drawio.svg`, or `.drawio.png` file. It defines the structure, style, and naming constraints every diagram in this repository must meet to render on the first attempt in VS Code with the `hediet.vscode-drawio` extension and remain consistent throughout the kit. It teaches the invariants a diagram file must maintain, but does not provide step-by-step construction instructions. The authoring procedure, XML recipes by type, templates, and validation script live in the [`draw-io-diagram-generator` skill](../skills/draw-io-diagram-generator/SKILL.md). Read it before generating or restructuring a diagram and do not duplicate its steps here.
 
-## Invariantes de estrutura
+## Structural invariants
 
-Estas invariantes são inegociáveis; um diagrama que viola qualquer uma delas é renderizado em branco ou corrompido.
+These invariants are non-negotiable; a diagram violating any of them renders blank or corrupted.
 
-- `id="0"` e `id="1"` são as **duas primeiras células** de todo `<diagram>`, nessa ordem, e nunca são reutilizadas para conteúdo.
-- Todo `id` de célula é **exclusivo dentro da página do diagrama** (os IDs podem se repetir em páginas distintas).
-- Todo vértice (`vertex="1"`) possui um filho `<mxGeometry ... as="geometry">` com `x`, `y`, `width` e `height`.
-- Toda aresta (`edge="1"`) aponta `source`/`target` para IDs de vértices existentes **ou**, em arestas flutuantes como linhas de vida de diagramas de sequência, contém `<mxPoint as="sourcePoint">` e `<mxPoint as="targetPoint">` dentro de `<mxGeometry>`.
-- Toda célula, exceto `id="0"`, possui um `parent` que resolve para um ID existente.
-- Os filhos de um contêiner (swimlane, tabela) usam coordenadas **relativas ao pai**, não ao canvas.
+- `id="0"` and `id="1"` are the **first two cells** of every `<diagram>`, in that order, and are never reused for content.
+- Every cell `id` is **unique within the diagram page** (IDs may repeat across different pages).
+- Every vertex (`vertex="1"`) has a child `<mxGeometry ... as="geometry">` with `x`, `y`, `width`, and `height`.
+- Every edge (`edge="1"`) points `source`/`target` to existing vertex IDs **or**, for floating edges such as sequence diagram lifelines, contains `<mxPoint as="sourcePoint">` and `<mxPoint as="targetPoint">` inside `<mxGeometry>`.
+- Every cell except `id="0"` has a `parent` that resolves to an existing ID.
+- Children of a container (swimlane, table) use coordinates **relative to the parent**, not the canvas.
 
 ```xml
 <root>
   <mxCell id="0" />
   <mxCell id="1" parent="0" />
-  <!-- toda outra célula define parent como um ID existente -->
+  <!-- every other cell sets parent to an existing ID -->
 </root>
 ```
 
 > [!WARNING]
-> Um arquivo que abre em branco no VS Code quase sempre não possui as células raiz `id="0"`/`id="1"` ou contém uma aresta cujo ID `source`/`target` não resolve. Verifique primeiro essas duas invariantes.
+> A file that opens blank in VS Code is almost always missing the `id="0"`/`id="1"` root cells or contains an edge whose `source`/`target` ID does not resolve. Check these two invariants first.
 
-## Paleta de cores semântica
+## Semantic color palette
 
-Use uma única paleta em todo o repositório para que a cor de uma forma sempre tenha o mesmo significado. `fillColor` forma par com seu `strokeColor` correspondente.
+Use a single palette throughout the repository so a shape's color always has the same meaning. Pair `fillColor` with its corresponding `strokeColor`.
 
-| Papel | fillColor | strokeColor |
+| Role | fillColor | strokeColor |
 |---|---|---|
-| Primário / informação (padrão) | `#dae8fc` | `#6c8ebf` |
-| Sucesso / início / positivo | `#d5e8d4` | `#82b366` |
-| Alerta / decisão | `#fff2cc` | `#d6b656` |
-| Erro / fim / perigo | `#f8cecc` | `#b85450` |
-| Neutro / interface | `#f5f5f5` | `#666666` |
-| Externo / parceiro | `#e1d5e7` | `#9673a6` |
+| Primary / information (default) | `#dae8fc` | `#6c8ebf` |
+| Success / start / positive | `#d5e8d4` | `#82b366` |
+| Warning / decision | `#fff2cc` | `#d6b656` |
+| Error / end / danger | `#f8cecc` | `#b85450` |
+| Neutral / interface | `#f5f5f5` | `#666666` |
+| External / partner | `#e1d5e7` | `#9673a6` |
 
-## Convenções de arquivo, nomenclatura e layout
+## File, naming, and layout conventions
 
-| Aspecto | Convenção |
+| Aspect | Convention |
 |---|---|
-| Extensão | `.drawio` para diagramas versionados; `.drawio.svg` quando o arquivo for incorporado em Markdown |
-| Nome do arquivo | `kebab-case`, por exemplo, `payment-flow.drawio`, `database-schema.drawio` |
-| Local | Ao lado do código documentado pelo diagrama, em `docs/` ou `architecture/` |
-| Grade | Alinhe todas as coordenadas à grade de 10 px (valores divisíveis por 10) |
-| Espaçamento | 40–60 px entre formas da mesma linha; 80–120 px entre linhas de camadas |
-| Tamanho da página | A4 horizontal padrão, `1169 × 827` px |
-| Densidade | No máximo 40 células por página; divida sistemas maiores em várias páginas `<diagram>` |
-| Título | Adicione uma célula de texto de título no início de cada página |
+| Extension | `.drawio` for versioned diagrams; `.drawio.svg` when embedded in Markdown |
+| File name | `kebab-case`, for example, `payment-flow.drawio`, `database-schema.drawio` |
+| Location | Beside the code documented by the diagram, in `docs/` or `architecture/` |
+| Grid | Align all coordinates to the 10 px grid (values divisible by 10) |
+| Spacing | 40–60 px between shapes on the same row; 80–120 px between layer rows |
+| Page size | Default landscape A4, `1169 × 827` px |
+| Density | At most 40 cells per page; split larger systems into multiple `<diagram>` pages |
+| Title | Add a title text cell at the start of each page |
 
-## Validação
+## Validation
 
-Antes do commit, execute o verificador `validate-drawio.py` documentado na [skill `draw-io-diagram-generator`](../skills/draw-io-diagram-generator/SKILL.md). Depois, abra o arquivo no VS Code para confirmar a renderização. A skill detém a invocação exata e a tabela de solução de problemas; este arquivo detém as invariantes impostas pelo verificador.
+Before committing, run the `validate-drawio.py` checker documented in the [`draw-io-diagram-generator` skill](../skills/draw-io-diagram-generator/SKILL.md). Then open the file in VS Code to confirm rendering. The skill owns the exact invocation and troubleshooting table; this file owns the invariants enforced by the checker.
 
-## Convenções
+## Conventions
 
-| Regra | Justificativa |
+| Rule | Rationale |
 |---|---|
-| `id="0"` e `id="1"` são as duas primeiras células de cada página | O draw.io as trata como raiz reservada; sem elas, o arquivo não é renderizado |
-| Todo estilo de vértice inclui `whiteSpace=wrap;html=1` | Os rótulos quebram linhas e renderizam HTML de modo consistente, sem transbordar |
-| Os conectores usam `edgeStyle=orthogonalEdgeStyle` | O roteamento limpo em ângulos retos mantém os diagramas legíveis |
-| A paleta de cores semântica é usada de modo consistente | Uma cor possui o mesmo significado em todo diagrama |
-| Os nomes dos arquivos de diagrama usam `kebab-case` e ficam ao lado do código | Os diagramas são fáceis de encontrar e comparar no controle de versão |
-| As etapas e receitas de autoria ficam na skill, não aqui | Uma única fonte de procedimento evita desvios entre duas cópias |
+| `id="0"` and `id="1"` are the first two cells of each page | draw.io treats them as the reserved root; without them, the file does not render |
+| Every vertex style includes `whiteSpace=wrap;html=1` | Labels wrap and render HTML consistently, without overflowing |
+| Connectors use `edgeStyle=orthogonalEdgeStyle` | Clean right-angle routing keeps diagrams readable |
+| The semantic color palette is used consistently | A color has the same meaning in every diagram |
+| Diagram file names use `kebab-case` and live beside the code | Diagrams are easy to find and diff in version control |
+| Authoring steps and recipes live in the skill, not here | A single procedure source prevents drift between two copies |
 
-## Faça / Não faça
+## Do / Don't
 
-| Faça | Não faça |
+| Do | Don't |
 |---|---|
-| Coloque primeiro `id="0"` e `id="1"` e depois as células de conteúdo | Reutilize `0` ou `1` em uma forma ou omita-os |
-| Aponte toda aresta para IDs de vértices existentes ou use pontos flutuantes | Deixe `source`/`target` de uma aresta pendente |
-| Reutilize a paleta de cores semântica | Invente cores ad hoc para cada diagrama |
-| Aponte para a skill no fluxo de autoria | Copie para este arquivo as receitas passo a passo da skill |
-| Mantenha as coordenadas dos filhos relativas ao contêiner | Use coordenadas do canvas em células dentro de uma swimlane |
-| Divida um diagrama denso entre páginas | Comprima mais de 40 células em uma página |
+| Put `id="0"` and `id="1"` first, followed by content cells | Reuse `0` or `1` for a shape or omit them |
+| Point every edge to existing vertex IDs or use floating points | Leave an edge's `source`/`target` dangling |
+| Reuse the semantic color palette | Invent ad hoc colors for each diagram |
+| Point to the skill for the authoring workflow | Copy the skill's step-by-step recipes into this file |
+| Keep child coordinates relative to the container | Use canvas coordinates for cells inside a swimlane |
+| Split a dense diagram across pages | Squeeze more than 40 cells into one page |
 
-## Lista de verificação antes de abrir uma PR
+## PR Checklist
 
-- [ ] `<mxCell id="0" />` e `<mxCell id="1" parent="0" />` são as duas primeiras células de toda página
-- [ ] Todos os IDs de células são exclusivos dentro do diagrama, e todo `parent` resolve
-- [ ] Todo `source`/`target` de aresta resolve, ou a aresta usa `sourcePoint`/`targetPoint`
-- [ ] Todo vértice possui `<mxGeometry as="geometry">`, e os filhos dos contêineres usam coordenadas relativas
-- [ ] A paleta de cores semântica e o estilo de vértice `whiteSpace=wrap;html=1` são aplicados de modo consistente
-- [ ] O arquivo usa `kebab-case`, fica em `docs/` ou `architecture/` e possui uma célula de título por página
-- [ ] O verificador `validate-drawio.py` da skill passa, e o arquivo é renderizado no VS Code
+- [ ] `<mxCell id="0" />` and `<mxCell id="1" parent="0" />` are the first two cells of every page
+- [ ] All cell IDs are unique within the diagram, and every `parent` resolves
+- [ ] Every edge `source`/`target` resolves, or the edge uses `sourcePoint`/`targetPoint`
+- [ ] Every vertex has `<mxGeometry as="geometry">`, and container children use relative coordinates
+- [ ] The semantic color palette and `whiteSpace=wrap;html=1` vertex style are applied consistently
+- [ ] The file uses `kebab-case`, lives in `docs/` or `architecture/`, and has one title cell per page
+- [ ] The skill's `validate-drawio.py` checker passes, and the file renders in VS Code
