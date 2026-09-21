@@ -7,7 +7,7 @@ description: "Use when the user reports a deployed Azure resource is failing, de
 This workflow analyzes a specific Azure resource to assess its health, diagnose issues through logs and telemetry, and develop a remediation plan.
 
 > [!NOTE]
-> This skill depends on the **Azure MCP server** (or the `az` CLI) and requires the target resource to be deployed and emitting telemetry. When both are available, prefer Azure MCP tools (`azmcp-*`) over the Azure CLI.
+> This skill depends on the `Azure MCP Server/*` toolset and requires the target resource to be deployed and emitting telemetry. In a cloud coding agent, configure Azure MCP through the supported `azd coding-agent config` workflow. If tools, permissions, or telemetry are unavailable, report the affected checks as blocked instead of inferring health.
 
 ## When to Invoke
 
@@ -18,7 +18,7 @@ This workflow analyzes a specific Azure resource to assess its health, diagnose 
 
 ## Prerequisites
 
-- Azure MCP server configured and authenticated.
+- Azure MCP Server configured and authenticated.
 - Target Azure resource identified (name and, optionally, resource group/subscription).
 - The resource must be deployed and running to generate logs and telemetry.
 
@@ -31,7 +31,7 @@ Get diagnostic and troubleshooting best practices with the Azure best practices 
 ### Step 2: Resource discovery and identification
 
 1. **Locate the resource**:
-    - If only a name is provided, search subscriptions (`azmcp-subscription-list` or `az resource list --name <resource-name>`).
+    - If only a name is provided, search subscriptions and resources with Azure MCP tools.
     - If there are multiple matches, ask the user to specify the subscription or resource group.
     - Collect resource type and status, location, tags, configuration, and dependencies.
 2. **Detect the resource type** to choose appropriate diagnostics:
@@ -112,7 +112,7 @@ requests
 | Medium | Warnings, suboptimal configuration, minor performance issues |
 | Low | Informational alerts, optimization opportunities |
 
-2. **Determine the root cause category**: configuration issue, resource constraint (CPU/memory/disk/throttling), network issue, application issue (failure, memory leak, inefficient query), external dependency, or security issue (authentication failure, certificate expiration).
+2. **Assess causality**: distinguish a confirmed root cause from a correlated symptom or hypothesis. Record confidence, supporting evidence, conflicting evidence, and the next discriminating check. Do not label a hypothesis as root cause.
 3. **Assess impact**: affected users and systems, implications for data integrity and security, and recovery time priorities.
 
 ### Step 6: Generate a remediation plan
@@ -120,7 +120,7 @@ requests
 1. **Immediate actions** (Critical): emergency fixes to restore availability, workarounds, and escalation procedures.
 2. **Short-term fixes** (High/Medium): configuration adjustments, resource scaling, software fixes, and monitoring improvements.
 3. **Long-term improvements**: architectural changes for resilience, preventive measures, and documentation.
-4. **Implementation steps**: prioritized items with specific Azure CLI commands, testing/validation, rollback plans, and post-change monitoring.
+4. **Implementation steps**: prioritized Terraform change surfaces or application tasks, testing and validation, rollback, and post-change monitoring. This diagnostic workflow does not execute remediation or `terraform apply`.
 
 ### Step 7: User confirmation and report generation
 
@@ -148,7 +148,7 @@ Remediation plan:
 - Immediate actions: X items
 - Short-term fixes: Y items
 - Long-term improvements: Z items
-- Estimated resolution time: [Timeline]
+- Resolution estimate: [team-supplied estimate or not estimated]
 
 Proceed with the detailed remediation plan? (y/n)
 ```
@@ -160,9 +160,9 @@ After approval, generate the detailed report using the output template below.
 | Situation | Action |
 |---|---|
 | Resource not found | Request the exact name and location |
-| Authentication issues | Provide guidance on Azure authentication setup |
+| Authentication issues | Report the missing authentication prerequisite and stop live-state analysis |
 | Insufficient permissions | List the required read-only RBAC roles |
-| No logs available | Suggest enabling diagnostic settings and waiting for data |
+| No logs available | Mark telemetry-based findings blocked; propose diagnostic settings as a Terraform follow-up |
 | Query timeouts | Split the analysis into smaller time windows |
 | Service-specific gaps | Provide a generic health assessment and record limitations |
 
@@ -193,23 +193,17 @@ The skill writes a health report. Below the H1 title (`Azure resource health rep
 
 ## Remediation plan
 
-### Phase 1: Immediate actions (0 to 2 hours)
+### Phase 1: Immediate containment
 
-```bash
-<Azure CLI commands to restore service, with explanations>
-```
+<Proposed action, approval owner, validation, rollback, and evidence gap>
 
-### Phase 2: Short-term fixes (2 to 24 hours)
+### Phase 2: Short-term fixes
 
-```bash
-<Azure CLI commands for reliability improvements>
-```
+<Terraform or application change surface, validation, rollback, and monitoring>
 
-### Phase 3: Long-term improvements (1 to 4 weeks)
+### Phase 3: Long-term improvements
 
-```bash
-<Azure CLI and configuration changes>
-```
+<Architecture or operational follow-up; timeline remains pending until owned>
 
 ## Validation steps
 
@@ -223,7 +217,7 @@ The skill writes a health report. Below the H1 title (`Azure resource health rep
 
 - [ ] Resource health status was accurately assessed from logs, metrics, and telemetry.
 - [ ] All significant issues were identified and classified by severity.
-- [ ] Root cause analysis was completed for each Critical and High finding.
-- [ ] The remediation plan provides specific Azure CLI steps, with validation and rollback.
+- [ ] Each Critical and High finding distinguishes confirmed cause, hypothesis, and unknowns with confidence and evidence.
+- [ ] The remediation plan identifies Terraform or application change surfaces, validation, rollback, and decision owners.
 - [ ] Issues are prioritized by business impact, with monitoring and prevention recommendations.
-- [ ] Detailed remediation actions are executed only after explicit user confirmation.
+- [ ] No remediation or `terraform apply` was executed; any implementation requires a separate explicitly approved workflow.

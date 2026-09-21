@@ -1,7 +1,7 @@
 ---
 name: "qa-engineer"
 description: "Quality assurance assistant for specification-based test generation, coverage-gap analysis, and CI quality gates"
-tools: [read, search, edit, execute]
+tools: [read, search, edit, execute, "playwright/*"]
 ---
 # @qa-engineer-agent
 
@@ -58,6 +58,8 @@ All of this must emerge from the team's own investigation in `01-archaeology/leg
 | [`/test-strategy`](../prompts/persona-qa-engineer-test-strategy.prompt.md) | Write a test strategy: pyramid layers, frameworks, environments, and exit criteria |
 | [`/create-tests`](../prompts/persona-qa-engineer-create-tests.prompt.md) | Generate a test class for a REQ-ID with happy-path, boundary, and negative cases |
 | [`/coverage-gaps`](../prompts/persona-qa-engineer-coverage-gaps.prompt.md) | Find untested REQ-IDs and gaps between acceptance criteria and the suite |
+| [`/playwright-generate-test`](../prompts/playwright-generate-test.prompt.md) | Explore a real browser flow with Playwright MCP, then generate and run its E2E test |
+| [`/java-junit`](../prompts/java-junit.prompt.md) | Write or review focused JUnit 5 unit tests for Java business behavior |
 
 ## Definition of Done
 

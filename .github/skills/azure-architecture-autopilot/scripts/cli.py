@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """CLI for the azure-architecture-autopilot diagram engine."""
+from generator import generate_diagram
 import argparse
 import json
 import sys
@@ -9,7 +10,6 @@ import shutil
 from pathlib import Path
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from generator import generate_diagram
 
 
 def main():
@@ -17,14 +17,20 @@ def main():
         description="Generate interactive Azure architecture diagrams",
         prog="azure-architecture-autopilot"
     )
-    parser.add_argument("-s", "--services", help="Services JSON (string or file path)")
-    parser.add_argument("-c", "--connections", help="Connections JSON (string or file path)")
-    parser.add_argument("-t", "--title", default="Azure Architecture", help="Diagram title")
-    parser.add_argument("-o", "--output", default="azure-architecture.html", help="Output file path")
+    parser.add_argument("-s", "--services",
+                        help="Services JSON (string or file path)")
+    parser.add_argument("-c", "--connections",
+                        help="Connections JSON (string or file path)")
+    parser.add_argument(
+        "-t", "--title", default="Azure Architecture", help="Diagram title")
+    parser.add_argument(
+        "-o", "--output", default="azure-architecture.html", help="Output file path")
     parser.add_argument("-f", "--format", choices=["html", "png", "both"], default="html",
                         help="Output format: html (default), png or both (html+png)")
-    parser.add_argument("--vnet-info", default="", help="VNet CIDR information")
-    parser.add_argument("--hierarchy", default="", help="Subscription/RG hierarchy JSON")
+    parser.add_argument("--vnet-info", default="",
+                        help="VNet CIDR information")
+    parser.add_argument("--hierarchy", default="",
+                        help="Subscription/RG hierarchy JSON")
 
     args = parser.parse_args()
 
@@ -60,7 +66,8 @@ def main():
 
     if args.format in ("png", "both"):
         # Write temporary HTML and capture a screenshot with puppeteer/playwright
-        tmp_html = html_path if args.format == "both" else Path(str(png_path) + ".tmp.html")
+        tmp_html = html_path if args.format == "both" else Path(
+            str(png_path) + ".tmp.html")
         if args.format != "both":
             tmp_html.write_text(html, encoding="utf-8")
 
@@ -106,7 +113,8 @@ if (!puppeteer) {{ console.error('puppeteer not found'); process.exit(1); }}
 }})();
 """
     try:
-        result = subprocess.run([node, "-e", script], capture_output=True, text=True, timeout=30)
+        result = subprocess.run([node, "-e", script],
+                                capture_output=True, text=True, timeout=30)
         return result.returncode == 0 and png_path.exists()
     except (subprocess.TimeoutExpired, FileNotFoundError):
         return False
@@ -144,7 +152,8 @@ def _normalize_services(services):
                 svc["private"] = False
             else:
                 # Log a warning for invalid values
-                print(f"WARNING: Invalid boolean value '{svc['private']}' for the 'private' field. Defaulting to False.", file=sys.stderr)
+                print(
+                    f"WARNING: Invalid boolean value '{svc['private']}' for the 'private' field. Defaulting to False.", file=sys.stderr)
                 svc["private"] = False
     return services
 

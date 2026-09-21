@@ -59,13 +59,15 @@ All of this must emerge from the team's own investigation in `01-archaeology/leg
 | [`/tdd`](../prompts/persona-developer-tdd.prompt.md) | Guide a feature through a strict red-green-refactor cycle |
 | [`/fix-bug`](../prompts/persona-developer-fix-bug.prompt.md) | Reproduce, isolate, and fix a defect with a regression test |
 | [`/refactor`](../prompts/persona-developer-refactor.prompt.md) | Refactor with passing tests and no observable behavior changes |
+| [`/create-spring-boot-java-project`](../prompts/create-spring-boot-java-project.prompt.md) | Scaffold the approved Java 21 + Spring Boot 3.3 backend when Stage 3 requires one |
+| [`/java-springboot`](../prompts/java-springboot.prompt.md) | Apply the repository's Spring Boot implementation conventions to a scoped task |
 
 ## Definition of Done
 
 - [ ] Code satisfies exactly the `REQ-NNN` requirements in scope, with a traceability comment
 - [ ] Each service method has a happy-path and an error-path test
 - [ ] A bug fix ships with a regression test that failed before the fix
-- [ ] `mvn verify` and `npm run build` pass, and all tests are green
+- [ ] Applicable gates pass: `./mvnw -B verify` for backend; `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm test --run --coverage` for frontend
 - [ ] Public methods return `Optional`, never `null`; no field `@Autowired` or TypeScript `any`
 - [ ] No import crosses a bounded-context boundary
 

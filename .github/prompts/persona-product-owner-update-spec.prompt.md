@@ -1,102 +1,102 @@
 ---
 name: "update-spec"
-description: "Atualize um spec.md existente para adicionar ou alterar requisitos, preservando a rastreabilidade e as regras não modificadas."
+description: "Update an existing spec.md to add or change requirements while preserving traceability and unchanged rules."
 argument-hint: "feature=NNN-feature-name change=<description>"
 agent: "product-owner"
 tools: ["read", "search", "edit"]
 ---
 # /update-spec
 
-## Objetivo
+## Objective
 
-Evoluir `specs/<NNN>-<feature>/spec.md` com segurança, adicionando ou modificando requisitos de uma funcionalidade alterada. Preserve os REQ-IDs existentes, a rastreabilidade e a conformidade com a constituição. A entrega é uma especificação editada e um relatório de alterações.
+Safely evolve `specs/<NNN>-<feature>/spec.md` by adding or modifying requirements for a changed feature. Preserve existing REQ-IDs, traceability, and compliance with the constitution. The deliverable is an edited specification and a change report.
 
-## Quando usar
+## When to Invoke
 
-Quando o escopo de uma funcionalidade mudar depois da criação da especificação, antes do início da implementação ou quando uma solicitação de mudança chegar durante a Etapa 3.
+When a feature's scope changes after the specification has been created, before implementation begins, or when a change request arrives during Stage 3.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/spec.md` já existe com REQ-IDs e uma versão no bloco de metadados YAML
-- `.specify/memory/constitution.md` existe
-- A mudança está descrita e sua fonte legada (ou `[GREENFIELD]`) é conhecida
+- `specs/<NNN>-<feature>/spec.md` already exists with REQ-IDs and a version in the YAML frontmatter
+- `.specify/memory/constitution.md` exists
+- The change is described and its legacy source (or `[GREENFIELD]`) is known
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
 - `feature=<NNN>-<feature>`
-- A mudança que deve ser aplicada: um requisito novo, uma modificação ou uma remoção com seu motivo
-- O valor de `source_legacy:` para qualquer requisito novo ou alterado
-- Solicite à pessoa usuária qualquer informação ausente.
+- The change to apply: a new requirement, a modification, or a removal with its reason
+- The `source_legacy:` value for any new or changed requirement
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Lerei a especificação atual e a constituição e registrarei a versão vigente
-- Localizarei a seção e os REQ-IDs exatos afetados pela mudança
-- Preservarei literalmente cada requisito não alterado
-- Adicionarei ou modificarei somente os requisitos selecionados, cada um com redação EARS, `source_legacy:` e critérios de aceitação
-- Incrementarei a versão da especificação no bloco de metadados YAML e adicionarei uma linha ao histórico de alterações
-- Produzirei um relatório de alterações com cada REQ-ID adicionado, modificado ou removido
+- Read the current specification and constitution and record the current version
+- Locate the exact section and REQ-IDs affected by the change
+- Preserve each unchanged requirement verbatim
+- Add or modify only the selected requirements, each with EARS wording, `source_legacy:`, and acceptance criteria
+- Increment the specification version in the YAML frontmatter and add a changelog entry
+- Produce a change report with each added, modified, or removed REQ-ID
 
-## O que não farei
+## What I Will NOT Do
 
-- Excluir ou renumerar REQ-IDs existentes silenciosamente. As remoções são explícitas e justificadas porque testes e ADRs fazem referência a esses IDs
-- Adicionar um requisito sem uma linha `source_legacy:` (proteção contra alucinações e verificação obrigatória de CI)
-- Inventar comportamento legado. Lerei o arquivo citado ou perguntarei à equipe
-- Criar uma especificação do zero. Essa é a função de `/spec`
-- Auditar novamente toda a especificação em busca de contradições. Essa é a função de `/contradiction-check` com o Especialista em Requisitos (`@requirements-engineer`)
+- Silently delete or renumber existing REQ-IDs. Removals are explicit and justified because tests and ADRs reference these IDs
+- Add a requirement without a `source_legacy:` line (hallucination protection and mandatory CI check)
+- Invent legacy behavior. I will read the cited file or ask the team
+- Create a specification from scratch. That is the role of `/spec`
+- Reaudit the entire specification for contradictions. That is the role of `/contradiction-check` with the Requirements Engineer (`@requirements-engineer`)
 
-## Formato da saída
+## Output Format
 
-Um `spec.md` editado e um relatório de alterações apresentado à equipe:
+An edited `spec.md` and a change report presented to the team:
 
 ```markdown
-## Relatório de alterações: 001-pagamento-beneficio (v1.2.0 -> v1.3.0)
+## Change report: 001-pagamento-beneficio (v1.2.0 -> v1.3.0)
 
-| REQ-ID | Ação | source_legacy | Observação |
+| REQ-ID | Action | source_legacy | Note |
 |---|---|---|---|
-| REQ-PAY-021 | Adicionado | 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end> | Nova regra de arredondamento confirmada com a equipe |
-| REQ-PAY-014 | Modificado | (sem alteração) | Limite alterado de 30 para 45 dias |
-| REQ-PAY-009 | Removido | (não se aplica) | Substituído por REQ-PAY-021 e adiado para a lista priorizada |
+| REQ-PAY-021 | Added | 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end> | New rounding rule confirmed with the team |
+| REQ-PAY-014 | Modified | (unchanged) | Limit changed from 30 to 45 days |
+| REQ-PAY-009 | Removed | (not applicable) | Replaced by REQ-PAY-021 and deferred to the backlog |
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada REQ-ID preexistente fora do escopo permanece idêntico byte a byte
-- [ ] Os requisitos adicionados ou modificados mantêm a redação EARS e uma linha `source_legacy:` válida
-- [ ] Cada remoção está listada com uma justificativa e qualquer REQ-ID substituto
-- [ ] A versão da especificação foi incrementada no bloco de metadados YAML, conforme o versionamento semântico (semver), com uma entrada no histórico de alterações
-- [ ] Não há contradição nova com `.specify/memory/constitution.md`
-- [ ] Um relatório de alterações lista cada REQ-ID adicionado, modificado ou removido
+- [ ] Each preexisting out-of-scope REQ-ID remains byte-for-byte identical
+- [ ] Added or modified requirements retain EARS wording and a valid `source_legacy:` line
+- [ ] Each removal is listed with a justification and any replacement REQ-ID
+- [ ] The specification version has been incremented in the YAML frontmatter according to semantic versioning (semver), with a changelog entry
+- [ ] There is no new contradiction with `.specify/memory/constitution.md`
+- [ ] A change report lists each added, modified, or removed REQ-ID
 
-## Corpo do prompt
+## Prompt Body
 
-Você atua como Responsável pelo Produto (`@product-owner`). Uma funcionalidade já tem uma especificação, e uma mudança deve ser incorporada sem danos colaterais.
+You are the Product Owner (`@product-owner`). A feature already has a specification, and a change must be incorporated without collateral damage.
 
-**Etapa 1: leia o estado atual.**
-Abra `spec.md` e `.specify/memory/constitution.md`. Registre a versão atual do bloco de metadados YAML.
+**Step 1: read the current state.**
+Open `spec.md` and `.specify/memory/constitution.md`. Record the current version from the YAML frontmatter.
 
-**Etapa 2: delimite a mudança.**
-Identifique exatamente a seção e os REQ-IDs afetados pela mudança. Todo o restante fica congelado.
+**Step 2: scope the change.**
+Identify the exact section and REQ-IDs affected by the change. Everything else is frozen.
 
-**Etapa 3: exija a fonte.**
-Para cada requisito novo ou alterado, exija um caminho legado ou uma justificativa com `[GREENFIELD]`. Se estiver ausente, pergunte e interrompa o trabalho.
+**Step 3: require the source.**
+For each new or changed requirement, require a legacy path or a justification with `[GREENFIELD]`. If it is missing, ask and stop.
 
-**Etapa 4: aplique a edição.**
-Adicione ou modifique somente os requisitos no escopo. Mantenha os requisitos não alterados literalmente, sem reformatar, renumerar ou reescrever.
+**Step 4: apply the edit.**
+Add or modify only the in-scope requirements. Keep unchanged requirements verbatim, without reformatting, renumbering, or rewriting.
 
-**Etapa 5: trate as remoções explicitamente.**
-Se um requisito for removido, registre-o no relatório de alterações com o motivo e qualquer REQ-ID substituto. Nunca exclua silenciosamente.
+**Step 5: handle removals explicitly.**
+If a requirement is removed, record it in the change report with the reason and any replacement REQ-ID. Never delete silently.
 
-**Etapa 6: incremente a versão.**
-Atualize a versão do bloco de metadados YAML conforme o versionamento semântico e adicione uma linha ao histórico de alterações que descreva a mudança.
+**Step 6: increment the version.**
+Update the YAML frontmatter version according to semantic versioning and add a changelog entry describing the change.
 
-**Etapa 7: apresente o relatório.**
-Produza a tabela do relatório de alterações.
+**Step 7: present the report.**
+Produce the change report table.
 
-Priorize a estabilidade dos REQ-IDs, pois outros artefatos fazem referência a esses IDs. Nunca remova uma linha `source_legacy:` nem invente comportamento legado para justificar uma mudança.
+Prioritize REQ-ID stability because other artifacts reference these IDs. Never remove a `source_legacy:` line or invent legacy behavior to justify a change.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
-/update-spec feature=001-pagamento-beneficio change="Adicionar regra de arredondamento para valores de benefício corrigidos"
+```text
+/update-spec feature=001-pagamento-beneficio change="Add a rounding rule for corrected benefit amounts"
 ```

@@ -64,7 +64,7 @@ IF <confirmed unwanted condition>, THEN the system SHALL <one observable respons
 - Status: Proposed
 - Source: SRC-001
 - Rationale: <reason supported by the confirmed rule>
-- source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSN:L<start>-L<end>
+- source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSN#L<start>-L<end>
 - Planned verification: <test, inspection, analysis, demonstration, or measurement; expected evidence>
 - AC-REQ-007-01 - Acceptance (Given/When/Then):
   - Given <evidenced precondition>
@@ -76,20 +76,20 @@ Keep the source register and traceability matrix in the same `spec.md`:
 
 | SRC-ID | Source type | Primary evidence | Confirmed rule |
 |---|---|---|---|
-| SRC-001 | Legacy | `<full program path>:L<start>-L<end>` | Rule 4 |
+| SRC-001 | Legacy | `<full program path>#L<start>-L<end>` | Rule 4 |
 
 | REQ-ID | EARS Pattern | source_legacy | Source Rule | Source File | SRC-ID | AC-ID |
 |---|---|---|---|---|---|---|
-| REQ-007 | Unwanted | `<PROGRAM>.NSN:L<start>-L<end>` | Rule 4 | `business-rules-catalog.md` | SRC-001 | AC-REQ-007-01 |
+| REQ-007 | Unwanted | `<PROGRAM>.NSN#L<start>-L<end>` | Rule 4 | `business-rules-catalog.md` | SRC-001 | AC-REQ-007-01 |
 
 ## Rules for SDD and Traceability
 
-- SDD instructions load automatically only for `.specs/**`; read them explicitly for this prompt and apply the evidence, EARS atomicity, traceability, and status rules.
-- Preserve `specs/<NNN>-<feature>/spec.md` and the `REQ-NNN` scheme as repository conventions. The uppercase ten-artifact contract belongs to `.specs/`; it does not authorize replacing the existing artifact paths.
+- SDD instructions apply to `specs/**`; read them explicitly before authoring so their evidence, EARS atomicity, traceability, and status rules govern the whole task.
+- Preserve `specs/<NNN>-<feature>/spec.md` and the `REQ-NNN` scheme. Do not create a parallel artifact tree or impose files outside the requested scope.
 - Use `SHALL` in normative clauses as defined by the skill. Preserve meaning and IDs when normalizing existing requirements. `SRC-###` supplements but never replaces `source_legacy:`.
 - Do not invent priorities, metrics, approvals, or test results to complete the template. Unevidenced fields remain `PENDING` or `BLOCKED`, with an impact and owner; do not present blocked requirements as ready.
 - Load only resources needed by the selected mode. Do not assume generators or validators named by the skill exist or cover this repository's artifacts; record unexecuted checks and the reason.
-- Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite. Keep test planning in the requirement's verification field; do not create `tasks.md` or a parallel FRD/NFRD unless requested. Use the SDD skill's output template for the final report.
+- Apply the `SDD Workflow` section of the [architect agent](../agents/architect.agent.md) directly. Keep test planning in the requirement's verification field; do not create `tasks.md` or a parallel FRD/NFRD unless requested. Use the SDD skill's output template for the final report.
 
 ## Definition of Done
 
@@ -106,7 +106,7 @@ Keep the source register and traceability matrix in the same `spec.md`:
 You are `@architect`. Promote confirmed Stage 1 rules to formal EARS requirements without inventing evidence.
 
 **Step 0 - Load SDD, TDD, and instructions.**
-Before reading feature inputs or authoring, explicitly read [SDD artifact instructions](../instructions/sdd-artifacts.instructions.md) and load [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) and [tdd-workflow](../skills/tdd-workflow/SKILL.md). If skill loading is unavailable, read each `SKILL.md` directly. Read [test instructions](../instructions/tests.instructions.md) for acceptance planning and [Natural/Adabas instructions](../instructions/natural-adabas.instructions.md) before legacy sources. Do not rely on `applyTo` matching `specs/`. Select `Requirements` and read the [EARS reference](../skills/sdd-requirements-engineer/references/ears-notation.md) and [quality gates](../skills/sdd-requirements-engineer/references/quality-gates.md); apply the compatibility rules above.
+Before reading feature inputs or authoring, explicitly read [SDD artifact instructions](../instructions/sdd-artifacts.instructions.md) and load [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) and [tdd-workflow](../skills/tdd-workflow/SKILL.md). If skill loading is unavailable, read each `SKILL.md` directly. Read [test instructions](../instructions/tests.instructions.md) for acceptance planning and [Natural/Adabas instructions](../instructions/natural-adabas.instructions.md) before legacy sources. Select `Requirements` and read the [EARS reference](../skills/sdd-requirements-engineer/references/ears-notation.md) and [quality gates](../skills/sdd-requirements-engineer/references/quality-gates.md); apply the repository contract above.
 
 **Step 1 - Confirm scope.**
 List only **Confirmed** entries that the team assigned to the feature. Record deferred work in `scope-decisions.md`. Do not include **Inferred** or **Mystery** entries.

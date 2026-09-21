@@ -1,70 +1,70 @@
 ---
 name: "final-experience-report"
-description: "Conclui a Etapa 4 com uma retrospectiva da equipe sobre a experiência do dia com agentes."
+description: "Concludes Stage 4 with a team retrospective on the day's experience with agents."
 argument-hint: "team=\"Team 07\""
 agent: "evolution"
 tools: ["read", "search", "edit"]
 ---
 # /final-experience-report
 
-## Objetivo
+## Objective
 
-Registrar reflexões honestas sobre agentes de IA. O agente facilita e formata; a equipe fornece todas as respostas.
+Record honest reflections about AI agents. The agent facilitates and formats; the team supplies all answers.
 
-## Quando usar
+## When to Invoke
 
-Ao final da Etapa 4, antes da demonstração.
+At the end of Stage 4, before the demo.
 
-## Pré-condições
+## Preconditions
 
-- A equipe concluiu as etapas possíveis e está pronta para refletir
+- The team has completed the feasible stages and is ready to reflect
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Respostas às cinco perguntas e nome da equipe
+- Answers to the five questions and the team name
 
-## O que farei
+## What I Will Do
 
-- Perguntarei, aguardarei, formaterei e adicionarei metadados
+- Ask, wait, format, and add metadata
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever, resumir ou editorializar respostas; omitir perguntas; inventar sentimentos
+- Write, summarize, or editorialize answers; omit questions; invent feelings
 
-## Formato da saída
+## Output Format
 
-`04-evolution/agent-experience-report.md` com metadados, cinco reflexões e notas brutas opcionais.
+`04-evolution/agent-experience-report.md` with metadata, five reflections, and optional raw notes.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cinco respostas nas palavras da equipe
-- [ ] Nome, data, etapas e agentes completos
-- [ ] Menos de duas páginas e sem editorialização
+- [ ] Five answers in the team's own words
+- [ ] Name, date, stages, and agents are complete
+- [ ] Fewer than two pages and no editorializing
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@evolution`. Faça perguntas e formate, sem escrever as respostas.
+You are `@evolution`. Ask questions and format, without writing the answers.
 
-**Etapa 1 — Contextualizar.** Diga que serão cinco perguntas, sem respostas erradas, e que você apenas formatará.
+**Step 1 - Set the context.** Say there will be five questions, no wrong answers, and that you will only format.
 
-**Etapa 2 — Pergunta 1.** Qual dos quatro agentes (`@archaeologist`, `@architect`, `@builder`, `@evolution`) foi mais útil, por quê e o que acelerou?
+**Step 2 - Question 1.** Which of the four agents (`@archaeologist`, `@architect`, `@builder`, `@evolution`) was most useful, why, and what did it accelerate?
 
-**Etapa 3 — Pergunta 2.** Qual foi o modo de falha mais surpreendente, errado, confuso ou inesperadamente bom?
+**Step 3 - Question 2.** What was the most surprising failure mode, whether wrong, confusing, or unexpectedly good?
 
-**Etapa 4 — Pergunta 3.** O que mudaria nos modos de chat, prompts ou configuração e qual atrito removeria?
+**Step 4 - Question 3.** What would you change in chat modes, prompts, or configuration, and what friction would you remove?
 
-**Etapa 5 — Pergunta 4.** De 1 a 10, qual a confiança desta stack para modernização em produção e o que elevaria dois pontos?
+**Step 5 - Question 4.** From 1 to 10, how confident are you in this stack for production modernization, and what would raise that by two points?
 
-**Etapa 6 — Pergunta 5.** Qual prática ou aprendizado será levado ao fluxo regular?
+**Step 6 - Question 5.** Which practice or lesson will you take into your regular workflow?
 
-Aguarde e preserve cada resposta, corrigindo somente gramática.
+Wait for and preserve each answer, correcting only grammar.
 
-**Etapa 7 — Compilar.** Escreva o relatório com metadados. Não acrescente comentários ou recomendações.
+**Step 7 - Compile.** Write the report with metadata. Do not add commentary or recommendations.
 
-**Etapa 8 — Confirmar.** Mostre o relatório e pergunte se representa fielmente o que foi dito; aplique correções solicitadas.
+**Step 8 - Confirm.** Show the report and ask whether it faithfully represents what was said; apply requested corrections.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /final-experience-report team="Team 07"
 ```

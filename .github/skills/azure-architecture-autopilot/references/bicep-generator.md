@@ -1,133 +1,133 @@
-# Agente gerador de Bicep
+# Bicep generator agent
 
-Recebe a especificação final da arquitetura na Fase 1 e gera modelos Bicep implantáveis.
+Receives the final architecture specification from Phase 1 and generates deployable Bicep templates.
 
-## Etapa 0: verificar as especificações mais recentes (obrigatório antes de gerar Bicep)
+## Step 0: check the latest specifications (required before generating Bicep)
 
-Não fixe versões da API no código Bicep.
-Sempre consulte a referência do Bicep no Microsoft Docs e confirme a `apiVersion` estável mais recente antes de usá-la.
+Do not hardcode API versions in Bicep code.
+Always consult the Bicep reference on Microsoft Docs and confirm the latest stable `apiVersion` before using it.
 
-### Etapas de verificação
+### Verification steps
 
-1. Identifique a lista de serviços
-2. Consulte a URL de cada serviço no Microsoft Docs com `web_fetch`
-3. Confirme a versão estável mais recente da API
-4. Escreva o Bicep com essa versão
+1. Identify the service list
+2. Fetch each service's Microsoft Docs URL with `web_fetch`
+3. Confirm the latest stable API version
+4. Write Bicep using that version
 
-### Verificação da disponibilidade de implantação do modelo (obrigatória para modelos Foundry/OpenAI)
+### Model deployment availability check (required for Foundry/OpenAI models)
 
-Verifique se o modelo informado pode ser implantado na região de destino **antes de gerar Bicep**.
-A disponibilidade varia por região e muda com frequência. Não dependa de conhecimento estático.
+Check whether the specified model can be deployed in the target region **before generating Bicep**.
+Availability varies by region and changes frequently. Do not rely on static knowledge.
 
-**Métodos de verificação (em ordem de prioridade):**
+**Verification methods (in priority order):**
 
-1. Consulte a disponibilidade no Microsoft Docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models
-2. Ou consulte diretamente pela CLI do Azure:
+1. Check availability on Microsoft Docs: https://learn.microsoft.com/en-us/azure/ai-services/openai/concepts/models
+2. Or query directly through the Azure CLI:
 
    ```powershell
    az cognitiveservices account list-models --name "<FOUNDRY_NAME>" --resource-group "<RG_NAME>" -o table
    ```
 
-   (Quando o recurso Foundry já existir)
+  (When the Foundry resource already exists)
 
-**Se o modelo não estiver disponível na região de destino:**
+**If the model is unavailable in the target region:**
 
-- Informe e sugira regiões disponíveis ou modelos alternativos
-- Não substitua o modelo nem a região sem aprovação
+- Report this and suggest available regions or alternative models
+- Do not replace the model or region without approval
 
-### URLs do Microsoft Docs por serviço
+### Microsoft Docs URLs by service
 
-O registro completo de URLs está em `references/azure-dynamic-sources.md`. Consulte-o ao pesquisar.
-Os arquivos de referência ficam em `.github/skills/azure-architecture-autopilot/`.
+The complete URL registry is in `references/azure-dynamic-sources.md`. Consult it when researching.
+Reference files are under `.github/skills/azure-architecture-autopilot/`.
 
-> **Importante**: consulte a URL diretamente com `web_fetch` para confirmar a `apiVersion` estável mais recente. Não use sem verificação versões fixas de referências ou conversas anteriores.
+> **Important**: fetch the URL directly with `web_fetch` to confirm the latest stable `apiVersion`. Do not use fixed versions from references or previous conversations without verification.
 
-> **Sempre verifique também os recursos filhos**: consulte as versões da API de recursos filhos (`accounts/projects`, `accounts/deployments`, `privateDnsZones/virtualNetworkLinks`, `privateEndpoints/privateDnsZoneGroups` etc.) na página do pai. As versões podem ser diferentes.
+> **Always check child resources too**: look up API versions for child resources (`accounts/projects`, `accounts/deployments`, `privateDnsZones/virtualNetworkLinks`, `privateEndpoints/privateDnsZoneGroups`, etc.) on the parent page. Versions may differ.
 
-> **O mesmo princípio vale para erros/avisos**: se ocorrer um erro de versão da API na análise de alterações (`what-if`) ou na implantação, não trate a versão da mensagem como a mais recente. Consulte novamente o Microsoft Docs antes de corrigir.
-
----
-
-## Princípios para consultar informações (estáveis versus dinâmicas)
-
-### Sempre consultar (dinâmicas)
-
-- Versão da API → consulte as URLs em `azure-dynamic-sources.md`
-- Disponibilidade do modelo (nome, versão e região) → consulte
-- Lista de SKUs/preços → consulte
-- Disponibilidade regional → consulte
-
-### Consultar primeiro as referências (estáveis)
-
-- Padrões de propriedades obrigatórias (`isHnsEnabled`, `allowProjectManagement` etc.) → `service-gotchas.md`
-- Mapeamentos de `groupId` de PE e DNS Zone (principais serviços) → `service-gotchas.md`
-- Padrões comuns de PE, segurança e nomenclatura → `azure-common-patterns.md`
-- Guia de configuração de serviços de IA/dados → `ai-data.md`
-
-> Em caso de dúvida sobre uma informação estável, confirme-a novamente no Microsoft Docs. Não é necessário consultar todas as vezes.
+> **The same principle applies to errors/warnings**: if an API version error occurs during change analysis (`what-if`) or deployment, do not treat the version in the message as the latest. Check Microsoft Docs again before fixing it.
 
 ---
 
-## Fluxo de contingência para serviço desconhecido
+## Information lookup principles (stable versus dynamic)
 
-Quando a solicitação incluir um serviço fora do escopo da v1 (`ai-data.md`):
+### Always look up (dynamic)
 
-1. **Informe**: "Este serviço está fora do escopo padrão da v1. Ele será gerado por melhor esforço com base no Microsoft Docs."
-2. **Consulte a versão da API**: monte a URL no formato `https://learn.microsoft.com/en-us/azure/templates/microsoft.{provider}/{resourceType}` e consulte-a
-3. **Identifique o tipo e as propriedades obrigatórias**: confirme-os na documentação consultada
-4. **Verifique o mapeamento de PE**: consulte `https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns` para confirmar `groupId`/DNS Zone
-5. **Aplique os padrões comuns**: use os padrões de segurança, rede e nomenclatura de `azure-common-patterns.md`
-6. **Escreva o Bicep**: gere o módulo com base nas informações acima
-7. **Encaminhe ao revisor**: valide a compilação com `az bicep build`
+- API version → consult the URLs in `azure-dynamic-sources.md`
+- Model availability (name, version, and region) → look up
+- SKU/pricing list → look up
+- Regional availability → look up
 
-## Informações de entrada
+### Consult references first (stable)
 
-As informações abaixo devem estar finalizadas ao concluir a Fase 1:
+- Required property patterns (`isHnsEnabled`, `allowProjectManagement`, etc.) → `service-gotchas.md`
+- PE `groupId` and DNS Zone mappings (major services) → `service-gotchas.md`
+- Common PE, security, and naming patterns → `azure-common-patterns.md`
+- AI/data service configuration guide → `ai-data.md`
 
+> When unsure about stable information, reconfirm it on Microsoft Docs. A lookup is not required every time.
+
+---
+
+## Fallback flow for an unknown service
+
+When the request includes a service outside the v1 scope (`ai-data.md`):
+
+1. **Inform**: "This service is outside the standard v1 scope. It will be generated on a best-effort basis using Microsoft Docs."
+2. **Look up the API version**: build and fetch the URL in the format `https://learn.microsoft.com/en-us/azure/templates/microsoft.{provider}/{resourceType}`
+3. **Identify the type and required properties**: confirm them in the retrieved documentation
+4. **Check the PE mapping**: consult `https://learn.microsoft.com/en-us/azure/private-link/private-endpoint-dns` to confirm `groupId`/DNS Zone
+5. **Apply common patterns**: use security, networking, and naming patterns from `azure-common-patterns.md`
+6. **Write Bicep**: generate the module using the information above
+7. **Hand off to the reviewer**: validate compilation with `az bicep build`
+
+## Input information
+
+The following information must be finalized by the end of Phase 1:
+
+```text
+- services: [Service list + SKU]
+- networking: Whether private_endpoint is used
+- resource_group: Resource group name
+- location: Deployment location (confirmed in Phase 1)
+- subscription_id: Azure subscription ID
 ```
-- services: [Lista de serviços + SKU]
-- networking: Se private_endpoint é usado
-- resource_group: Nome do grupo de recursos
-- location: Local da implantação (confirmado na Fase 1)
-- subscription_id: ID da assinatura do Azure
-```
 
-## Estrutura dos arquivos de saída
+## Output file structure
 
-```
+```text
 <project-name>/
-├── main.bicep              # Orquestração principal: chamadas de módulos e passagem de parâmetros
-├── main.bicepparam         # Arquivo de parâmetros: valores do ambiente, sem informações confidenciais
+├── main.bicep              # Main orchestration: module calls and parameter passing
+├── main.bicepparam         # Parameter file: environment values, no sensitive information
 └── modules/
-    ├── network.bicep           # VNet, Subnet (inclui pe-subnet)
-    ├── ai.bicep                # Serviços de IA (configurados conforme os requisitos)
-    ├── storage.bicep           # ADLS Gen2 (isHnsEnabled: true obrigatório)
-    ├── fabric.bicep            # Microsoft Fabric Capacity (somente quando necessário)
+  ├── network.bicep           # VNet, Subnet (includes pe-subnet)
+  ├── ai.bicep                # AI services (configured according to requirements)
+  ├── storage.bicep           # ADLS Gen2 (isHnsEnabled: true required)
+  ├── fabric.bicep            # Microsoft Fabric Capacity (only when needed)
     ├── keyvault.bicep          # Key Vault
-    ├── monitoring.bicep        # Application Insights, Log Analytics (somente em configurações baseadas em Hub)
-    └── private-endpoints.bicep # Todos os PEs + Private DNS Zones + VNet Links + DNS Zone Groups
+  ├── monitoring.bicep        # Application Insights, Log Analytics (Hub-based configurations only)
+  └── private-endpoints.bicep # All PEs + Private DNS Zones + VNet Links + DNS Zone Groups
 ```
 
-## Responsabilidades dos módulos
+## Module responsibilities
 
 ### `network.bicep`
 
-- VNet: recebe o CIDR como parâmetro para evitar conflitos com espaços de endereços existentes
-- pe-subnet: exige `privateEndpointNetworkPolicies: 'Disabled'`
-- Sub-redes adicionais: tratadas por parâmetros conforme necessário
+- VNet: accepts CIDR as a parameter to avoid conflicts with existing address spaces
+- pe-subnet: requires `privateEndpointNetworkPolicies: 'Disabled'`
+- Additional subnets: handled through parameters as needed
 
 ### `ai.bicep`
 
-- **Recurso Microsoft Foundry** (`Microsoft.CognitiveServices/accounts`, `kind: 'AIServices'`): recurso de IA de nível superior
-  - `customSubDomainName: foundryName` obrigatório. **Não pode ser alterado após a criação. Se omitido, exclua e recrie o recurso**
-  - `identity: { type: 'SystemAssigned' }` obrigatório
-  - `allowProjectManagement: true` obrigatório
-  - Implantação de modelo (`Microsoft.CognitiveServices/accounts/deployments`): feita no nível do recurso Foundry
-- **⚠️ Foundry Project** (`Microsoft.CognitiveServices/accounts/projects`): **deve ser criado como recurso filho**
-  - Tipo de recurso: `Microsoft.CognitiveServices/accounts/projects` (nunca crie como recurso `accounts` autônomo)
-  - Use `parent: foundryAccount` no Bicep
-  - Exemplo incorreto: criar um Project como conta `kind: 'AIServices'` separada → o portal não o reconhece
-  - Exemplo correto:
+- **Microsoft Foundry resource** (`Microsoft.CognitiveServices/accounts`, `kind: 'AIServices'`): top-level AI resource
+  - `customSubDomainName: foundryName` is required. **Cannot be changed after creation. If omitted, delete and recreate the resource**
+  - `identity: { type: 'SystemAssigned' }` is required
+  - `allowProjectManagement: true` is required
+  - Model deployment (`Microsoft.CognitiveServices/accounts/deployments`): performed at the Foundry resource level
+- **Foundry Project** (`Microsoft.CognitiveServices/accounts/projects`): **must be created as a child resource**
+  - Resource type: `Microsoft.CognitiveServices/accounts/projects` (never create as a standalone `accounts` resource)
+  - Use `parent: foundryAccount` in Bicep
+  - Incorrect example: creating a Project as a separate `kind: 'AIServices'` account → the portal does not recognize it
+  - Correct example:
 
     ```bicep
     resource foundryProject 'Microsoft.CognitiveServices/accounts/projects@<apiVersion>' = {
@@ -139,67 +139,67 @@ As informações abaixo devem estar finalizadas ao concluir a Fase 1:
     }
     ```
 
-- **Azure AI Search**: configuração de classificação semântica (Semantic Ranking) e pesquisa vetorial
-- Considere a opção baseada em Hub (`Microsoft.MachineLearningServices/workspaces`) somente mediante solicitação explícita ou necessidade de treinamento de ML/modelos de código aberto. Para cargas comuns de IA/RAG, Foundry (AIServices) é a opção padrão
+- **Azure AI Search**: Semantic Ranking and vector search configuration
+- Consider the Hub-based option (`Microsoft.MachineLearningServices/workspaces`) only on explicit request or when ML training/open-source models are needed. For typical AI/RAG workloads, Foundry (AIServices) is the default
 
-**⛔ Propriedades proibidas de CognitiveServices:**
+**Prohibited CognitiveServices properties:**
 
-- `apiProperties.statisticsEnabled`: essa propriedade não existe. Nunca a use. Ela causa o erro `ApiPropertiesInvalid` na implantação
-- `apiProperties.qnaAzureSearchEndpointId`: exclusiva do QnA Maker. Não use com Foundry
-- Não adicione arbitrariamente propriedades não validadas a `properties.apiProperties`
+- `apiProperties.statisticsEnabled`: this property does not exist. Never use it. It causes the `ApiPropertiesInvalid` deployment error
+- `apiProperties.qnaAzureSearchEndpointId`: exclusive to QnA Maker. Do not use with Foundry
+- Do not arbitrarily add unvalidated properties to `properties.apiProperties`
 
 ### `storage.bicep`
 
-- ADLS Gen2: `isHnsEnabled: true` ← **nunca omita esta propriedade**
-- Contêineres: raw, processed, curated (ou conforme os requisitos)
+- ADLS Gen2: `isHnsEnabled: true` ← **never omit this property**
+- Containers: raw, processed, curated (or as required)
 - `allowBlobPublicAccess: false`, `minimumTlsVersion: 'TLS1_2'`
 
 ### `keyvault.bicep`
 
-- `enableRbacAuthorization: true` (não use o modelo de política de acesso, Access Policy)
+- `enableRbacAuthorization: true` (do not use the Access Policy model)
 - `enableSoftDelete: true`, `softDeleteRetentionInDays: 90`
 - `enablePurgeProtection: true`
 
 ### `monitoring.bicep`
 
 - Log Analytics Workspace
-- Application Insights (necessário somente para configurações baseadas em Hub; não é obrigatório para Foundry AIServices)
+- Application Insights (needed only for Hub-based configurations; not required for Foundry AIServices)
 
 ### `private-endpoints.bicep`
 
-- Conjunto de três componentes para cada serviço:
-  1. `Microsoft.Network/privateEndpoints` (colocado em pe-subnet)
+- A set of three components for each service:
+  1. `Microsoft.Network/privateEndpoints` (placed in pe-subnet)
   2. `Microsoft.Network/privateDnsZones` + VNet Link (`registrationEnabled: false`)
   3. `Microsoft.Network/privateEndpoints/privateDnsZoneGroups`
-- Para os mapeamentos de DNS Zone de cada serviço, consulte `references/service-gotchas.md`
+- For each service's DNS Zone mappings, see `references/service-gotchas.md`
 
-**⚠️ Regras de DNS de PE para Foundry/AIServices:**
+**PE DNS rules for Foundry/AIServices:**
 
-- `groupId` do PE: `account`
-- O DNS Zone Group deve incluir **duas zonas**:
+- PE `groupId`: `account`
+- The DNS Zone Group must include **two zones**:
   1. `privatelink.cognitiveservices.azure.com`
   2. `privatelink.openai.azure.com`
-- Incluir somente uma causa falha de resolução de DNS nas chamadas à API OpenAI → erro de conexão
+- Including only one causes DNS resolution failure for OpenAI API calls → connection error
 
-**⚠️ Regras de PE para ADLS Gen2 (`isHnsEnabled: true`):**
+**PE rules for ADLS Gen2 (`isHnsEnabled: true`):**
 
-- Dois PEs obrigatórios:
+- Two required PEs:
   1. `blob` → `privatelink.blob.core.windows.net`
   2. `dfs` → `privatelink.dfs.core.windows.net`
-- Sem o PE DFS, as operações do lago de dados (Data Lake), como criação de sistema de arquivos e manipulação de diretórios, falham
+- Without the DFS PE, Data Lake operations such as filesystem creation and directory manipulation fail
 
-### `rbac.bicep` (ou incorporado a main.bicep)
+### `rbac.bicep` (or embedded in main.bicep)
 
-**⚠️ Atribuição de função RBAC: nunca omita**
+**RBAC role assignment: never omit**
 
-**Todo serviço com identidade gerenciada (Managed Identity, `identity.type: 'SystemAssigned'`) deve ter atribuições de função RBAC.**
-Uma identidade sem funções atribuídas causa falhas de autenticação entre serviços.
-Isso não é opcional. É um **item obrigatório**.
-A revisão da Fase 3 relatará a omissão como CRÍTICA.
+**Every service with a Managed Identity (`identity.type: 'SystemAssigned'`) must have RBAC role assignments.**
+An identity without assigned roles causes service-to-service authentication failures.
+This is not optional. It is a **required item**.
+The Phase 3 review will report the omission as CRITICAL.
 
-- Mapeamentos RBAC obrigatórios:
+- Required RBAC mappings:
 
-| Serviço de origem | Serviço de destino | Função | ID da definição da função |
+| Source service | Target service | Role | Role definition ID |
 |------------|-----------|------|-------------------|
 | Foundry | Storage | `Storage Blob Data Contributor` | `ba92f5b4-2d11-453d-a403-e96b0029c9fe` |
 | Foundry | AI Search | `Search Index Data Contributor` | `8ebe5a00-799e-43f5-93ac-243d3dce84a7` |
@@ -210,10 +210,10 @@ A revisão da Fase 3 relatará a omissão como CRÍTICA.
 | Data Factory | Key Vault | `Key Vault Secrets User` | `4633458b-17de-408a-b874-0445c86b69e6` |
 | Databricks | Storage | `Storage Blob Data Contributor` | `ba92f5b4-2d11-453d-a403-e96b0029c9fe` |
 
-> **Regra especial do AKS**: o AKS usa `identityProfile.kubeletidentity.objectId`, não `identity.principalId`.
+> **AKS special rule**: AKS uses `identityProfile.kubeletidentity.objectId`, not `identity.principalId`.
 
 ```bicep
-// Exemplo de RBAC: Foundry → Storage Blob Data Contributor
+// RBAC example: Foundry → Storage Blob Data Contributor
 resource foundryStorageRole 'Microsoft.Authorization/roleAssignments@2022-04-01' = {
   name: guid(storageAccount.id, foundry.id, 'ba92f5b4-2d11-453d-a403-e96b0029c9fe')
   scope: storageAccount
@@ -225,50 +225,50 @@ resource foundryStorageRole 'Microsoft.Authorization/roleAssignments@2022-04-01'
 }
 ```
 
-### Regras do SQL Server
+### SQL Server rules
 
-- **Gerenciamento de senha**: declare `@secure() param sqlAdminPassword string` em main.bicep e passe-o aos módulos
-  - Não gere com `newGuid()` dentro dos módulos, pois a senha muda na reimplantação
-  - Armazene como segredo do Key Vault para recuperá-la após a implantação
-- **Método de autenticação**: use `administrators.azureADOnlyAuthentication: true` por padrão
-  - Muitas políticas organizacionais (MCAPS etc.) bloqueiam autenticação SQL autônoma
-  - Autenticação somente por AAD + identidade gerenciada (Managed Identity) é a configuração mais segura
+- **Password management**: declare `@secure() param sqlAdminPassword string` in main.bicep and pass it to modules
+  - Do not generate it with `newGuid()` inside modules, since the password changes on redeployment
+  - Store it as a Key Vault secret for retrieval after deployment
+- **Authentication method**: use `administrators.azureADOnlyAuthentication: true` by default
+  - Many organizational policies (MCAPS, etc.) block standalone SQL authentication
+  - AAD-only authentication + Managed Identity is the most secure configuration
 
-### Tratamento de segredos de rede
+### Network secret handling
 
-- **Chave compartilhada do VPN Gateway**: `@secure() param vpnSharedKey string`; `@secure()` é obrigatório
-- Nunca inclua chaves VPN em texto não criptografado em `.bicepparam`; forneça-as na implantação ou use uma referência do Key Vault
-- A mesma regra se aplica às senhas SQL
-- **Aplicável a**: chave compartilhada de VPN, chave de autorização do ExpressRoute, PSK de Wi-Fi e todos os outros segredos de rede
-- Os parâmetros dos módulos também devem incluir o decorador `@secure()`
+- **VPN Gateway shared key**: `@secure() param vpnSharedKey string`; `@secure()` is required
+- Never include plaintext VPN keys in `.bicepparam`; supply them at deployment or use a Key Vault reference
+- The same rule applies to SQL passwords
+- **Applies to**: VPN shared key, ExpressRoute authorization key, Wi-Fi PSK, and all other network secrets
+- Module parameters must also include the `@secure()` decorator
 
-### ⚠️ Regras de consistência do isolamento de rede
+### Network isolation consistency rules
 
-- Ao definir `publicNetworkAccess: 'Disabled'`, você **também deve** criar o PE correspondente do serviço
-- Definir publicNetworkAccess como Disabled sem PE deixa o serviço inacessível → inutilizável após a implantação
-- O revisor da Fase 3 deve relatar essa inconsistência como **CRÍTICA**
-- Ao encontrar a inconsistência, adicione um módulo de PE ou reverta publicNetworkAccess para Enabled
+- When setting `publicNetworkAccess: 'Disabled'`, you **must also** create the corresponding service PE
+- Setting publicNetworkAccess to Disabled without a PE makes the service inaccessible → unusable after deployment
+- The Phase 3 reviewer must report this inconsistency as **CRITICAL**
+- When the inconsistency is found, add a PE module or revert publicNetworkAccess to Enabled
 
-## Princípios obrigatórios de codificação
+## Mandatory coding principles
 
-### Convenções de nomenclatura
+### Naming conventions
 
 ```bicep
-// Usa uniqueString para evitar colisões de nomes: sempre obrigatório
+// Use uniqueString to avoid name collisions: always required
 param foundryName string = 'foundry-${uniqueString(resourceGroup().id)}'
 param searchName string = 'srch-${uniqueString(resourceGroup().id)}'
-param storageName string = 'st${uniqueString(resourceGroup().id)}'  // Caracteres especiais não são permitidos
+param storageName string = 'st${uniqueString(resourceGroup().id)}'  // Special characters are not allowed
 param keyVaultName string = 'kv-${uniqueString(resourceGroup().id)}'
 ```
 
-> **⚠️ Recursos que exigem `customSubDomainName` (Foundry, Cognitive Services etc.) devem incluir `uniqueString()`.**
-> Cadeias de texto estáticas (strings), por exemplo `'my-rag-chatbot'`, podem estar em uso por outro locatário e causar falhas.
-> O mesmo vale para nomes do Foundry Project: `'project-${uniqueString(resourceGroup().id)}'`
+> **Resources requiring `customSubDomainName` (Foundry, Cognitive Services, etc.) must include `uniqueString()`.**
+> Static strings, such as `'my-rag-chatbot'`, may already be used by another tenant and cause failures.
+> The same applies to Foundry Project names: `'project-${uniqueString(resourceGroup().id)}'`
 
-### Isolamento de rede
+### Network isolation
 
 ```bicep
-// Obrigatório para todos os serviços ao usar Private Endpoints
+// Required for all services when using Private Endpoints
 publicNetworkAccess: 'Disabled'
 networkAcls: {
   defaultAction: 'Deny'
@@ -277,32 +277,32 @@ networkAcls: {
 }
 ```
 
-### Gerenciamento de dependências
+### Dependency management
 
 ```bicep
-// Usa dependências implícitas por referências de recursos em vez de dependsOn explícito
+// Use implicit dependencies through resource references instead of explicit dependsOn
 resource aiProject '...' = {
   properties: {
-    hubResourceId: aiHub.id  // Referência a aiHub → aiHub é implantado primeiro automaticamente
+    hubResourceId: aiHub.id  // Reference to aiHub → aiHub is automatically deployed first
   }
 }
 ```
 
-### Segurança
+### Security
 
 ```bicep
-// Usa referências do Key Vault para valores confidenciais; nunca armazena texto não criptografado nos parâmetros
+// Use Key Vault references for sensitive values; never store plaintext in parameters
 @secure()
-param adminPassword string  // Não insira valores em texto não criptografado em main.bicepparam
+param adminPassword string  // Do not enter plaintext values in main.bicepparam
 ```
 
-### Comentários do código
+### Code comments
 
 ```bicep
-// Recurso Microsoft Foundry: kind: 'AIServices'
-// customSubDomainName: obrigatório e globalmente exclusivo. Não pode ser alterado após a criação; se omitido, exclua e recrie o recurso
-// allowProjectManagement: true é obrigatório; sem ele, a criação do Foundry Project falha
-// Substitua apiVersion pela versão mais recente consultada na Etapa 0
+// Microsoft Foundry resource: kind: 'AIServices'
+// customSubDomainName: required and globally unique. Cannot be changed after creation; if omitted, delete and recreate the resource
+// allowProjectManagement: true is required; without it, Foundry Project creation fails
+// Replace apiVersion with the latest version retrieved in Step 0
 resource foundry 'Microsoft.CognitiveServices/accounts@<version fetched in Step 0>' = {
   kind: 'AIServices'
   properties: {
@@ -313,43 +313,43 @@ resource foundry 'Microsoft.CognitiveServices/accounts@<version fetched in Step 
 }
 ```
 
-### ⚠️ Validação da qualidade do código Bicep (obrigatória após a geração)
+### Bicep code quality validation (required after generation)
 
-**Validação da declaração de módulos:**
+**Module declaration validation:**
 
-- Verifique se a propriedade `name:` não está duplicada em cada bloco de módulo
-- Exemplo correto: `name: 'deploy-sql'`
-- Exemplo incorreto: `name: 'name: 'deploy-sql'` (`name:` duplicado → erro de compilação)
+- Check that the `name:` property is not duplicated in each module block
+- Correct example: `name: 'deploy-sql'`
+- Incorrect example: `name: 'name: 'deploy-sql'` (duplicate `name:` → compilation error)
 
-**Prevenção de propriedades duplicadas:**
+**Duplicate property prevention:**
 
-- Repetir o nome de uma propriedade no mesmo bloco de recurso causa erro de compilação
-- Isso é comum em recursos complexos como VPN Gateway (`gatewayType`), Firewall, AKS etc.
-- Procure `BCP025: The property "xxx" is declared multiple times` na saída de `az bicep build`
+- Repeating a property name in the same resource block causes a compilation error
+- This is common in complex resources such as VPN Gateway (`gatewayType`), Firewall, AKS, etc.
+- Look for `BCP025: The property "xxx" is declared multiple times` in `az bicep build` output
 
-**`az bicep build` deve ser executado:**
+**`az bicep build` must be run:**
 
-- Após gerar todos os arquivos Bicep, sempre execute `az bicep build --file main.bicep`
-- Corrija os erros e compile novamente
-- Avisos (`WARNING`, como BCP081) podem ser ignorados após verificar a versão da API no Microsoft Docs
+- After generating all Bicep files, always run `az bicep build --file main.bicep`
+- Fix errors and build again
+- Warnings (`WARNING`, such as BCP081) may be ignored after checking the API version on Microsoft Docs
 
-## Estrutura básica de main.bicep
+## Basic main.bicep structure
 
 ```bicep
 // ============================================================
-// Infraestrutura do Azure para [Nome do projeto]: main.bicep
-// Gerado em: [Data]
+// Azure infrastructure for [Project name]: main.bicep
+// Generated on: [Date]
 // ============================================================
 
 targetScope = 'resourceGroup'
 
-// ── Parâmetros comuns ─────────────────────────────────────
-param location string   // Local confirmado na Fase 1; não fixe o valor
+// ── Common parameters ─────────────────────────────────────
+param location string   // Location confirmed in Phase 1; do not hardcode the value
 param projectPrefix string
-param vnetAddressPrefix string    // ← Confirme. Evita conflitos com redes existentes
-param peSubnetPrefix string       // ← CIDR da sub-rede dedicada a PE dentro da VNet
+param vnetAddressPrefix string    // ← Confirm. Avoids conflicts with existing networks
+param peSubnetPrefix string       // ← CIDR of the dedicated PE subnet inside the VNet
 
-// ── Rede ──────────────────────────────────────────────────
+// ── Network ──────────────────────────────────────────────────
 module network './modules/network.bicep' = {
   name: 'deploy-network'
   params: {
@@ -359,17 +359,17 @@ module network './modules/network.bicep' = {
   }
 }
 
-// ── Serviços de IA/dados ──────────────────────────────────
+// ── AI/data services ──────────────────────────────────
 module ai './modules/ai.bicep' = {
   name: 'deploy-ai'
   params: {
     location: location
-    // Adicione parâmetros separados se as regiões variarem por serviço; verifique-as no Microsoft Docs
+    // Add separate parameters if regions vary by service; verify them on Microsoft Docs
   }
   dependsOn: [network]
 }
 
-// ── Armazenamento ─────────────────────────────────────────
+// ── Storage ─────────────────────────────────────────
 module storage './modules/storage.bicep' = {
   name: 'deploy-storage'
   params: {
@@ -385,7 +385,7 @@ module keyVault './modules/keyvault.bicep' = {
   }
 }
 
-// ── Private Endpoints (todos os serviços) ─────────────────
+// ── Private Endpoints (all services) ─────────────────
 module privateEndpoints './modules/private-endpoints.bicep' = {
   name: 'deploy-private-endpoints'
   params: {
@@ -399,54 +399,54 @@ module privateEndpoints './modules/private-endpoints.bicep' = {
   }
 }
 
-// ── Saídas ────────────────────────────────────────────────
+// ── Outputs ────────────────────────────────────────────────
 output vnetId string = network.outputs.vnetId
 output foundryEndpoint string = ai.outputs.foundryEndpoint
 output searchEndpoint string = ai.outputs.searchEndpoint
 ```
 
-## Estrutura básica de main.bicepparam
+## Basic main.bicepparam structure
 
 ```bicep
 using './main.bicep'
 
 param location = '<Location confirmed in Phase 1>'
 param projectPrefix = '<Project prefix>'
-// Não insira valores confidenciais aqui; use referências do Key Vault
-// Defina as regiões após verificar a disponibilidade de cada serviço no Microsoft Docs
+// Do not enter sensitive values here; use Key Vault references
+// Set regions after checking each service's availability on Microsoft Docs
 ```
 
-### Tratamento de parâmetros @secure()
+### Handling @secure() parameters
 
-Quando um arquivo `.bicepparam` contém a diretiva `using`, não é possível usar opções `--parameters` adicionais com `az deployment`.
-Por isso, os parâmetros `@secure()` devem seguir estas regras:
+When a `.bicepparam` file contains the `using` directive, additional `--parameters` options cannot be used with `az deployment`.
+Therefore, `@secure()` parameters must follow these rules:
 
-- **Defina um valor padrão quando possível**: `@secure() param password string = newGuid()`
-- **Se parâmetros @secure() exigirem entrada**: gere também um arquivo JSON de parâmetros (`main.parameters.json`) em vez de usar `.bicepparam`
-- **Nunca faça isto**: gerar um comando que use `.bicepparam` e `--parameters key=value` simultaneamente
+- **Set a default value when possible**: `@secure() param password string = newGuid()`
+- **If @secure() parameters require input**: also generate a JSON parameter file (`main.parameters.json`) instead of using `.bicepparam`
+- **Never do this**: generate a command using `.bicepparam` and `--parameters key=value` simultaneously
 
-## Lista de verificação de erros comuns
+## Common error checklist
 
-A lista completa está em `references/service-gotchas.md`. Resumo:
+The complete list is in `references/service-gotchas.md`. Summary:
 
-| Item | ❌ Incorreto | ✅ Correto |
+| Item | Incorrect | Correct |
 |------|--------|----------|
-| ADLS Gen2 | `isHnsEnabled` ausente | `isHnsEnabled: true` |
-| Sub-rede de PE | Política não configurada | `privateEndpointNetworkPolicies: 'Disabled'` |
-| Configuração de PE | Somente o PE foi criado | PE + DNS Zone + VNet Link + DNS Zone Group |
+| ADLS Gen2 | Missing `isHnsEnabled` | `isHnsEnabled: true` |
+| PE subnet | Policy not configured | `privateEndpointNetworkPolicies: 'Disabled'` |
+| PE configuration | Only the PE was created | PE + DNS Zone + VNet Link + DNS Zone Group |
 | Foundry | `kind: 'OpenAI'` | `kind: 'AIServices'` + `allowProjectManagement: true` |
-| Foundry | `customSubDomainName` ausente | `customSubDomainName: foundryName`; não pode ser alterado após a criação |
-| Foundry Project | Não criado | Sempre deve ser criado em conjunto com o recurso Foundry |
-| Uso do Hub | Usado para IA comum | Somente mediante solicitação explícita ou necessidade de ML/modelos de código aberto |
-| Rede pública | Não configurada | `publicNetworkAccess: 'Disabled'` |
-| Nome do Storage | Contém hifens | Somente minúsculas + dígitos; recomenda-se `uniqueString()` |
-| Versão da API | Copiada de valor anterior | Consulte o Microsoft Docs (dinâmica) |
-| Região | Valor fixo | Parâmetro + verificação no Microsoft Docs (dinâmica) |
+| Foundry | Missing `customSubDomainName` | `customSubDomainName: foundryName`; cannot be changed after creation |
+| Foundry Project | Not created | Must always be created together with the Foundry resource |
+| Hub usage | Used for typical AI | Only on explicit request or when ML/open-source models are needed |
+| Public network | Not configured | `publicNetworkAccess: 'Disabled'` |
+| Storage name | Contains hyphens | Lowercase letters + digits only; `uniqueString()` is recommended |
+| API version | Copied from a previous value | Consult Microsoft Docs (dynamic) |
+| Region | Hardcoded value | Parameter + verification on Microsoft Docs (dynamic) |
 
-## Após concluir a geração
+## After generation is complete
 
-Ao concluir a geração do Bicep:
+When Bicep generation is complete:
 
-1. Apresente um resumo dos arquivos gerados e da função de cada um
-2. Passe imediatamente para a Fase 3 (revisor de Bicep)
-3. O revisor faz a revisão e as correções automáticas conforme `references/bicep-reviewer.md`
+1. Present a summary of generated files and each file's purpose
+2. Proceed immediately to Phase 3 (Bicep reviewer)
+3. The reviewer performs the review and automatic fixes according to `references/bicep-reviewer.md`

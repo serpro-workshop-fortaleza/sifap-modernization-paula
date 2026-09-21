@@ -1,54 +1,54 @@
 ---
 name: "api-validate"
-description: "Valide a implementação de uma API em relação ao contrato OpenAPI/AsyncAPI e informe cada divergência com o local explícito da correção."
+description: "Validate an API implementation against its OpenAPI/AsyncAPI contract and report each discrepancy with an explicit fix location."
 argument-hint: "contract=<openapi.yaml|asyncapi.yaml> impl=<controllers path>"
 agent: "software-architect"
 tools: ["read", "search"]
 ---
 # /api-validate
 
-## Objetivo
+## Objective
 
-Comparar a implementação com OpenAPI/AsyncAPI e relatar toda divergência como breaking, additive ou metadata, indicando correção no contrato ou no código. Verifique todas as operações e todos os endpoints.
+Compare the implementation with OpenAPI/AsyncAPI and report every discrepancy as breaking, additive, or metadata, indicating a fix in the contract or code. Check all operations and endpoints.
 
-## Quando usar
+## When to Invoke
 
-Após alterar um controlador ou manipulador e antes da integração.
+After changing a controller or handler and before merging.
 
-## Pré-condições
+## Preconditions
 
-- Contrato e implementação existem
-- [`backend.instructions.md`](../instructions/backend.instructions.md) rege caminhos e status
+- The contract and implementation exist
+- [`backend.instructions.md`](../instructions/backend.instructions.md) governs paths and statuses
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Caminhos do contrato e da implementação e payloads de exemplo, se houver
+- Contract and implementation paths and sample payloads, if any
 
-## O que farei
+## What I Will Do
 
-- Compararei path, método, schemas, erros e autenticação nos dois sentidos
-- Validarei exemplos e classificarei impacto e local da correção
+- Compare path, method, schemas, errors, and authentication in both directions
+- Validate examples and classify impact and fix location
 
-## O que não farei
+## What I Will NOT Do
 
-- Editar, inventar operações ou tratar campo opcional aditivo como breaking
-- Decidir mudança irreversível; encaminharei a [`adr-draft`](../skills/adr-draft/SKILL.md)
+- Edit, invent operations, or treat an additive optional field as breaking
+- Decide an irreversible change; I will refer it to [`adr-draft`](../skills/adr-draft/SKILL.md)
 
-## Formato da saída
+## Output Format
 
-Tabela `Endpoint | Tipo de divergência | Gravidade | Local da correção`, incluindo endpoints não documentados.
+An `Endpoint | Discrepancy type | Severity | Fix location` table, including undocumented endpoints.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cobertura de 100% do contrato e da implementação
-- [ ] Breaking e additive separados; local da correção explícito
+- [ ] 100% coverage of the contract and implementation
+- [ ] Breaking and additive changes are separated; fix locations are explicit
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@software-architect`. Leia contrato e código. Para cada operação, compare path, HTTP, request, response, erros e autenticação. Procure endpoints não documentados. Valide exemplos. Classifique como breaking, additive ou metadata e indique contrato ou código. Não edite nem rebaixe a gravidade.
+You are `@software-architect`. Read the contract and code. For each operation, compare path, HTTP, request, response, errors, and authentication. Look for undocumented endpoints. Validate examples. Classify as breaking, additive, or metadata and indicate contract or code. Do not edit or downgrade severity.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /api-validate contract=backend/src/main/resources/openapi.yaml impl=backend/src/main/java/app/orders
 ```

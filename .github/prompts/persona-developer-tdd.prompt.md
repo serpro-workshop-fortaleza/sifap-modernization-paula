@@ -1,115 +1,115 @@
 ---
 name: "tdd"
-description: "Conduza um comportamento por um ciclo estrito de vermelho-verde-refatorar, produzindo registros de alteração separados para as fases vermelha (red), verde (green) e de refatoração (refactor)."
+description: "Guide one behavior through a strict red-green-refactor cycle, producing separate commits for the red, green, and refactor phases."
 argument-hint: "behavior=<behavior> req=REQ-NNN target=<file-or-class>"
 agent: "implementer"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /tdd
 
-## Objetivo
+## Objective
 
-Produzir um ciclo completo orientado por testes para um único comportamento, entregue em três registros de alteração separados: `red` (vermelho), `green` (verde) e `refactor` (refatoração). Nenhum código de produção é escrito sem um teste falhando, e nenhum primeiro teste é escrito para passar imediatamente. O comportamento deve corresponder a exatamente um critério de aceitação de um `REQ-ID`.
+Produce a complete test-driven cycle for a single behavior, delivered in three separate commits: `red`, `green`, and `refactor`. No production code is written without a failing test, and no first test is written to pass immediately. The behavior must correspond to exactly one acceptance criterion of a `REQ-ID`.
 
 > [!NOTE]
-> Um teste falhando por vez. Nunca mantenha dois estados `red` (vermelho). Se o primeiro teste for difícil de escrever, o projeto está revelando um problema.
+> One failing test at a time. Never maintain two `red` states. If the first test is hard to write, the design is revealing a problem.
 
-## Quando usar
+## When to Invoke
 
-Use durante a Etapa 3 para descobrir ou fortalecer um comportamento pequeno, como uma lógica nova, um limite ou um caso extremo, quando o projeto ainda não estiver evidente e uma rede de segurança baseada em testes antecipados agregar mais valor.
+Use during Stage 3 to discover or strengthen a small behavior, such as new logic, a boundary, or an edge case, when the design is not yet obvious and a test-first safety net adds the most value.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/spec.md` contém o `REQ-ID` e o critério de aceitação ao qual o comportamento corresponde
-- A ramificação atual é `impl/<NNN>-<feature>`
-- A estrutura de testes está disponível: JUnit 5 + AssertJ (Java) ou Vitest + Testing Library (TypeScript)
-- O módulo alvo já tem sua estrutura inicial, ou este ciclo cria sua primeira classe
+- `specs/<NNN>-<feature>/spec.md` contains the `REQ-ID` and acceptance criterion that the behavior corresponds to
+- The current branch is `impl/<NNN>-<feature>`
+- The testing framework is available: JUnit 5 + AssertJ (Java) or Vitest + Testing Library (TypeScript)
+- The target module is already scaffolded, or this cycle creates its first class
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- O comportamento a descobrir, em linguagem simples
-- O `REQ-ID` vinculado em `specs/<NNN>-<feature>/spec.md`
-- O arquivo ou a classe alvo (se não existir, informe isso. TDD também orienta o projeto, portanto sua criação é aceitável)
-- Solicite à pessoa usuária qualquer item ausente.
+- The behavior to discover, in plain language
+- The linked `REQ-ID` in `specs/<NNN>-<feature>/spec.md`
+- The target file or class (if it does not exist, say so. TDD also guides design, so creating it is acceptable)
+- Ask the user for any missing item.
 
-## O que farei
+## What I Will Do
 
-- Escolherei o caso não trivial mais simples e escreverei um teste falhando que nomeie o comportamento
-- Confirmarei que o teste falha pelo motivo correto e criarei o registro de alteração do estado vermelho (`red`)
-- Escreverei o menor código de produção que faça o teste passar, confirmarei que toda a suíte está aprovada e criarei o registro de alteração
-- Refatorarei no estado verde (`green`) com uma transformação de Fowler, manterei todos os testes aprovados e criarei o registro de alteração
-- Informarei o comportamento descoberto, os três registros de alteração e o próximo teste a escrever
+- Choose the simplest nontrivial case and write a failing test that names the behavior
+- Confirm that the test fails for the right reason and commit the `red` state
+- Write the smallest production code that makes the test pass, confirm that the full suite is green, and commit
+- Refactor in the `green` state with a Fowler transformation, keep all tests passing, and commit
+- Report the discovered behavior, the three commits, and the next test to write
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever o teste e o código juntos. Isso é verificação, não TDD
-- Manter dois testes falhando ao mesmo tempo ou ignorar a fase de refatoração (`refactor`)
-- Alterar o comportamento sob o pretexto de refatorar. Se uma asserção mudar, o ciclo será inválido
-- Testar métodos privados ou simular todas as dependências
-- Inventar um critério de aceitação ausente da especificação. Se o comportamento não tiver `REQ-ID`, pararei e o encaminharei para `/update-spec` em vez de tentar adivinhar
-- Implementar neste ciclo o próximo teste sugerido
+- Write the test and code together. That is verification, not TDD
+- Keep two tests failing at the same time or skip the `refactor` phase
+- Change behavior under the guise of refactoring. If an assertion changes, the cycle is invalid
+- Test private methods or mock every dependency
+- Invent an acceptance criterion absent from the specification. If the behavior has no `REQ-ID`, I will stop and route it to `/update-spec` instead of guessing
+- Implement the suggested next test in this cycle
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### Comportamento descoberto
-Uma pessoa pagadora isenta de impostos recebe tarifa zero. (REQ-031, critério 2)
+### Discovered behavior
+A tax-exempt payer receives a zero fee. (REQ-031, criterion 2)
 
-### Registros de alteração
-| Fase | Mensagem | Arquivos | Resultado |
+### Commits
+| Phase | Message | Files | Result |
 |---|---|---|---|
-| red | `test(fees): red - tarifa zero para pessoa pagadora isenta` | `FeeServiceTest.java` | 1 falhando |
-| green | `feat(fees): green - implementar REQ-031 (mínimo)` | `FeeService.java` | 12 aprovados |
-| refactor | `refactor(fees): extrair a verificação de isenção` | `FeeService.java` | 12 aprovados |
+| red | `test(fees): red - zero fee for an exempt payer` | `FeeServiceTest.java` | 1 failing |
+| green | `feat(fees): green - implement REQ-031 (minimal)` | `FeeService.java` | 12 passing |
+| refactor | `refactor(fees): extract the exemption check` | `FeeService.java` | 12 passing |
 
-### Arquivo de teste
+### Test file
 <complete test source, with an inline `// REQ-031` comment>
 
-### Código de produção
+### Production code
 <complete source after the refactor phase>
 
-### Sugestão para o próximo ciclo
-Adicione um teste de limite: tarifa no limiar de isenção. (Não implementado aqui.)
+### Suggestion for the next cycle
+Add a boundary test: fee at the exemption threshold. (Not implemented here.)
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Existem três registros de alteração separados: `test:` (`red`), `feat:` (`green`) e `refactor:`
-- [ ] O registro da fase vermelha (`red`) é reproduzivelmente vermelho: acessá-lo faz a compilação falhar
-- [ ] O registro da fase verde (`green`) contém o mínimo necessário para passar
-- [ ] O registro da fase de refatoração (`refactor`) altera somente a estrutura. Os nomes dos testes e as asserções permanecem inalterados
-- [ ] A suíte completa termina aprovada
-- [ ] O comportamento corresponde a exatamente um critério de aceitação de um `REQ-ID`, citado por um comentário `// REQ-NNN` na mesma linha
+- [ ] Three separate commits exist: `test:` (`red`), `feat:` (`green`), and `refactor:`
+- [ ] The `red` commit is reproducibly red: checking it out makes the build fail
+- [ ] The `green` commit contains the minimum needed to pass
+- [ ] The `refactor` commit changes structure only. Test names and assertions remain unchanged
+- [ ] The full suite finishes green
+- [ ] The behavior corresponds to exactly one acceptance criterion of a `REQ-ID`, cited by an inline `// REQ-NNN` comment
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@implementer`. A equipe quer descobrir um comportamento começando pelo teste. Leia a habilidade [`tdd-workflow`](../skills/tdd-workflow/SKILL.md) antes de começar. Ela define o ciclo, as regras e os antipadrões. Execute exatamente três fases e não as combine.
+You are `@implementer`. The team wants to discover a behavior starting with the test. Read the [`tdd-workflow`](../skills/tdd-workflow/SKILL.md) skill before starting. It defines the cycle, rules, and anti-patterns. Execute exactly three phases and do not combine them.
 
-**Etapa 1: VERMELHO (`RED`), escreva o teste que falha.**
-Escolha o caso não trivial mais simples, não o caso vazio nem o caso catastrófico. Nomeie o teste como `should_<expected>_when_<condition>` e adicione um comentário `// REQ-NNN` na mesma linha. Use Preparar-Agir-Verificar, com linhas em branco entre as seções.
+**Step 1: RED, write the failing test.**
+Choose the simplest nontrivial case, not the empty case or the catastrophic case. Name the test `should_<expected>_when_<condition>` and add an inline `// REQ-NNN` comment. Use Arrange-Act-Assert, with blank lines between sections.
 
-**Etapa 2: VERMELHO (`RED`), confirme e crie o registro de alteração.**
-Execute o teste. Confirme que ele falha e leia a mensagem para verificar se a causa é a esperada (asserção ou compilação, não um erro de configuração). Crie o registro com a mensagem `test(<scope>): red - <behavior>`.
+**Step 2: RED, confirm and commit.**
+Run the test. Confirm that it fails and read the message to verify that the cause is expected (assertion or compilation, not a setup error). Commit with the message `test(<scope>): red - <behavior>`.
 
-**Etapa 3: VERDE (`GREEN`), escreva o menor código que passa.**
-Escreva o mínimo de código de produção que faça o teste passar. No primeiro ciclo, é permitido simular com um valor fixo. Execute o teste isolado e depois a suíte completa. Ambos devem passar.
+**Step 3: GREEN, write the smallest passing code.**
+Write the minimum production code that makes the test pass. In the first cycle, faking it with a fixed value is allowed. Run the isolated test and then the full suite. Both must pass.
 
-**Etapa 4: VERDE (`GREEN`), crie o registro de alteração.**
-Crie o registro com a mensagem `feat(<scope>): green - implementar REQ-NNN (mínimo)`.
+**Step 4: GREEN, commit.**
+Commit with the message `feat(<scope>): green - implement REQ-NNN (minimal)`.
 
-**Etapa 5: REFATORAÇÃO (`REFACTOR`), melhore no estado verde.**
-Procure duplicação, nomes enganosos e obsessão por primitivos. Aplique uma transformação de Fowler: `Extract Method` (extrair método), `Rename` (renomear) ou `Inline Variable` (incorporar variável). Execute todos os testes após cada microetapa. Eles devem continuar aprovados.
+**Step 5: REFACTOR, improve while green.**
+Look for duplication, misleading names, and primitive obsession. Apply a Fowler transformation: `Extract Method`, `Rename`, or `Inline Variable`. Run all tests after each micro-step. They must stay green.
 
-**Etapa 6: REFATORAÇÃO (`REFACTOR`), crie o registro de alteração e pare.**
-Crie o registro com a mensagem `refactor(<scope>): <description>`. Pare quando o projeto estiver adequado ao próximo ciclo, sem buscar perfeição.
+**Step 6: REFACTOR, commit and stop.**
+Commit with the message `refactor(<scope>): <description>`. Stop when the design is suitable for the next cycle, without seeking perfection.
 
-**Etapa 7: relate e encaminhe.**
-Declare o comportamento descoberto em uma frase, liste os três registros de alteração e identifique o próximo teste (limite, erro ou segunda variação) sem implementá-lo.
+**Step 7: report and hand off.**
+State the discovered behavior in one sentence, list the three commits, and identify the next test (boundary, error, or second variation) without implementing it.
 
-Nunca retorne `null`, nunca use `any` e mascare CPF ou valores de benefícios em qualquer linha de registro (log). Se o comportamento não corresponder a um `REQ-ID`, pare e encaminhe para `/update-spec`. Não invente o requisito.
+Never return `null`, never use `any`, and mask CPF or benefit amounts in any log line. If the behavior does not correspond to a `REQ-ID`, stop and route it to `/update-spec`. Do not invent the requirement.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
-/tdd behavior="tarifa zero para pessoa pagadora isenta de impostos" req=REQ-031 target=FeeService
+```text
+/tdd behavior="zero fee for a tax-exempt payer" req=REQ-031 target=FeeService
 ```

@@ -3,73 +3,73 @@ name: Markdown lint and specification quality
 # `portugues-br` mirrors the entire kit in pt-BR, so it needs the same Markdown,
 # primitive, and traceability checks as `main`. See the same note in ci.yml.
 on:
-  push:
-    branches: [main, develop, portugues-br, espanol, "spec/**"]
-  pull_request:
-    paths:
-      - ".github/**"
-      - "**.md"
-      - "specs/**"
-      - "docs/**"
+    push:
+        branches: [main, develop, portugues-br, espanol, "spec/**"]
+    pull_request:
+        paths:
+            - ".github/**"
+            - "**.md"
+            - "specs/**"
+            - "docs/**"
 
 permissions:
-  contents: read
+    contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
 
 jobs:
-  markdown-lint:
-    name: Markdown lint
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Run markdownlint
-        uses: DavidAnson/markdownlint-cli2-action@992badcdf24e3b8eb7e87ff9287fe931bcb00c6e # v20
-        with:
-          # Exclusions live in .markdownlint-cli2.jsonc, the single source of truth.
-          # Do not list them again here: a second list drifts.
-          globs: "**/*.md"
+    markdown-lint:
+        name: Markdown lint
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+            - name: Run markdownlint
+              uses: DavidAnson/markdownlint-cli2-action@992badcdf24e3b8eb7e87ff9287fe931bcb00c6e # v20
+              with:
+                  # Exclusions live in .markdownlint-cli2.jsonc, the single source of truth.
+                  # Do not list them again here: a second list drifts.
+                  globs: "**/*.md"
 
-  copilot-primitives:
-    name: Copilot primitive drift check
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Run primitive regression tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B -m unittest discover -s .github/scripts/tests -v
-      - name: Validate agents, prompts, instructions, skills, and hooks
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 .github/scripts/validate-copilot-primitives.py
+    copilot-primitives:
+        name: Copilot primitive drift check
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+            - name: Run primitive regression tests
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  python3 -B -m unittest discover -s .github/scripts/tests -v
+            - name: Validate agents, prompts, instructions, skills, and hooks
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  python3 .github/scripts/validate-copilot-primitives.py
 
-  spec-traceability:
-    name: Report test traceability by REQ-ID
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Report REQ-IDs not yet referenced by tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B .github/scripts/validate-spec-traceability.py --mode tests
+    spec-traceability:
+        name: Report test traceability by REQ-ID
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+            - name: Report REQ-IDs not yet referenced by tests
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  python3 -B .github/scripts/validate-spec-traceability.py --mode tests
 
-  legacy-traceability:
-    name: Legacy traceability check (every REQ-ID must cite a .NSN/.ddm or a new [GREENFIELD] implementation)
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
-      - name: Check source_legacy in every requirement
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 -B .github/scripts/validate-spec-traceability.py --mode legacy
+    legacy-traceability:
+        name: Legacy traceability check (every REQ-ID must cite a .NSN/.ddm or a new [GREENFIELD] implementation)
+        runs-on: ubuntu-latest
+        timeout-minutes: 10
+        steps:
+            - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+            - name: Check source_legacy in every requirement
+              shell: bash
+              run: |
+                  set -euo pipefail
+                  python3 -B .github/scripts/validate-spec-traceability.py --mode legacy

@@ -62,7 +62,7 @@ A file at `02-modern-spec/bounded-contexts.md`:
 
 ## Rules for SDD and TDD
 
-Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite: keep supporting boundary decisions here and canonical requirements in `specs/<NNN>-<feature>/spec.md`. Link existing REQ-ID and AC-ID where available; before requirements exist, retain primary evidence and mark downstream mapping `PENDING`, rather than inventing IDs. Use the SDD skill's output template for the final report, without turning a proposed map into an implementation handoff.
+Apply the `SDD Workflow` section of the [architect agent](../agents/architect.agent.md) directly: keep supporting boundary decisions here and canonical requirements in `specs/<NNN>-<feature>/spec.md`. Link existing REQ-ID and AC-ID where available; before requirements exist, retain primary evidence and mark downstream mapping `PENDING`, rather than inventing IDs. Use the SDD skill's output template for the final report, without turning a proposed map into an implementation handoff.
 
 ## Definition of Done
 

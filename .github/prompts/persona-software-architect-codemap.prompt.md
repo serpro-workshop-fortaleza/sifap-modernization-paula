@@ -1,56 +1,56 @@
 ---
 name: "codemap"
-description: "Produza um mapa de código navegável, no nível de serviço, para um módulo do SIFAP 2.0: componentes, dependências diretas, cobertura de REQ-ID, linhagem legada e pontos de integração."
+description: "Produce a navigable service-level code map for a SIFAP 2.0 module: components, direct dependencies, REQ-ID coverage, legacy lineage, and integration points."
 argument-hint: "service=<name> path=<root created by the team> spec=specs/<NNN>-<feature>/spec.md"
 agent: "software-architect"
 tools: ["read", "search", "edit"]
 ---
 # /codemap
 
-## Objetivo
+## Objective
 
-Produzir `docs/codemap-<service>.md` para localizar componentes, dependências diretas, REQ-IDs e linhagem em dez minutos.
+Produce `docs/codemap-<service>.md` to locate components, direct dependencies, REQ-IDs, and lineage within ten minutes.
 
-## Quando usar
+## When to Invoke
 
-Após a equipe criar um serviço e sempre que sua estrutura mudar.
+After the team creates a service and whenever its structure changes.
 
-## Pré-condições
+## Preconditions
 
-- Serviço e `spec.md` existem
-- [`modular-monolith.instructions.md`](../instructions/modular-monolith.instructions.md) rege dependências
+- The service and `spec.md` exist
+- [`modular-monolith.instructions.md`](../instructions/modular-monolith.instructions.md) governs dependencies
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Serviço, raiz, especificação, inclusão de testes e mapa anterior
+- Service, root, specification, whether to include tests, and previous map
 
-## O que farei
+## What I Will Do
 
-- Agruparei Java por `controller`, `service`, `domain`, `repository`, `infrastructure`, `config`; TypeScript por `app/`, `components/`, `lib/`, `server/`
-- Registrarei função confirmada, dependências diretas, `@implements REQ-NNN`, estado, API, testes e linhagem confirmada
-- Gerarei Mermaid e tabela pesquisável; sinalizarei direção errada, mais de cinco saídas e código sem entradas
+- Group Java by `controller`, `service`, `domain`, `repository`, `infrastructure`, `config`; TypeScript by `app/`, `components/`, `lib/`, `server/`
+- Record confirmed purpose, direct dependencies, `@implements REQ-NNN`, state, API, tests, and confirmed lineage
+- Generate Mermaid and a searchable table; flag wrong direction, more than five outgoing dependencies, and code without incoming dependencies
 
-## O que não farei
+## What I Will NOT Do
 
-- Gerar automaticamente por imports, listar transitivas ou inventar REQ-IDs, endpoints, responsabilidades ou fatos Natural
-- Decidir contextos; use `/impl-plan` ou [`adr-draft`](../skills/adr-draft/SKILL.md)
+- Generate automatically from imports, list transitive dependencies, or invent REQ-IDs, endpoints, responsibilities, or Natural facts
+- Decide contexts; use `/impl-plan` or [`adr-draft`](../skills/adr-draft/SKILL.md)
 
-## Formato da saída
+## Output Format
 
-Documento com diagrama, tabela `Tipo | FQN | Função | REQ-IDs | Entrada | Saída`, API, estado, linhagem e problemas observados.
+A document with a diagram, a `Type | FQN | Purpose | REQ-IDs | Incoming | Outgoing` table, API, state, lineage, and observed issues.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Mermaid reflete componentes reais; tabela cobre o serviço
-- [ ] REQ-IDs ausentes são explícitos; dependências são diretas
-- [ ] Linhagem tem evidência e o documento está ligado a `docs/CODEMAP.md`
+- [ ] Mermaid reflects actual components; the table covers the service
+- [ ] Missing REQ-IDs are explicit; dependencies are direct
+- [ ] Lineage has evidence and the document is linked to `docs/CODEMAP.md`
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@software-architect`. Confirme escopo e mapa anterior. Liste componentes por camada e função comprovada. Mapeie chamadas diretas e contratos estáveis. Localize `@implements REQ-NNN` sem inventar lacunas. Registre somente a origem Natural confirmada; use “não mapeado” no restante. Sinalize violações de camada, god classes e código sem entrada. Grave Mermaid e tabelas e vincule a `docs/CODEMAP.md`.
+You are `@software-architect`. Confirm the scope and previous map. List components by layer and verified purpose. Map direct calls and stable contracts. Locate `@implements REQ-NNN` without inventing gaps. Record only confirmed Natural origins; use "unmapped" for the rest. Flag layer violations, god classes, and code without incoming dependencies. Write Mermaid and tables and link to `docs/CODEMAP.md`.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /codemap service=registration path=backend/src/main/java/app/registration spec=specs/014-registration/spec.md
 ```

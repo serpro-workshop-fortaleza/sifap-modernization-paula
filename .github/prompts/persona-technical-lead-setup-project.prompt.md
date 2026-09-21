@@ -1,53 +1,53 @@
 ---
 name: "setup-project"
-description: "Inicialize a estrutura de engenharia de contexto do Copilot de um projeto: AGENTS.md, CODEMAP.md e a base de instruções, prompts e agentes em .github."
+description: "Initialize a project's Copilot context-engineering structure: AGENTS.md, CODEMAP.md, and the foundation of instructions, prompts, and agents in .github."
 argument-hint: "root=<repo-root>"
 agent: "tech-lead"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /setup-project
 
-## Objetivo
+## Objective
 
-Criar `AGENTS.md`, `CODEMAP.md`, `.github/copilot-instructions.md` e bases de instructions, prompts e agents específicas da stack, com escopo e sem segredos. Não criar protótipo.
+Create `AGENTS.md`, `CODEMAP.md`, `.github/copilot-instructions.md`, and stack-specific foundations for instructions, prompts, and agents, scoped and free of secrets. Do not create a prototype.
 
-## Quando usar
+## When to Invoke
 
-No início do projeto ou quando faltar superfície de contexto.
+At the start of a project or when the context surface is missing.
 
-## Pré-condições
+## Preconditions
 
-- Raiz gravável e concordância com [`copilot-instructions.md`](../copilot-instructions.md)
+- Writable root and agreement with [`copilot-instructions.md`](../copilot-instructions.md)
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Raiz e stack, se indetectável
+- Root and stack, if undetectable
 
-## O que farei
+## What I Will Do
 
-- Detectarei stack por manifests; criarei AGENTS com comandos verificados, CODEMAP com Modules/Data Flow/External Integrations e arquivos `.github/` com `applyTo` específico
-- Prepararei as mudanças sem commit, listarei arquivos e recomendarei `/audit-context`
+- Detect the stack from manifests; create AGENTS with verified commands, CODEMAP with Modules/Data Flow/External Integrations, and `.github/` files with specific `applyTo` scopes
+- Stage the changes without committing, list files, and recommend `/audit-context`
 
-## O que não farei
+## What I Will NOT Do
 
-- Criar aplicação, `backend/`, `frontend/` ou `infra/`; usar conteúdo genérico, `applyTo: "**"`, segredo, credencial ou `TODO`; adicionar ferramenta não aprovada
+- Create an application, `backend/`, `frontend/`, or `infra/`; use generic content, `applyTo: "**"`, secrets, credentials, or `TODO`; add an unapproved tool
 
-## Formato da saída
+## Output Format
 
-Lista de arquivos preparados, mensagem de commit sugerida e três acompanhamentos manuais.
+List of staged files, suggested commit message, and three manual follow-ups.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] AGENTS é específico; todos os escopos são concretos
-- [ ] Sem segredo ou TODO; `.gitignore` ajustado
-- [ ] Mudanças preparadas, não commitadas, e acompanhamentos listados
+- [ ] AGENTS is specific; all scopes are concrete
+- [ ] No secrets or TODO; `.gitignore` adjusted
+- [ ] Changes staged, not committed, and follow-ups listed
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@tech-lead`. Detecte `package.json`, `pom.xml`, `requirements.txt` e `*.csproj`; pergunte se nada existir. Escreva AGENTS com stack e comandos. Crie CODEMAP com `## Modules`, `## Data Flow`, `## External Integrations`, deixando módulos para `/update-codemap`. Registre linguagem, tom, segurança e ferramentas no copilot-instructions sem repetir o global. Crie instructions com globs como `backend/**/*.java`, nunca `**`, conforme [`instructions/README.md`](../instructions/README.md). Prepare com git sem commit e informe caminhos absolutos, mensagem sugerida e três ações. Não crie protótipo nem placeholder.
+You are `@tech-lead`. Detect `package.json`, `pom.xml`, `requirements.txt`, and `*.csproj`; ask if none exist. Write AGENTS with the stack and commands. Create CODEMAP with `## Modules`, `## Data Flow`, `## External Integrations`, leaving modules to `/update-codemap`. Record language, tone, security, and tools in copilot-instructions without repeating global guidance. Create instructions with globs such as `backend/**/*.java`, never `**`, following [`instructions/README.md`](../instructions/README.md). Stage with git without committing and report absolute paths, a suggested message, and three actions. Do not create a prototype or placeholder.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /setup-project root=.
 ```

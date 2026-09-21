@@ -1,13 +1,13 @@
 ---
 name: "az-cost-optimize"
-description: "Use when the user wants to reduce or optimize Azure spending for an existing workload, right-size resources, or track savings in GitHub work items. Analyzes Terraform/Bicep IaC and deployed Azure resources to identify cost optimization opportunities. Then opens one GitHub work item per opportunity and a coordinating epic. Triggers include \"reduce Azure costs\", \"optimize Azure spending\", \"right-size resources\", and \"savings work items\". For pricing queries or rough estimates, use azure-pricing."
+description: "Use when the user wants to reduce Azure spending for an existing workload, right-size deployed resources, or track evidence-backed savings in GitHub work items. Analyzes Terraform and current Azure telemetry, validates dated prices, and creates approved work items. Triggers include \"reduce Azure costs\", \"optimize Azure spending\", \"right-size resources\", and \"savings work items\". For pricing-only questions, use azure-pricing."
 ---
 # Azure cost optimization
 
 Analyze infrastructure-as-code files and deployed Azure resources to generate cost optimization recommendations. Then create an individual GitHub work item (`issue`) for each opportunity and a coordinating epic.
 
 > [!NOTE]
-> This skill depends on authentication with the **Azure MCP server** and the **GitHub MCP server** (or `gh`). This kit's IaC uses **Terraform**, so `.tf` files are the primary source of truth. Treat other repository files as non-authoritative. When available, prefer Azure MCP tools (`azmcp-*`) over direct Azure CLI commands.
+> This skill depends on the `Azure MCP Server/*` and `github/*` toolsets. This kit's IaC uses **Terraform**, so `.tf` files are the intended configuration source. If either required toolset is unavailable, report the affected phase as blocked. Do not substitute unobserved CLI output or claim that work items were created.
 
 ## When to Invoke
 
@@ -18,8 +18,8 @@ Analyze infrastructure-as-code files and deployed Azure resources to generate co
 
 ## Prerequisites
 
-- Azure MCP server configured and authenticated.
-- GitHub MCP server (or `gh`) configured and authenticated.
+- Azure MCP Server configured and authenticated. In a cloud coding agent, use the supported `azd coding-agent config` workflow.
+- GitHub tools configured and authenticated.
 - Target GitHub repository identified.
 - Azure resources deployed (IaC files are optional but helpful).
 
@@ -34,13 +34,13 @@ Run `azmcp-bestpractices-get` to load current Azure optimization guidance. Use i
 1. **Resource discovery**:
     - Use `azmcp-subscription-list` to find subscriptions.
     - Use `azmcp-group-list --subscription <id>` to find resource groups.
-    - Use `az resource list --subscription <id> --resource-group <name>` for a complete inventory.
-    - Prefer resource-specific MCP tools, with the CLI as a fallback: `azmcp-cosmos-account-list`, `azmcp-storage-account-list`, `azmcp-monitor-workspace-list`, `azmcp-keyvault-key-list`; and `az webapp list`, `az appservice plan list`, `az functionapp list`, `az sql server list`, `az redis list` when no MCP tool exists.
+    - Use Azure MCP resource discovery for a complete inventory and service-specific details.
+    - When an Azure MCP capability is unavailable, record that resource as not assessed; do not replace evidence with assumptions.
 2. **IaC detection**:
-    - Look for IaC files: `**/*.tf` (primary in this kit), plus `**/*.bicep`, `**/main.json`, and `**/*template*.json`.
+    - Look for Terraform files under `infra/**/*.tf`.
     - Analyze resource definitions and compare them with discovered resources.
     - Use only IaC files as the source of truth, not other repository files.
-    - If no IaC files are found, stop and inform the user.
+    - If no Terraform files are found, stop and inform the user; this kit does not authorize direct configuration drift.
 3. **Configuration analysis**: extract current SKUs, tiers, and settings; map dependencies and utilization patterns.
 
 ### Step 3: Collect usage metrics and validate current costs
@@ -62,7 +62,7 @@ AzureDiagnostics
 ```
 
 3. **Calculate baseline metrics**: CPU/memory averages, database throughput, storage access frequency, and function execution rates.
-4. **Validate current costs**: using the discovered SKUs/tiers, look up current Azure pricing (or use the `azure-pricing` skill) and document Resource -> Current SKU -> Estimated monthly cost before recommending changes.
+4. **Validate current costs**: using discovered SKUs and measured usage, look up current Azure pricing and record the source URL, retrieval date, region, currency, billing unit, assumptions, and calculation. Never present a list price as an invoice total.
 
 ### Step 4: Generate cost optimization recommendations
 
@@ -75,18 +75,9 @@ AzureDiagnostics
 | Storage | Apply lifecycle policies (Hot to Cool, then Archive); consolidate redundant accounts; right-size tiers |
 | Infrastructure | Remove unused resources; add autoscaling; schedule shutdowns for non-production environments |
 
-2. **Calculate evidence-based savings**: subtract the target cost from the validated current cost and document the pricing source for both.
-3. **Calculate a priority score** for each recommendation:
-
-```text
-Priority score = (Value score x Monthly savings) / (Risk score x Implementation days)
-
-High priority:   Score > 20
-Medium priority: Score 5-20
-Low priority:    Score < 5
-```
-
-4. **Validate recommendations**: check CLI commands, confirm savings calculations, and assess risks and prerequisites. All savings must have supporting evidence.
+2. **Calculate evidence-based savings**: subtract the target estimate from the current estimate using the same currency, region, billing assumptions, and observation window. Document both sources and calculations.
+3. **Rank without invented scoring**: present validated savings, utilization evidence, implementation dependencies, rollback path, and qualitative risk side by side. Let the accountable team assign priority unless it has supplied a scoring model.
+4. **Validate recommendations**: confirm the Terraform change surface, savings calculation, risks, prerequisites, validation plan, and rollback. All claims need evidence or an explicit assumption.
 
 ### Step 5: Get user confirmation
 
@@ -116,20 +107,20 @@ Proceed with creating GitHub work items? (y/n)
 
 ### Step 6: Create individual optimization work items
 
-Create one GitHub work item per opportunity with the `cost-optimization` and `azure` labels, using the individual item template in [Output Template](#output-template). Title format: `[COST-OPT] [Resource type] - [Brief description] - $X/month savings`.
+After approval, call the GitHub identity tool, search open issues for duplicates, and list issue types for an organization repository. Create one work item per opportunity using the individual template in [Output Template](#output-template). Add labels only when they already exist. Title format: `[COST-OPT] [Resource type] - [Brief description] - <validated currency amount>/month potential savings`.
 
 ### Step 7: Create the coordinating epic
 
-Create an epic with the `cost-optimization`, `azure`, and `epic` labels, using the epic template in [Output Template](#output-template). Check that each Mermaid diagram has valid syntax and is accessible (styling and colors). Title format: `[EPIC] Azure cost optimization initiative - $X/month potential savings`.
+Create the coordinating epic only after all individual creation results are known. Include returned issue URLs and partial failures. Use an existing epic issue type or label; do not invent one. Validate any Mermaid diagram before including it. Title format: `[EPIC] Azure cost optimization initiative - <validated currency amount>/month potential savings`.
 
 ## Error handling
 
 | Situation | Action |
 |---|---|
 | Savings estimates without evidence | Recheck settings and pricing sources before proceeding |
-| Azure authentication failure | Provide manual Azure CLI setup steps |
-| No resources found | Create an informational work item about deploying resources |
-| GitHub creation failure | Display formatted recommendations in the console |
+| Azure authentication or tool failure | Report the blocked phase and the missing prerequisite; do not infer live state |
+| No resources found | Report the observed empty scope and stop without creating speculative work |
+| GitHub creation failure | Record which creations succeeded or failed and return the approved issue bodies |
 | Insufficient usage data | Record the limitation and provide only configuration-based recommendations |
 
 ## Output Template
@@ -139,32 +130,31 @@ Individual optimization work item:
 ````markdown
 ## Cost optimization: <Brief title>
 
-**Monthly savings**: $X | **Risk level**: <Low/Medium/High> | **Implementation effort**: X days
+**Potential monthly savings**: <amount and currency> | **Risk level**: <evidence-backed rating> | **Effort**: <team estimate or not estimated>
 
 ### Description
 <Clear explanation of the optimization and why it is needed>
 
 ### Implementation
 
-IaC files detected: <Yes/No>
+Terraform source: `<path>`
 
-When IaC files are found, apply the change in Terraform (for example, in `infra/app_service.tf`, change `sku_name = "S3"` to `sku_name = "B2"`):
-
-```bash
-terraform -chdir=infra apply
-```
-
-When no IaC files are found, use the Azure CLI directly and warn that an authoritative IaC file may exist elsewhere:
+Apply the reviewed change in Terraform in a later implementation task. During this workflow, inspect the proposed plan without applying it:
 
 ```bash
-az appservice plan update --name <plan> --sku B2
+terraform -chdir=<module> fmt -check
+terraform -chdir=<module> init -backend=false -input=false
+terraform -chdir=<module> validate
+terraform -chdir=<module> plan -input=false
 ```
 
 ### Evidence
 - Current configuration: <details>
 - Usage pattern: <monitoring data evidence>
-- Cost impact: $X/month -> $Y/month
-- Best practice alignment: <reference>
+- Cost impact: <current amount and currency> -> <target amount and currency>
+- Pricing evidence: <official URL, retrieval date, region, units, assumptions>
+- Utilization evidence: <query/source, time window, result, freshness limit>
+- Best practice alignment: <official reference>
 
 ### Validation steps
 - [ ] Test in a non-production environment
@@ -175,7 +165,7 @@ az appservice plan update --name <plan> --sku B2
 ### Risks and considerations
 - <Risk and mitigation>
 
-**Priority score**: X | **Value**: X/10 | **Risk**: X/10
+**Priority**: <team decision or pending> | **Decision owner**: <role>
 ````
 
 Coordinating epic:
@@ -183,7 +173,7 @@ Coordinating epic:
 ````markdown
 ## Azure cost optimization epic
 
-**Total potential savings**: $X/month | **Implementation timeline**: X weeks
+**Total potential savings**: <amount and currency>/month | **Timeline**: <team estimate or not estimated>
 
 ### Executive summary
 - Resources analyzed: X
@@ -204,13 +194,10 @@ graph TB
 
 ### Implementation tracking
 
-High priority (implement first):
+Team-prioritized:
 - [ ] #<issue>: <Title> - $X/month savings
 
-Medium priority:
-- [ ] #<issue>: <Title> - $X/month savings
-
-Low priority:
+Priority pending:
 - [ ] #<issue>: <Title> - $X/month savings
 
 ### Progress tracking
@@ -219,7 +206,7 @@ Low priority:
 
 ### Success criteria
 - [ ] All high-priority optimizations implemented
-- [ ] More than 80% of estimated savings achieved
+- [ ] Realized savings are measured against the documented baseline and reported without changing the original estimate
 - [ ] No performance degradation observed
 - [ ] Cost monitoring dashboard updated
 ````
@@ -227,8 +214,11 @@ Low priority:
 ## Quality Gate
 
 - [ ] Each cost estimate was checked against actual resource configuration and Azure pricing.
-- [ ] Recommendations derive only from authoritative IaC files, or execution stops when none are found.
-- [ ] Each recommendation includes evidence, a priority score, and specific executable commands.
+- [ ] Recommendations derive from Terraform and observed Azure state, or the workflow stops when either source is unavailable.
+- [ ] Each estimate records official pricing evidence, date, region, currency, units, assumptions, and telemetry window.
+- [ ] Each recommendation includes risk, dependencies, a Terraform change surface, validation, and rollback without an invented score or timeline.
 - [ ] One traceable GitHub work item was created per opportunity, plus a coordinating epic.
 - [ ] Work items were created only after explicit user confirmation.
+- [ ] Duplicate searches, issue types, returned URLs, and partial failures were recorded from GitHub tool output.
 - [ ] Each architecture diagram is valid Mermaid and accurately represents the current state.
+- [ ] No Azure mutation or `terraform apply` occurred during analysis.

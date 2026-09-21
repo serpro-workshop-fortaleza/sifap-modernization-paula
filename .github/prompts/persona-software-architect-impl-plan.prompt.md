@@ -1,55 +1,55 @@
 ---
 name: "impl-plan"
-description: "Estruture o plan.md de uma funcionalidade em fases ordenadas por dependências, com marcadores de paralelismo, perfis de capacidade e critérios mensuráveis de saída."
+description: "Structure a feature's plan.md into dependency-ordered phases with parallelism markers, capability profiles, and measurable exit criteria."
 argument-hint: "feature=NNN-feature-name"
 agent: "software-architect"
 tools: ["read", "search", "edit"]
 ---
 # /impl-plan
 
-## Objetivo
+## Objective
 
-Organizar tarefas em `plan.md` por dependência, paralelismo seguro, perfil de capacidade e critérios mensuráveis, sem inventar escopo.
+Organize tasks in `plan.md` by dependency, safe parallelism, capability profile, and measurable criteria, without inventing scope.
 
-## Quando usar
+## When to Invoke
 
-Na Etapa 2, depois de `spec.md`, projeto inicial e `tasks.md`, antes da implementação.
+In Stage 2, after `spec.md`, the initial design, and `tasks.md`, before implementation.
 
-## Pré-condições
+## Preconditions
 
-- Cada REQ-ID tem `source_legacy:`
-- O Monólito Modular e as tarefas estão definidos
+- Each REQ-ID has `source_legacy:`
+- The Modular Monolith and tasks are defined
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Identificador e tarefas
+- Identifier and tasks
 
-## O que farei
+## What I Will Do
 
-- Criarei fases foundation, features e hardening
-- Marcarei `[P]` somente com arquivos distintos e sem dependência de execução, comprovados por grep
-- Usarei perfis deep reasoning, implementation ou mechanical conforme [`model-routing.md`](../../09-cheat-sheets/model-routing.md)
-- Definirei saídas mensuráveis e riscos
+- Create foundation, features, and hardening phases
+- Mark `[P]` only for distinct files with no execution dependency, verified by grep
+- Use deep reasoning, implementation, or mechanical profiles according to [`model-routing.md`](../../09-cheat-sheets/model-routing.md)
+- Define measurable exit criteria and risks
 
-## O que não farei
+## What I Will NOT Do
 
-- Fixar modelo, inventar tarefa/REQ-ID, escrever código ou projetar arquitetura
+- Pin a model, invent a task/REQ-ID, write code, or design architecture
 
-## Formato da saída
+## Output Format
 
-Fases com `Task ID | Título | [P] | Perfil de capacidade | Esforço | Rastreia`, critérios e tabela de riscos.
+Phases with `Task ID | Title | [P] | Capability profile | Effort | Traces to`, criteria, and a risk table.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Toda tarefa rastreia REQ-ID, dura até um dia e tem perfil
-- [ ] `[P]` tem evidência; fases têm critérios; riscos têm mitigação
+- [ ] Every task traces to a REQ-ID, takes at most one day, and has a profile
+- [ ] `[P]` has evidence; phases have criteria; risks have mitigations
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@software-architect`. Leia `spec.md`, `plan.md` e `tasks.md`. Ordene fundação, funcionalidades e robustecimento. Marque paralelismo apenas após verificar arquivos e dependências. Atribua perfil, nunca modelo. Defina testes, documentação e revisão verificáveis por fase. Registre riscos, sobretudo regra legada não confirmada. Decomponha tarefas acima de um dia.
+You are `@software-architect`. Read `spec.md`, `plan.md`, and `tasks.md`. Order foundation, features, and hardening. Mark parallelism only after checking files and dependencies. Assign a profile, never a model. Define verifiable tests, documentation, and review for each phase. Record risks, especially unconfirmed legacy rules. Break down tasks longer than one day.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /impl-plan feature=014-registration
 ```

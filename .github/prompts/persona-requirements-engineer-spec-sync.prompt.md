@@ -1,112 +1,112 @@
 ---
 name: "spec-sync"
-description: "Detecte divergências entre spec.md e a implementação e proponha uma atualização de sincronização da especificação."
+description: "Detect drift between spec.md and the implementation and propose a specification synchronization update."
 argument-hint: "feature=NNN-feature-name"
 agent: "requirements-engineer"
 tools: ["read", "search", "execute"]
 ---
 # /spec-sync
 
-## Objetivo
+## Objective
 
-Detectar divergências entre `specs/<NNN>-<feature>/spec.md` e o código, classificar cada REQ-ID e propor uma alteração na especificação que elimine a lacuna. A entrega é um relatório de divergências e uma alteração proposta, não uma edição aplicada. Nunca presuma que o código está correto.
+Detect drift between `specs/<NNN>-<feature>/spec.md` and the code, classify each REQ-ID, and propose a specification change that closes the gap. The deliverable is a drift report and a proposed change, not an applied edit. Never assume the code is correct.
 
-## Quando usar
+## When to Invoke
 
-Entre a metade e o final da Etapa 3 ou na Etapa 4, quando o código estiver adiantado ou atrasado em relação à especificação e a equipe precisar reconciliá-los.
+From the middle to the end of Stage 3 or in Stage 4, when code is ahead of or behind the specification and the team needs to reconcile them.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/spec.md` existe com REQ-IDs
-- O código e os testes da funcionalidade existem
-- A equipe consegue confirmar as fontes de qualquer comportamento recém-descoberto
+- `specs/<NNN>-<feature>/spec.md` exists with REQ-IDs
+- The feature's code and tests exist
+- The team can confirm sources for any newly discovered behavior
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
 - `feature=<NNN>-<feature>`
-- Escopo opcional: um subconjunto de REQ-IDs ou pacotes
-- O `source_legacy:` de qualquer comportamento Não documentado que a equipe decidir manter
-- Solicite à pessoa usuária qualquer informação ausente.
+- Optional scope: a subset of REQ-IDs or packages
+- The `source_legacy:` for any Undocumented behavior the team decides to retain
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Analisarei os REQ-IDs de `spec.md`
-- Pesquisarei na base de código as referências a REQ-IDs em comentários, nomes de testes e mensagens de confirmação no Git
-- Classificarei cada REQ-ID como Implementado (código e teste), Parcial (somente código), Órfão (sem código) ou Não documentado (o código cita um REQ-ID desconhecido)
-- Selecionarei três fluxos representativos e compararei a especificação com o caminho real do código
-- Proporei adições à especificação para itens Não documentados, cada uma com um REQ-ID proposto, uma declaração EARS e um marcador de posição `source_legacy:` obrigatório
-- Classificarei as três principais divergências por risco
+- Parse the REQ-IDs in `spec.md`
+- Search the codebase for REQ-ID references in comments, test names, and Git commit messages
+- Classify each REQ-ID as Implemented (code and test), Partial (code only), Orphan (no code), or Undocumented (code cites an unknown REQ-ID)
+- Select three representative flows and compare the specification with the actual code path
+- Propose specification additions for Undocumented items, each with a proposed REQ-ID, an EARS statement, and a mandatory `source_legacy:` placeholder
+- Rank the top three drifts by risk
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever automaticamente a especificação. Proporei uma alteração, e o Responsável pelo Produto deverá aprová-la
-- Criar um requisito para código Não documentado sem exigir seu `source_legacy:` (proteção contra alucinações e verificação obrigatória de CI)
-- Presumir que o código está correto porque existe. A divergência pode indicar que o código está errado, não a especificação
-- Inventar uma fonte legada para o comportamento descoberto. A equipe deve fornecê-la
-- Classificar qualquer item sem uma referência `file:line`
+- Automatically write the specification. I will propose a change, and the Product Owner must approve it
+- Create a requirement for Undocumented code without requiring its `source_legacy:` (hallucination protection and mandatory CI check)
+- Assume the code is correct because it exists. Drift may indicate that the code is wrong, not the specification
+- Invent a legacy source for discovered behavior. The team must provide it
+- Classify any item without a `file:line` reference
 
-## Formato da saída
+## Output Format
 
-Uma tabela de divergências, uma alteração proposta e uma lista de riscos classificada, apresentadas à equipe.
+A drift table, a proposed change, and a ranked risk list, presented to the team.
 
-Tabela de divergências:
+Drift table:
 
 ```markdown
-## Relatório de sincronização: 001-pagamento-beneficio
+## Synchronization report: 001-pagamento-beneficio
 
-| REQ-ID | Status | Evidência (file:line) | Ação |
+| REQ-ID | Status | Evidence (file:line) | Action |
 |---|---|---|---|
-| REQ-PAY-014 | Implementado | PaymentBatchService.java:132; PaymentBatchServiceTest.java:88 | Nenhuma |
-| REQ-PAY-021 | Parcial | BenefitAmount.java:57 | Adicionar um teste que faça referência a REQ-PAY-021 |
-| REQ-PAY-030 | Órfão | — | Implementar ou adiar |
-| REQ-PAY-041 | Não documentado | DuplicateFilter.java:24 | Adicionar o REQ à especificação (`source_legacy` obrigatório) |
+| REQ-PAY-014 | Implemented | PaymentBatchService.java:132; PaymentBatchServiceTest.java:88 | None |
+| REQ-PAY-021 | Partial | BenefitAmount.java:57 | Add a test referencing REQ-PAY-021 |
+| REQ-PAY-030 | Orphan | - | Implement or defer |
+| REQ-PAY-041 | Undocumented | DuplicateFilter.java:24 | Add the REQ to the specification (`source_legacy` required) |
 ```
 
-Alteração proposta para cada item Não documentado:
+Proposed change for each Undocumented item:
 
 ```diff
 + ### REQ-PAY-041 (unwanted)
-+ SE uma linha de pagamento duplicar uma linha já importada, ENTÃO o sistema DEVE ignorar a duplicata.
++ IF a payment row duplicates an already imported row, THEN the system SHALL ignore the duplicate.
 + source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end>
 ```
 
-Em seguida, apresente uma lista das "três principais divergências por risco", ordenada pelo impacto no negócio e pela probabilidade de incidente.
+Then present a list of the "top three drifts by risk", ordered by business impact and incident likelihood.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada REQ-ID da especificação está classificado com evidência `file:line`
-- [ ] Cada item Não documentado tem um REQ-ID proposto, uma declaração EARS e um marcador de posição `source_legacy:` que a equipe deve preencher
-- [ ] A alteração proposta pode ser aplicada sem conflitos à estrutura atual de `spec.md`
-- [ ] A divergência comportamental foi verificada em pelo menos três fluxos representativos
-- [ ] As três principais divergências estão classificadas por risco
-- [ ] Nenhum arquivo de especificação foi modificado
+- [ ] Each REQ-ID in the specification is classified with `file:line` evidence
+- [ ] Each Undocumented item has a proposed REQ-ID, an EARS statement, and a `source_legacy:` placeholder for the team to fill in
+- [ ] The proposed change applies cleanly to the current `spec.md` structure
+- [ ] Behavioral drift has been checked in at least three representative flows
+- [ ] The top three drifts are ranked by risk
+- [ ] No specification file has been modified
 
-## Corpo do prompt
+## Prompt Body
 
-Você atua como Especialista em Requisitos (`@requirements-engineer`) e reconcilia a especificação escrita com o comportamento real do código.
+You are the Requirements Engineer (`@requirements-engineer`), reconciling the written specification with actual code behavior.
 
-**Etapa 1: analise os REQ-IDs.**
-Leia `spec.md` e liste cada REQ-ID declarado.
+**Step 1: parse the REQ-IDs.**
+Read `spec.md` and list each declared REQ-ID.
 
-**Etapa 2: pesquise as referências.**
-Pesquise cada REQ-ID na base de código, em comentários, nomes de testes e mensagens de confirmação no Git. Registre `file:line` para cada ocorrência.
+**Step 2: search for references.**
+Search for each REQ-ID in the codebase, in comments, test names, and Git commit messages. Record `file:line` for each occurrence.
 
-**Etapa 3: classifique cada REQ-ID.**
-Use Implementado (código e teste), Parcial (somente código), Órfão (sem código) ou Não documentado (o código referencia um REQ-ID que a especificação não declara).
+**Step 3: classify each REQ-ID.**
+Use Implemented (code and test), Partial (code only), Orphan (no code), or Undocumented (code references a REQ-ID the specification does not declare).
 
-**Etapa 4: selecione amostras de divergência comportamental.**
-Escolha três fluxos representativos e compare o comportamento especificado com o caminho real do código. Registre as incompatibilidades.
+**Step 4: sample behavioral drift.**
+Choose three representative flows and compare the specified behavior with the actual code path. Record mismatches.
 
-**Etapa 5: proponha a alteração.**
-Para cada item Não documentado, elabore um novo REQ com uma declaração EARS e um marcador de posição `source_legacy:` que a equipe deve preencher. Não invente a fonte.
+**Step 5: propose the change.**
+For each Undocumented item, draft a new REQ with an EARS statement and a `source_legacy:` placeholder for the team to fill in. Do not invent the source.
 
-**Etapa 6: classifique os três principais riscos.**
-Ordene-os pelo impacto no negócio e pela probabilidade de incidente.
+**Step 6: rank the top three risks.**
+Order them by business impact and incident likelihood.
 
-Proponha, mas não aplique. Cada REQ proposto precisa de uma linha `source_legacy:` preenchida pela equipe. Uma divergência exige determinar qual lado está correto, sem presumir que o código prevalece.
+Propose, but do not apply. Each proposed REQ needs a `source_legacy:` line filled in by the team. Drift requires determining which side is correct, without assuming that code takes precedence.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /spec-sync feature=001-pagamento-beneficio
 ```

@@ -86,6 +86,36 @@ class SpecificationTraceabilityTests(unittest.TestCase):
         self.assertIn("REQ-001", output)
         self.assertIn("::error", output)
 
+    def test_accepts_list_item_and_bold_source_declarations(self):
+        source = "01-archaeology/legacy-sifap/adabas-ddms/SAMPLE.ddm"
+        self.write_fixture(source, "DB: 001 FILE: 010\n")
+        declarations = (
+            f"- source_legacy: {source}",
+            f"* source_legacy: {source}",
+            f"- **source_legacy**: {source}",
+        )
+        for declaration in declarations:
+            with self.subTest(declaration=declaration):
+                self.write_fixture("specs/001-validation/spec.md", (
+                    f"## REQ-001: Validation\n{declaration}\n"
+                ))
+
+                exit_code, output = self.run_check("legacy")
+
+                self.assertEqual(0, exit_code, output)
+
+    def test_rejects_list_item_declaration_with_invalid_source(self):
+        self.write_fixture("specs/001-validation/spec.md", (
+            "## REQ-001: Validation\n"
+            "- source_legacy: 01-archaeology/legacy-sifap/"
+            "natural-programs/SAMPLE.NSN:L1-L3\n"
+        ))
+
+        exit_code, output = self.run_check("legacy")
+
+        self.assertEqual(1, exit_code)
+        self.assertIn("REQ-001", output)
+
     def test_accepts_justified_greenfield_and_existing_namespaced_ids(self):
         self.write_fixture("specs/portal.md", (
             "## REQ-PORTAL-001: Search\n"

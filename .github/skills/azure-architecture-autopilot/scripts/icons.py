@@ -1,5 +1,5 @@
-"""Ícones oficiais de serviços do Azure: SVG codificado em Base64.
-Gerado automaticamente com o conjunto mais recente de ícones do Azure. Total de ícones: 634
+"""Official Azure service icons: Base64-encoded SVG.
+Automatically generated from the latest Azure icon set. Total icons: 634
 """
 
 AZURE_ICONS = {
@@ -3187,7 +3187,7 @@ AZURE_ICONS = {
 
 
 def get_icon_data_uri(key: str) -> str:
-    """Obtém o URI de dados de um ícone do Azure."""
+    """Get the data URI for an Azure icon."""
     icon = AZURE_ICONS.get(key.lower().replace("-", "_").replace(" ", "_"))
     if icon:
         return f"data:image/svg+xml;base64,{icon['b64']}"
@@ -3195,6 +3195,6 @@ def get_icon_data_uri(key: str) -> str:
 
 
 def search_icons(query: str) -> list:
-    """Pesquisa ícones por correspondência parcial de nome."""
+    """Search icons by partial name match."""
     q = query.lower().replace("-", "_").replace(" ", "_")
     return [(k, v["name"], v["category"]) for k, v in AZURE_ICONS.items() if q in k]

@@ -57,6 +57,8 @@ All of this must emerge from the team's own investigation in `01-archaeology/leg
 |---------|---------|
 | [`/migration`](../prompts/persona-dba-migration.prompt.md) | Write forward and rollback migrations with indexing and zero-downtime steps |
 | [`/query-audit`](../prompts/persona-dba-query-audit.prompt.md) | Audit a SQL query for performance, security, and standards with an EXPLAIN rationale |
+| [`/postgresql-code-review`](../prompts/postgresql-code-review.prompt.md) | Review PostgreSQL SQL, schemas, functions, migrations, and row-level security |
+| [`/postgresql-optimization`](../prompts/postgresql-optimization.prompt.md) | Design or optimize PostgreSQL queries, indexes, schemas, and advanced data types |
 
 ## Definition of Done
 

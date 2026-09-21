@@ -1,10 +1,10 @@
-# Referência de nomes de regiões do Azure
+# Azure region name reference
 
-A API Azure Retail Prices exige valores de `armRegionName` em minúsculas e sem espaços. Use esta tabela para associar nomes comuns de regiões aos valores da API.
+The Azure Retail Prices API requires lowercase `armRegionName` values without spaces. Use this table to map common region names to API values.
 
-## Mapeamento de regiões
+## Region mapping
 
-| Nome para exibição | armRegionName |
+| Display name | armRegionName |
 |-------------|---------------|
 | East US | `eastus` |
 | East US 2 | `eastus2` |
@@ -52,25 +52,27 @@ A API Azure Retail Prices exige valores de `armRegionName` em minúsculas e sem 
 | South Africa West | `southafricawest` |
 | Qatar Central | `qatarcentral` |
 
-## Regras de conversão
+## Conversion rules
 
-1. Remova todos os espaços.
-2. Converta para minúsculas.
-3. Exemplos:
-   - "East US" → `eastus`
-   - "West Europe" → `westeurope`
-   - "Southeast Asia" → `southeastasia`
-   - "South Central US" → `southcentralus`
+1. Remove all spaces.
+2. Convert to lowercase.
 
-## Aliases comuns
+Examples:
 
-As pessoas podem se referir às regiões de modo informal. Associe esses nomes ao `armRegionName` correto:
+- "East US" → `eastus`
+- "West Europe" → `westeurope`
+- "Southeast Asia" → `southeastasia`
+- "South Central US" → `southcentralus`
 
-| A pessoa diz | Mapear para |
+## Common aliases
+
+Users may refer to regions informally. Map these names to the correct `armRegionName`:
+
+| User says | Map to |
 |-----------|---------|
 | "US East", "Virginia" | `eastus` |
 | "US West", "California" | `westus` |
-| "Europe", "EU" | `westeurope` (padrão) |
+| "Europe", "EU" | `westeurope` (default) |
 | "UK", "London" | `uksouth` |
 | "Asia", "Singapore" | `southeastasia` |
 | "Japan", "Tokyo" | `japaneast` |

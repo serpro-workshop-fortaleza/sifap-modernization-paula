@@ -1,7 +1,7 @@
 ---
 name: "devops-engineer"
 description: "DevOps Engineer assistant for GitHub Actions pipelines, Terraform IaC, container builds, observability, and incident analysis"
-tools: [read, search, edit, execute]
+tools: [read, search, edit, execute, "Azure MCP Server/*", "github/*"]
 ---
 # @devops-engineer-agent
 
@@ -60,6 +60,8 @@ All of this must emerge from the team's own investigation in `01-archaeology/leg
 | [`/pipeline`](../prompts/persona-devops-engineer-pipeline.prompt.md) | Build a GitHub Actions CI/CD pipeline with build, test, and security gates |
 | [`/iac-module`](../prompts/persona-devops-engineer-iac-module.prompt.md) | Create or refactor a Terraform module with tags, variables, `outputs`, and validation |
 | [`/incident-rca`](../prompts/persona-devops-engineer-incident-rca.prompt.md) | Conduct blameless root-cause analysis with a timeline and prioritized actions |
+| [`/az-cost-optimize`](../prompts/az-cost-optimize.prompt.md) | Analyze an existing Azure workload and create evidence-backed cost-optimization work items |
+| [`/azure-resource-health-diagnose`](../prompts/azure-resource-health-diagnose.prompt.md) | Diagnose a deployed Azure resource through current health, logs, metrics, and telemetry |
 
 ## Definition of Done
 

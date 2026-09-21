@@ -1,7 +1,7 @@
 name: Implementation task
 description: A single scoped implementation task derived from a specification
 title: "[T-NNN] "
-labels: [ "task", "stage-3" ]
+labels: ["task", "stage-3"]
 projects: []
 assignees: []
 body:
@@ -40,7 +40,8 @@ body:
     id: acceptance-criteria
     attributes:
       label: Acceptance criteria (from the specification)
-      description: Copy from `spec.md` so the implementer does not need to switch
+      description:
+        Copy from `spec.md` so the implementer does not need to switch
         between files.
       placeholder: |
         - When <event>, the system SHALL <verifiable behavior>.

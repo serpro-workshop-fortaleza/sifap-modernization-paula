@@ -1,88 +1,88 @@
 ---
 name: "generate-jpa-from-fdt"
-description: "Gera classes de entidade JPA a partir de definições FDT do Adabas, usando JSONB para campos MU/PE."
+description: "Generates JPA entity classes from Adabas FDT definitions, using JSONB for MU/PE fields."
 argument-hint: "ddm=01-archaeology/legacy-sifap/adabas-ddms/<DDM>.ddm context=<context> package=<java.package> dateformat=<format>"
 agent: "builder"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /generate-jpa-from-fdt
 
-## Objetivo
+## Objective
 
-Analisar um DDM Adabas e gerar entidade JPA com tipos corretos, tratamento explícito de MU/PE e migração Flyway correspondente.
+Parse an Adabas DDM and generate a JPA entity with correct types, explicit MU/PE handling, and a corresponding Flyway migration.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 3, ao preparar a camada de dados de um contexto delimitado.
+At the start of Stage 3, when preparing a bounded context's data layer.
 
-## Pré-condições
+## Preconditions
 
-- `02-modern-spec/bounded-contexts.md` identifica o proprietário do DDM
-- O DDM está em `01-archaeology/legacy-sifap/adabas-ddms/`
-- O pacote de destino foi definido
+- `02-modern-spec/bounded-contexts.md` identifies the DDM owner
+- The DDM is in `01-archaeology/legacy-sifap/adabas-ddms/`
+- The target package has been defined
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Caminho do DDM
-- Contexto delimitado e pacote Java
-- Formato de data legado, como `YYYYMMDD` compactado ou `YYYY-MM-DD` alfanumérico
+- DDM path
+- Bounded context and Java package
+- Legacy date format, such as packed `YYYYMMDD` or alphanumeric `YYYY-MM-DD`
 
-## O que farei
+## What I Will Do
 
-- Analisarei FDT, mapearei campos Java/JPA, tratarei MU como JSONB ou `@ElementCollection` e PE como entidades `@OneToMany`
-- Gerarei DDL PostgreSQL 16 em Flyway
-- Marcarei nomes crípticos com FIXME
+- Parse the FDT, map Java/JPA fields, handle MU as JSONB or `@ElementCollection` and PE as `@OneToMany` entities
+- Generate PostgreSQL 16 DDL in Flyway
+- Mark cryptic names with FIXME
 
-## O que não farei
+## What I Will NOT Do
 
-- Inventar significado ou formato de data
-- Criar stored procedures
-- Omitir campos MU/PE
+- Invent meaning or date formats
+- Create stored procedures
+- Omit MU/PE fields
 
-## Formato da saída
+## Output Format
 
 1. `src/main/java/[package]/domain/[EntityName].java`
 2. `db/migration/V[NNN]__create_[table_name].sql`
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] A entidade compila e cobre todos os campos
-- [ ] MU usa JSONB (`@JdbcTypeCode(SqlTypes.JSON)`) ou `@ElementCollection`
-- [ ] PE usa entidade separada com `@OneToMany`
-- [ ] A migração é DDL PostgreSQL 16 válido
-- [ ] Nomes crípticos têm `// FIXME: confirm semantics` e são encaminhados como questões em aberto
+- [ ] The entity compiles and covers all fields
+- [ ] MU uses JSONB (`@JdbcTypeCode(SqlTypes.JSON)`) or `@ElementCollection`
+- [ ] PE uses a separate entity with `@OneToMany`
+- [ ] The migration is valid PostgreSQL 16 DDL
+- [ ] Cryptic names have `// FIXME: confirm semantics` and are referred as open questions
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@builder`. Crie uma entidade JPA a partir do DDM indicado.
+You are `@builder`. Create a JPA entity from the specified DDM.
 
-**Etapa 1 — Analisar FDT.** Extraia nível, nome curto, nome longo, formato A/N/P/B/D/T, tamanho e DE/MU/PE/SU. Apresente uma tabela para revisão.
+**Step 1 - Parse the FDT.** Extract the level, short name, long name, A/N/P/B/D/T format, length, and DE/MU/PE/SU. Present a table for review.
 
-**Etapa 2 — Mapear tipos.**
+**Step 2 - Map types.**
 
-| Adabas | Java | JPA | Observações |
+| Adabas | Java | JPA | Notes |
 |---|---|---|---|
 | A(n) | `String` | `@Column(length = n)` | |
-| N(n) sem decimais | `Long` ou `Integer` | `@Column` | Use `Long` para IDs |
-| N(n.m) | `BigDecimal` | `@Column(precision=n, scale=m)` | Sempre use para valores monetários |
-| P(n.m) | `BigDecimal` | `@Column(precision=n, scale=m)` | Decimal compactado |
-| D | `LocalDate` | `@Column` | Confirme o formato |
+| N(n) without decimals | `Long` or `Integer` | `@Column` | Use `Long` for IDs |
+| N(n.m) | `BigDecimal` | `@Column(precision=n, scale=m)` | Always use for monetary amounts |
+| P(n.m) | `BigDecimal` | `@Column(precision=n, scale=m)` | Packed decimal |
+| D | `LocalDate` | `@Column` | Confirm the format |
 | T | `LocalDateTime` | `@Column` | |
-| B(n) | `byte[]` | `@Lob` | Raro |
-| Campo MU | `List<T>` | JSONB ou `@ElementCollection` | A equipe escolhe |
-| Grupo PE | `List<EmbeddedEntity>` | `@OneToMany` | Entidade separada |
+| B(n) | `byte[]` | `@Lob` | Rare |
+| MU field | `List<T>` | JSONB or `@ElementCollection` | The team chooses |
+| PE group | `List<EmbeddedEntity>` | `@OneToMany` | Separate entity |
 
-Para MU, apresente JSONB, mais simples e menos consultável, e `@ElementCollection`, mais consultável e com tabela separada. A equipe escolhe.
+For MU, present JSONB, simpler and less queryable, and `@ElementCollection`, more queryable with a separate table. The team chooses.
 
-**Etapa 3 — Tratar PE.** Crie entidade e tabela próprias, `@ManyToOne` para o pai, campos mapeados e índice de ocorrência.
+**Step 3 - Handle PE.** Create a dedicated entity and table, `@ManyToOne` to the parent, mapped fields, and an occurrence index.
 
-**Etapa 4 — Tratar superdescritores.** Adicione índice composto:
+**Step 4 - Handle superdescriptors.** Add a composite index:
 
 ```java
 @Table(indexes = @Index(columnList = "field_a, field_b"))
 ```
 
-**Etapa 5 — Marcar nomes crípticos.**
+**Step 5 - Mark cryptic names.**
 
 ```java
 /** FIXME: confirm semantics with the team for Adabas field XX */
@@ -90,14 +90,14 @@ Para MU, apresente JSONB, mais simples e menos consultável, e `@ElementCollecti
 private String xxValue;
 ```
 
-Solicite que uma pessoa registre a questão em `mysteries-found.md` com `path:line`; não responda nem altere o status.
+Ask a person to record the question in `mysteries-found.md` with `path:line`; do not answer it or change its status.
 
-**Etapa 6 — Gerar Flyway.** Use snake_case, tipos correspondentes, JSONB escolhido, tabelas PE, chaves, índices e `CHECK` óbvios. Nomeie `V[NNN]__create_[table_name].sql`.
+**Step 6 - Generate Flyway.** Use snake_case, matching types, the selected JSONB option, PE tables, keys, indexes, and obvious `CHECK` constraints. Name it `V[NNN]__create_[table_name].sql`.
 
-**Etapa 7 — Verificar compilação.** Compile e informe problemas.
+**Step 7 - Verify compilation.** Compile and report problems.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /generate-jpa-from-fdt ddm=01-archaeology/legacy-sifap/adabas-ddms/<DDM>.ddm context=<context> package=<java.package> dateformat=<format>
 ```

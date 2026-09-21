@@ -1,101 +1,101 @@
 ---
 name: "map-dependencies"
-description: "Mapeia dependências entre programas (CALLNAT, INCLUDE) e entre programas e dados (acesso a DDM) no escopo selecionado."
+description: "Maps program-to-program (CALLNAT, INCLUDE) and program-to-data (DDM access) dependencies in the selected scope."
 argument-hint: "scope=01-archaeology/legacy-sifap/natural-programs/ recursive=true"
 agent: "archaeologist"
 tools: ["read", "search", "edit"]
 ---
 # /map-dependencies
 
-## Objetivo
+## Objective
 
-Construir um grafo de dependências de um escopo selecionado da base legada pelo rastreamento de chamadas CALLNAT, diretivas INCLUDE e padrões de acesso a dados DDM. Gerar um diagrama Mermaid em que cada aresta cita sua origem.
+Build a dependency graph for a selected scope of the legacy codebase by tracing CALLNAT calls, INCLUDE directives, and DDM data access patterns. Generate a Mermaid diagram in which every edge cites its source.
 
-## Quando usar
+## When to Invoke
 
-Depois que a equipe concluir o inventário inicial e quiser compreender as relações entre programas e dados.
+After the team completes the initial inventory and wants to understand relationships between programs and data.
 
-## Pré-condições
+## Preconditions
 
-- `01-archaeology/inventory.md` existe
-- `01-archaeology/legacy-sifap/` está acessível
-- A equipe selecionou um escopo: programa, fluxo batch ou família de transações
+- `01-archaeology/inventory.md` exists
+- `01-archaeology/legacy-sifap/` is accessible
+- The team has selected a scope: a program, batch flow, or transaction family
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- O escopo: caminho de arquivo, diretório ou conjunto de arquivos
-- Se o rastreamento será recursivo, seguindo os destinos CALLNAT, ou terá somente um nível
+- The scope: a file path, directory, or set of files
+- Whether tracing will be recursive, following CALLNAT targets, or only one level deep
 
-## O que farei
+## What I Will Do
 
-- Pesquisarei todas as declarações `CALLNAT`, `PERFORM` e `INCLUDE` no escopo
-- Identificarei o subprograma de destino de cada CALLNAT e verificarei sua existência
-- Pesquisarei `READ`, `FIND`, `GET`, `STORE`, `UPDATE`, `DELETE` e `HISTOGRAM`, com referências ao DDM ou arquivo de destino
-- Construirei um grafo Mermaid com dependências entre programas e entre programas e dados
-- Listarei referências quebradas a programas ausentes
+- Search for all `CALLNAT`, `PERFORM`, and `INCLUDE` statements in scope
+- Identify each CALLNAT target subprogram and verify its existence
+- Search for `READ`, `FIND`, `GET`, `STORE`, `UPDATE`, `DELETE`, and `HISTOGRAM`, with references to the target DDM or file
+- Build a Mermaid graph with program-to-program and program-to-data dependencies
+- List broken references to missing programs
 
-## O que não farei
+## What I Will NOT Do
 
-- Inventar conexões não presentes no código-fonte; toda aresta terá arquivo e linha
-- Supor a função de um destino CALLNAT pelo nome; mapearei somente a aresta
-- Pressupor estruturas; lerei o que realmente existe
-- Seguir referências fora de `01-archaeology/legacy-sifap/`
+- Invent connections absent from the source code; every edge will have a file and line
+- Assume a CALLNAT target's function from its name; map only the edge
+- Assume structures; read what actually exists
+- Follow references outside `01-archaeology/legacy-sifap/`
 
-## Formato da saída
+## Output Format
 
-Um arquivo Mermaid em `01-archaeology/dependency-map.mmd` e um arquivo de apoio em `01-archaeology/dependency-map.md`:
+A Mermaid file at `01-archaeology/dependency-map.mmd` and a supporting file at `01-archaeology/dependency-map.md`:
 
 ```markdown
-# Mapa de dependências — [Descrição do escopo]
-## Diagrama Mermaid
-## Arestas entre programas
-| Origem | Destino | Tipo | Arquivo | Linha |
-## Arestas entre programas e dados
-| Programa | DDM/arquivo | Operação | Arquivo | Linha |
-## Referências quebradas
-## Observações
+# Dependency map - [Scope description]
+## Mermaid diagram
+## Program-to-program edges
+| Source | Target | Type | File | Line |
+## Program-to-data edges
+| Program | DDM/file | Operation | File | Line |
+## Broken references
+## Notes
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] O arquivo Mermaid existe e renderiza um grafo válido
-- [ ] Cada nó corresponde a um arquivo real
-- [ ] Cada aresta cita arquivo e linha de origem
-- [ ] Referências quebradas estão listadas explicitamente
-- [ ] Arestas de acesso a dados distinguem READ, FIND, STORE, UPDATE e DELETE
+- [ ] The Mermaid file exists and renders a valid graph
+- [ ] Every node corresponds to a real file
+- [ ] Every edge cites its source file and line
+- [ ] Broken references are explicitly listed
+- [ ] Data access edges distinguish READ, FIND, STORE, UPDATE, and DELETE
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@archaeologist`. A equipe quer mapear dependências em parte da base legada. Rastreie todas as relações entre programas e entre programas e dados.
+You are `@archaeologist`. The team wants to map dependencies in part of the legacy codebase. Trace all program-to-program and program-to-data relationships.
 
-**Etapa 1 — Identificar o escopo.**
-Confirme se é um programa, um diretório ou um conjunto nomeado. Registre o limite e não pesquise fora dele sem solicitação explícita de rastreamento recursivo.
+**Step 1 - Identify the scope.**
+Confirm whether it is a program, directory, or named set. Record the boundary and do not search beyond it without an explicit request for recursive tracing.
 
-**Etapa 2 — Pesquisar CALLNAT.**
-Para cada `CALLNAT`, extraia programa chamador, nome do subprograma de destino, linha e parâmetros passados, sem interpretá-los. Verifique se o destino existe em `01-archaeology/legacy-sifap/`; caso contrário, registre uma referência quebrada.
+**Step 2 - Search for CALLNAT.**
+For each `CALLNAT`, extract the calling program, target subprogram name, line, and passed parameters without interpreting them. Check whether the target exists in `01-archaeology/legacy-sifap/`; otherwise, record a broken reference.
 
-**Etapa 3 — Pesquisar INCLUDE.**
-Para cada `INCLUDE`, extraia programa, nome do copycode e linha. Verifique se o copycode existe.
+**Step 3 - Search for INCLUDE.**
+For each `INCLUDE`, extract the program, copycode name, and line. Verify that the copycode exists.
 
-**Etapa 4 — Pesquisar PERFORM.**
-Registre `PERFORM` como dependência interna. Não crie arestas no grafo entre programas, mas liste-as em seção separada.
+**Step 4 - Search for PERFORM.**
+Record `PERFORM` as an internal dependency. Do not create program-to-program graph edges for these dependencies; list them in a separate section.
 
-**Etapa 5 — Pesquisar acesso a dados.**
-Para `READ`, `FIND`, `GET`, `STORE`, `UPDATE`, `DELETE` e `HISTOGRAM`, extraia programa, DDM ou número do arquivo, operação, linha e descritor usado em FIND ou READ LOGICAL.
+**Step 5 - Search for data access.**
+For `READ`, `FIND`, `GET`, `STORE`, `UPDATE`, `DELETE`, and `HISTOGRAM`, extract the program, DDM or file number, operation, line, and descriptor used in FIND or READ LOGICAL.
 
-**Etapa 6 — Construir o grafo Mermaid.**
-Use retângulos para programas, cilindros `[(name)]` para dados, setas sólidas “CALLNAT”, setas tracejadas “INCLUDE” e arestas para dados rotuladas com a operação. Preserve a paleta: preenchimento `#0f172a`, contorno `#334155`, texto `#e2e8f0`.
+**Step 6 - Build the Mermaid graph.**
+Use rectangles for programs, cylinders `[(name)]` for data, solid "CALLNAT" arrows, dashed "INCLUDE" arrows, and data edges labeled with the operation. Preserve the palette: fill `#0f172a`, stroke `#334155`, text `#e2e8f0`.
 
-**Etapa 7 — Documentar referências quebradas e observações.**
-Liste CALLNAT e INCLUDE cujos destinos não existam. Registre total de programas, total de arestas, programa mais conectado, DDM mais acessado e programas isolados.
+**Step 7 - Document broken references and notes.**
+List CALLNAT and INCLUDE statements whose targets do not exist. Record the total programs, total edges, most connected program, most accessed DDM, and isolated programs.
 
-**Etapa 8 — Escrever os arquivos.**
-Escreva o diagrama em `01-archaeology/dependency-map.mmd` e a documentação em `01-archaeology/dependency-map.md`.
+**Step 8 - Write the files.**
+Write the diagram to `01-archaeology/dependency-map.mmd` and the documentation to `01-archaeology/dependency-map.md`.
 
-Toda aresta deve citar arquivo e linha. Sem origem comprovada, não inclua a aresta. Não invente conexões.
+Every edge must cite a file and line. Without a verified source, do not include the edge. Do not invent connections.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /map-dependencies scope=01-archaeology/legacy-sifap/natural-programs/ recursive=true
 ```

@@ -1,118 +1,118 @@
 ---
 name: "implement"
-description: "Implemente uma única tarefa de tasks.md de ponta a ponta, com código de produção, testes e rastreabilidade por REQ-ID, sem ampliar o escopo."
+description: "Implement a single tasks.md task end to end, with production code, tests, and REQ-ID traceability, without expanding scope."
 argument-hint: "task=T-XXX feature=specs/<NNN>-<feature>"
 agent: "implementer"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /implement
 
-## Objetivo
+## Objective
 
-Implementar **exatamente uma tarefa** de `specs/<NNN>-<feature>/tasks.md` para que todos os critérios de aceitação vinculados sejam atendidos, o controle de qualidade local passe e cada mudança seja rastreável a um `REQ-ID`. O resultado contém código de produção e testes escritos juntos na mesma mudança, sem ampliar o escopo para tarefas vizinhas, sem refatorações não relacionadas e sem editar a própria especificação.
+Implement **exactly one task** from `specs/<NNN>-<feature>/tasks.md` so that all linked acceptance criteria are met, the local quality gate passes, and every change is traceable to a `REQ-ID`. The result contains production code and tests written together in the same change, without expanding scope to neighboring tasks, unrelated refactoring, or editing the specification itself.
 
 > [!IMPORTANT]
-> Uma tarefa por chamada. Abra uma nova conversa para a próxima tarefa. Nunca agrupe tarefas "enquanto estiver no arquivo".
+> One task per invocation. Open a new conversation for the next task. Never bundle tasks "while you are in the file".
 
-## Quando usar
+## When to Invoke
 
-Use durante a implementação da Etapa 3, quando `tasks.md` existir e a equipe tiver selecionado a próxima tarefa. Execute em uma ramificação `impl/<NNN>-<feature>` criada a partir de `develop`.
+Use during Stage 3 implementation, when `tasks.md` exists and the team has selected the next task. Run on an `impl/<NNN>-<feature>` branch created from `develop`.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/tasks.md` existe e contém a tarefa alvo com seus vínculos de `REQ-ID`
-- `specs/<NNN>-<feature>/spec.md` contém as declarações EARS e os critérios de aceitação desses `REQ-IDs`
-- `specs/<NNN>-<feature>/plan.md` identifica o pacote ou componente afetado pela tarefa
-- A ramificação atual é `impl/<NNN>-<feature>`, não `develop` nem `main`
-- A equipe já criou a estrutura inicial do módulo `backend/` ou `frontend/` alterado pela tarefa
+- `specs/<NNN>-<feature>/tasks.md` exists and contains the target task with its `REQ-ID` links
+- `specs/<NNN>-<feature>/spec.md` contains the EARS statements and acceptance criteria for those `REQ-IDs`
+- `specs/<NNN>-<feature>/plan.md` identifies the package or component affected by the task
+- The current branch is `impl/<NNN>-<feature>`, not `develop` or `main`
+- The team has already scaffolded the `backend/` or `frontend/` module changed by the task
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- O ID da tarefa, por exemplo, `T-017`, e a pasta da funcionalidade `specs/<NNN>-<feature>/`
-- O conjunto de tecnologias alvo da tarefa: Java 21 + Spring Boot 3.3 ou Next.js 15 + TypeScript estrito
-- Todas as decisões de escopo em `02-modern-spec/` que restrinjam a implementação
-- Solicite à pessoa usuária qualquer item ausente antes de escrever código.
+- The task ID, for example, `T-017`, and the feature folder `specs/<NNN>-<feature>/`
+- The task's target stack: Java 21 + Spring Boot 3.3 or Next.js 15 + strict TypeScript
+- Any scope decisions in `02-modern-spec/` that constrain implementation
+- Ask the user for any missing item before writing code.
 
-## O que farei
+## What I Will Do
 
-- Lerei o contrato da tarefa e copiarei seus `REQ-IDs` vinculados, suas dependências e seu marcador de complexidade
-- Extrairei cada declaração EARS vinculada e seus critérios de aceitação para um bloco de comentário no arquivo em alteração
-- Escreverei um teste falhando por critério de aceitação antes de qualquer código de produção
-- Escreverei o menor código de produção que faça os testes passarem, seguindo os padrões do projeto
-- Refatorarei com os testes aprovados e marcarei cada método público que atenda ao requisito com `@implements REQ-NNN`
-- Executarei o controle de qualidade local e marcarei somente a tarefa implementada em `tasks.md`
+- Read the task contract and copy its linked `REQ-IDs`, dependencies, and complexity marker
+- Extract each linked EARS statement and its acceptance criteria into a comment block in the file being changed
+- Write one failing test per acceptance criterion before any production code
+- Write the smallest production code that makes the tests pass, following project standards
+- Refactor with passing tests and tag each public method serving the requirement with `@implements REQ-NNN`
+- Run the local quality gate and check off only the implemented task in `tasks.md`
 
-## O que não farei
+## What I Will NOT Do
 
-- Implementar uma segunda tarefa "enquanto estiver no arquivo". Cada chamada e cada conversa tratam de uma única tarefa
-- Escrever os testes depois do código ou omitir um teste de qualquer critério de aceitação
-- Inventar requisito, regra de negócio ou critério de aceitação ausente da especificação. Se um `REQ-ID` for ambíguo, pararei e perguntarei em vez de tentar adivinhar
-- Alterar o esquema do banco de dados. Isso pertence a `/migration` e deve ser encaminhado à pessoa responsável pela administração do banco de dados. Também não editarei `spec.md`, pois isso pertence a `/update-spec` e deve ser encaminhado à pessoa Responsável pelo Produto
-- Retornar `null`, usar `Optional` como tipo de parâmetro ou usar `any` em TypeScript
-- Adicionar uma dependência sem um ADR ou alterar o `// TODO(REQ-XXX)` de outra tarefa
+- Implement a second task "while I am in the file". Each invocation and each conversation addresses a single task
+- Write tests after the code or omit a test for any acceptance criterion
+- Invent a requirement, business rule, or acceptance criterion absent from the specification. If a `REQ-ID` is ambiguous, I will stop and ask instead of guessing
+- Change the database schema. That belongs to `/migration` and must be routed to the database administrator. I will not edit `spec.md` either, because that belongs to `/update-spec` and must be routed to the Product Owner
+- Return `null`, use `Optional` as a parameter type, or use `any` in TypeScript
+- Add a dependency without an ADR or change another task's `// TODO(REQ-XXX)`
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### Arquivos alterados
+### Changed files
 
-| Arquivo | Papel |
+| File | Role |
 |---|---|
-| `backend/src/main/java/com/example/app/<feature>/<Feature>Service.java` | Produção: atende ao REQ-042 |
-| `backend/src/test/java/com/example/app/<feature>/<Feature>ServiceTest.java` | Teste: um caso por critério de aceitação |
-| `backend/src/main/java/com/example/app/<feature>/<Feature>Request.java` | Produção: tipo `record` de requisição com `@Valid` |
+| `backend/src/main/java/com/example/app/<feature>/<Feature>Service.java` | Production: serves REQ-042 |
+| `backend/src/test/java/com/example/app/<feature>/<Feature>ServiceTest.java` | Test: one case per acceptance criterion |
+| `backend/src/main/java/com/example/app/<feature>/<Feature>Request.java` | Production: request `record` with `@Valid` |
 
-### Controle de qualidade
-`./mvnw verify` → BUILD SUCCESS (18 testes, 0 falhas)
+### Quality gate
+`./mvnw verify` → BUILD SUCCESS (18 tests, 0 failures)
 
-### O que não alterei
-- Adiei a extração de um validador compartilhado (`Long Method`, método longo), pois está fora do escopo da tarefa. Registrei-a como acompanhamento.
+### What I did not change
+- Deferred extracting a shared validator (`Long Method`), because it is outside the task scope. Recorded it as a follow-up.
 
-### Mensagem do registro de alteração
-feat(<feature>): implementar REQ-042 e adicionar validação da requisição
+### Commit message
+feat(<feature>): implement REQ-042 and add request validation
 
-Conclui T-017 em specs/007-<feature>/tasks.md
-Referência: REQ-042
+Completes T-017 in specs/007-<feature>/tasks.md
+Reference: REQ-042
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] O controle de qualidade local passa: `./mvnw verify` (servidor) ou `pnpm test && pnpm lint && pnpm typecheck` (interface)
-- [ ] Cada método público novo contém `@implements REQ-NNN`
-- [ ] Existe pelo menos um teste por critério de aceitação de cada `REQ-ID` vinculado, todos com um comentário `// REQ-NNN` na mesma linha
-- [ ] Nenhum arquivo fora do escopo da tarefa é modificado
-- [ ] Somente a caixa de seleção da tarefa implementada em `tasks.md` muda para `- [x]`
-- [ ] A mensagem do registro de alteração identifica o ID da tarefa e os IDs dos requisitos
+- [ ] The local quality gate passes: `./mvnw -B verify` (backend) or `pnpm lint && pnpm typecheck && pnpm build && pnpm test --run --coverage` (frontend)
+- [ ] Each new public method contains `@implements REQ-NNN`
+- [ ] There is at least one test per acceptance criterion for each linked `REQ-ID`, all with an inline `// REQ-NNN` comment
+- [ ] No files outside the task scope are modified
+- [ ] Only the implemented task's checkbox in `tasks.md` changes to `- [x]`
+- [ ] The commit message identifies the task ID and requirement IDs
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@implementer`. A equipe selecionou uma tarefa de `tasks.md` para implementar de ponta a ponta. Leia a habilidade [`tdd-workflow`](../skills/tdd-workflow/SKILL.md) antes de começar. Ela define o procedimento vermelho-verde-refatorar (`red-green-refactor`).
+You are `@implementer`. The team has selected a task from `tasks.md` to implement end to end. Read the [`tdd-workflow`](../skills/tdd-workflow/SKILL.md) skill before starting. It defines the red-green-refactor procedure.
 
-**Etapa 1: leia o contrato da tarefa.**
-Abra `tasks.md`, localize a tarefa pelo ID e copie seus `REQ-IDs` vinculados, suas dependências, sua estimativa de complexidade e seu marcador de paralelismo. Se a tarefa depender de outra ainda não concluída, pare e informe isso.
+**Step 1: read the task contract.**
+Open `tasks.md`, find the task by ID, and copy its linked `REQ-IDs`, dependencies, complexity estimate, and parallelism marker. If the task depends on another that is not yet complete, stop and report it.
 
-**Etapa 2: leia os requisitos vinculados.**
-Para cada `REQ-ID`, abra `spec.md` e extraia a declaração EARS e seus critérios de aceitação. Cole-os como um bloco de comentário no início do arquivo que você alterará. Esse é o contrato que o código deve cumprir.
+**Step 2: read the linked requirements.**
+For each `REQ-ID`, open `spec.md` and extract the EARS statement and its acceptance criteria. Paste them as a comment block at the top of the file you will change. This is the contract the code must fulfill.
 
-**Etapa 3: localize os pontos de integração.**
-Leia `plan.md` e os ADRs relacionados. Identifique o pacote, a classe ou o componente afetado pela tarefa e confirme que pertence ao contexto delimitado correto (consulte [`modular-monolith`](../instructions/modular-monolith.instructions.md)).
+**Step 3: locate the integration points.**
+Read `plan.md` and the related ADRs. Identify the package, class, or component affected by the task and confirm that it belongs to the correct bounded context (see [`modular-monolith`](../instructions/modular-monolith.instructions.md)).
 
-**Etapa 4: escreva primeiro os testes que falham.**
-Escreva um teste por critério de aceitação, nomeado conforme o comportamento (`should_<expected>_when_<condition>`), cada um com um comentário `// REQ-NNN` na mesma linha. Execute-os e confirme que falham pelo motivo correto.
+**Step 4: write failing tests first.**
+Write one test per acceptance criterion, named for the behavior (`should_<expected>_when_<condition>`), each with an inline `// REQ-NNN` comment. Run them and confirm that they fail for the right reason.
 
-**Etapa 5: faça os testes passarem com o mínimo de código.**
-Escreva o menor código de produção que faça os testes passarem. Use tipos `record` para objetos de transferência de dados (DTOs), `@Valid` em controladores, injeção por construtor, interfaces `sealed` para uniões e `Optional` para resultados ausentes. Nunca retorne `null` nem use `any` em TypeScript.
+**Step 5: make the tests pass with minimal code.**
+Write the smallest production code that makes the tests pass. Use `record` types for data transfer objects (DTOs), `@Valid` in controllers, constructor injection, `sealed` interfaces for unions, and `Optional` for absent results. Never return `null` or use `any` in TypeScript.
 
-**Etapa 6: refatore com os testes aprovados.**
-Remova duplicações e melhore os nomes enquanto a suíte permanecer aprovada. Não altere um contrato público, exceto quando a especificação exigir.
+**Step 6: refactor with passing tests.**
+Remove duplication and improve names while the suite stays green. Do not change a public contract unless the specification requires it.
 
-**Etapa 7: conecte a rastreabilidade e execute o controle.**
-Adicione `@implements REQ-NNN` a cada método público que atenda ao requisito. Execute o controle local completo e não pare até que ele passe. Depois, marque somente a caixa de seleção desta tarefa em `tasks.md`.
+**Step 7: connect traceability and run the gate.**
+Add `@implements REQ-NNN` to each public method serving the requirement. Run the full local gate and do not stop until it passes. Then check off only this task in `tasks.md`.
 
-Mascare CPF e valores de benefícios em qualquer linha de registro (log) adicionada. Se um requisito for ambíguo ou uma mudança de esquema necessária estiver ausente de `plan.md`, pare e encaminhe a questão. Não invente comportamento.
+Mask CPF and benefit amounts in any added log line. If a requirement is ambiguous or a necessary schema change is absent from `plan.md`, stop and escalate the issue. Do not invent behavior.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /implement task=T-017 feature=specs/007-<feature>
 ```

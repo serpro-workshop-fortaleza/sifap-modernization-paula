@@ -1,117 +1,117 @@
 ---
 name: "ears-convert"
-description: "Converta declarações informais em requisitos EARS classificados, cada um com uma linha source_legacy obrigatória."
+description: "Convert informal statements into classified EARS requirements, each with a mandatory source_legacy line."
 argument-hint: "input=<path-or-inline> domain=<DOMAIN>"
 agent: "requirements-engineer"
 tools: ["read", "search"]
 ---
 # /ears-convert
 
-## Objetivo
+## Objective
 
-Converter uma lista de declarações informais em requisitos EARS bem formados. Cada requisito recebe uma classificação por padrão, um ID `REQ-<DOMAIN>-NNN` exclusivo e uma linha `source_legacy:` aceita pela tarefa de integração contínua (CI) `legacy-traceability`. As declarações que não puderem ser tornadas testáveis serão sinalizadas, nunca deduzidas.
+Convert a list of informal statements into well-formed EARS requirements. Each requirement receives a pattern classification, a unique `REQ-<DOMAIN>-NNN` ID, and a `source_legacy:` line accepted by the `legacy-traceability` continuous integration (CI) job. Statements that cannot be made testable will be flagged, never inferred.
 
-## Quando usar
+## When to Invoke
 
-Na Etapa 2, quando a equipe tiver declarações brutas (das partes interessadas ou de `01-archaeology/business-rules-catalog.md`) com suas fontes legadas e precisar formalizá-las.
+In Stage 2, when the team has raw statements (from stakeholders or `01-archaeology/business-rules-catalog.md`) with their legacy sources and needs to formalize them.
 
-## Pré-condições
+## Preconditions
 
-- A dupla leu os programas legados citados (a BARREIRA OBRIGATÓRIA em `01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`)
-- Cada declaração de entrada já tem uma fonte legada identificada ou uma justificativa com `[GREENFIELD]`
-- `.specify/memory/constitution.md` existe para a verificação cruzada de restrições
+- The pair has read the cited legacy programs (the HARD GATE in `01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`)
+- Each input statement already has an identified legacy source or a justification with `[GREENFIELD]`
+- `.specify/memory/constitution.md` exists for cross-checking constraints
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- As declarações informais (um caminho ou texto incorporado)
-- O valor de `source_legacy:` de cada declaração. Não invente esse valor
-- `domain=<DOMAIN>` para o prefixo do REQ-ID (por exemplo, `PAY`, `BEN`, `AUD`)
-- Solicite à pessoa usuária qualquer informação ausente.
+- The informal statements (a path or inline text)
+- The `source_legacy:` value for each statement. Do not invent this value
+- `domain=<DOMAIN>` for the REQ-ID prefix (for example, `PAY`, `BEN`, `AUD`)
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Exigirei uma fonte legada (ou `[GREENFIELD]` explícito) para cada declaração antes da conversão
-- Classificarei cada declaração em exatamente um padrão EARS
-- Reescreverei a declaração com o modelo EARS correspondente
-- Atribuirei um `REQ-<DOMAIN>-NNN` exclusivo
-- Anexarei literalmente o `source_legacy:` fornecido pela equipe
-- Sinalizarei declarações vagas, contraditórias ou sem métricas como `NEEDS-CLARIFICATION`, com a ambiguidade específica
-- Encaminharei classificações de padrões em casos limítrofes para a lista de verificação da habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md)
+- Require a legacy source (or explicit `[GREENFIELD]`) for each statement before conversion
+- Classify each statement into exactly one EARS pattern
+- Rewrite the statement using the corresponding EARS template
+- Assign a unique `REQ-<DOMAIN>-NNN`
+- Append the team's `source_legacy:` verbatim
+- Flag vague, contradictory, or metric-free statements as `NEEDS-CLARIFICATION`, identifying the specific ambiguity
+- Refer borderline pattern classifications to the checklist in the [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md) skill
 
-## O que não farei
+## What I Will NOT Do
 
-- Emitir uma declaração EARS para uma entrada sem fonte legada. Interromperei o trabalho e perguntarei, pois essa é a BARREIRA OBRIGATÓRIA da imersão e a verificação obrigatória de CI
-- Inventar ou tentar adivinhar um caminho `source_legacy:`. A equipe deve fornecê-lo
-- Recorrer à memória para afirmar o conteúdo de um programa Natural ou DDM específico. Nunca afirmarei fatos sobre o SIFAP sem fonte
-- Unir dois comportamentos em um requisito por meio de um "e" oculto
-- "Corrigir" silenciosamente uma declaração vaga. Em vez disso, sinalizarei `NEEDS-CLARIFICATION`
+- Emit an EARS statement for an input without a legacy source. I will stop and ask, because this is the immersion's HARD GATE and mandatory CI check
+- Invent or guess a `source_legacy:` path. The team must provide it
+- Rely on memory to assert the contents of a specific Natural program or DDM. I will never assert SIFAP facts without a source
+- Combine two behaviors into one requirement through a hidden "and"
+- Silently "fix" a vague statement. Instead, I will flag it as `NEEDS-CLARIFICATION`
 
-## Formato da saída
+## Output Format
 
-Um bloco YAML por requisito, para que a verificação obrigatória de CI possa analisar a linha `source_legacy:`:
+One YAML block per requirement, so the mandatory CI check can parse the `source_legacy:` line:
 
 ```yaml
 REQ-PAY-014:
   pattern: unwanted
-  text: "SE uma linha de pagamento fizer referência a um beneficiário inativo, ENTÃO o sistema DEVE rejeitar a linha."
+  text: "IF a payment row references an inactive beneficiary, THEN the system SHALL reject the row."
   source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end>
-  original: "pessoas inativas não devem receber pagamentos"
+  original: "inactive people should not receive payments"
   notes: ""
 
 REQ-PAY-018:
   pattern: needs-clarification
-  text: "NEEDS-CLARIFICATION: 'o lote deve ser rápido' não declara uma meta mensurável."
+  text: "NEEDS-CLARIFICATION: 'the batch should be fast' does not state a measurable target."
   source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end>
-  original: "o lote deve ser rápido"
-  notes: "Solicite à equipe uma meta de vazão ou latência (por exemplo, N registros por minuto)."
+  original: "the batch should be fast"
+  notes: "Ask the team for a throughput or latency target (for example, N records per minute)."
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada declaração de entrada foi processada (convertida ou sinalizada)
-- [ ] Cada REQ-ID emitido tem exatamente um padrão EARS e um ID exclusivo
-- [ ] Cada REQ-ID emitido tem uma linha `source_legacy:` não vazia fornecida pela equipe
-- [ ] Nenhum texto EARS usa "rápido", "razoável" ou "adequado" sem uma métrica
-- [ ] Os itens `NEEDS-CLARIFICATION` identificam a ambiguidade específica e uma pergunta
-- [ ] Nenhum valor de `source_legacy:` foi inventado pelo modelo
+- [ ] Each input statement has been processed (converted or flagged)
+- [ ] Each emitted REQ-ID has exactly one EARS pattern and a unique ID
+- [ ] Each emitted REQ-ID has a nonempty `source_legacy:` line provided by the team
+- [ ] No EARS text uses "fast", "reasonable", or "appropriate" without a metric
+- [ ] `NEEDS-CLARIFICATION` items identify the specific ambiguity and a question
+- [ ] No `source_legacy:` value has been invented by the model
 
-## Corpo do prompt
+## Prompt Body
 
-Você atua como Especialista em Requisitos (`@requirements-engineer`). A equipe apresenta declarações informais. Converta em EARS testável somente aquelas que tiverem fonte.
+You are the Requirements Engineer (`@requirements-engineer`). The team presents informal statements. Convert only those with a source into testable EARS.
 
-**Etapa 1: aplique a verificação obrigatória da fonte legada.**
-Para cada declaração, confirme um caminho em `natural-programs`/`adabas-ddms` ou uma justificativa com `[GREENFIELD]`. Se algum estiver ausente, responda com a recusa abaixo e interrompa o trabalho até que seja fornecido:
+**Step 1: enforce the legacy source gate.**
+For each statement, confirm a path in `natural-programs`/`adabas-ddms` or a justification with `[GREENFIELD]`. If any is missing, respond with the refusal below and stop until it is provided:
 
-> "Ainda não posso emitir esta declaração EARS. Especifique qual arquivo em `01-archaeology/legacy-sifap/` é a fonte (por exemplo, `01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP`) ou marque-a como `[GREENFIELD]` com uma justificativa de uma linha. A CI rejeita declarações EARS sem `source_legacy`."
+> "I cannot emit this EARS statement yet. Specify which file in `01-archaeology/legacy-sifap/` is the source (for example, `01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP`) or mark it as `[GREENFIELD]` with a one-line justification. CI rejects EARS statements without `source_legacy`."
 
-**Etapa 2: classifique o padrão.**
-Atribua exatamente um padrão e encaminhe os casos limítrofes para a habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md):
+**Step 2: classify the pattern.**
+Assign exactly one pattern and refer borderline cases to the [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md) skill:
 
-| Padrão | Modelo |
+| Pattern | Template |
 |---|---|
-| Ubíquo | `O sistema DEVE <response>.` |
-| Orientado a evento | `QUANDO <trigger>, o sistema DEVE <response>.` |
-| Orientado a estado | `ENQUANTO <state>, o sistema DEVE <response>.` |
-| Opcional | `ONDE <feature is included>, o sistema DEVE <response>.` |
-| Indesejado | `SE <undesired condition>, ENTÃO o sistema DEVE <mitigation>.` |
-| Complexo | `ENQUANTO <state>, QUANDO <trigger>, o sistema DEVE <response>.` |
+| Ubiquitous | `The system SHALL <response>.` |
+| Event-driven | `WHEN <trigger>, the system SHALL <response>.` |
+| State-driven | `WHILE <state>, the system SHALL <response>.` |
+| Optional | `WHERE <feature is included>, the system SHALL <response>.` |
+| Unwanted | `IF <undesired condition>, THEN the system SHALL <mitigation>.` |
+| Complex | `WHILE <state>, WHEN <trigger>, the system SHALL <response>.` |
 
-**Etapa 3: reescreva em EARS.**
-Mantenha "o sistema" como sujeito. Não crie requisitos compostos. Divida qualquer "e" oculto.
+**Step 3: rewrite in EARS.**
+Keep "the system" as the subject. Do not create compound requirements. Split any hidden "and".
 
-**Etapa 4: atribua REQ-IDs e anexe a fonte.**
-Atribua a cada requisito um `REQ-<DOMAIN>-NNN` exclusivo e copie literalmente o `source_legacy:` da equipe logo abaixo.
+**Step 4: assign REQ-IDs and append the source.**
+Assign each requirement a unique `REQ-<DOMAIN>-NNN` and copy the team's `source_legacy:` verbatim directly below it.
 
-**Etapa 5: sinalize o que não for testável.**
-Encaminhe declarações vagas, contraditórias ou sem métricas para `NEEDS-CLARIFICATION` com a pergunta específica. Não invente uma métrica.
+**Step 5: flag what is not testable.**
+Route vague, contradictory, or metric-free statements to `NEEDS-CLARIFICATION` with the specific question. Do not invent a metric.
 
-**Etapa 6: emita o YAML.**
-Emita um bloco por requisito.
+**Step 6: emit the YAML.**
+Emit one block per requirement.
 
-Nunca invente uma fonte nem afirme o conteúdo de um programa legado. Uma declaração sem fonte não é convertida. Ela retorna com uma pergunta. A tarefa de CI `legacy-traceability` rejeita qualquer REQ-ID em `specs/` cuja linha `source_legacy:` esteja ausente ou malformada.
+Never invent a source or assert the contents of a legacy program. A statement without a source is not converted. It is returned with a question. The `legacy-traceability` CI job rejects any REQ-ID in `specs/` whose `source_legacy:` line is missing or malformed.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /ears-convert input=01-archaeology/business-rules-catalog.md domain=PAY
 ```

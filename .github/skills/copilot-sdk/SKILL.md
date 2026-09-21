@@ -317,7 +317,7 @@ session.on((event: SessionEvent) => {
 });
 
 await session.sendAndWait({
-    prompt: "What is the weather like in Seattle and Tóquio?",
+    prompt: "What is the weather like in Seattle and Tokyo?",
 });
 
 await client.stop();
@@ -365,7 +365,7 @@ async def main():
     session.on(handle_event)
 
     await session.send_and_wait({
-        "prompt": "What is the weather like in Seattle and Tóquio?"
+        "prompt": "What is the weather like in Seattle and Tokyo?"
     })
 
     await client.stop()

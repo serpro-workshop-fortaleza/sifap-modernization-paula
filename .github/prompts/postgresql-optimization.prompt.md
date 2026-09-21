@@ -1,88 +1,88 @@
 ---
 name: "postgresql-optimization"
-description: "Otimize consultas, índices e esquema do PostgreSQL 16 com recursos específicos do PostgreSQL, delegando o fluxo de trabalho à skill postgresql-optimization."
+description: "Optimize PostgreSQL 16 queries, indexes, and schemas using PostgreSQL-specific features, delegating the workflow to the postgresql-optimization skill."
 argument-hint: "selection=<sql-or-query>"
 agent: "dba"
 tools: ["read", "search", "execute"]
 ---
 # /postgresql-optimization
 
-## Objetivo
+## Objective
 
-Otimizar uma consulta, um índice ou um esquema lento do PostgreSQL usando recursos específicos do PostgreSQL. Fundamentar cada recomendação com um `EXPLAIN ANALYZE` medido. O fluxo completo está na habilidade [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md). Este prompt o aplica ao banco de dados do SIFAP 2.0 (PostgreSQL 16 por meio de JPA/Hibernate) sem repeti-lo.
+Optimize a slow PostgreSQL query, index, or schema using PostgreSQL-specific features. Support each recommendation with measured `EXPLAIN ANALYZE` results. The complete workflow is in the [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md) skill. This prompt applies it to the SIFAP 2.0 database (PostgreSQL 16 through JPA/Hibernate) without repeating it.
 
 > [!IMPORTANT]
-> Nenhuma recomendação é entregue sem um `EXPLAIN ANALYZE` de antes e depois. Um plano é uma evidência, não uma opinião.
+> No recommendation is delivered without before-and-after `EXPLAIN ANALYZE` results. A plan is evidence, not an opinion.
 
-## Quando usar
+## When to Invoke
 
-Durante as Etapas 3 ou 4, quando uma consulta estiver lenta, um relatório exceder o tempo limite ou um esquema precisar de ajustes com contagens realistas de linhas.
+During Stages 3 or 4, when a query is slow, a report times out, or a schema needs tuning with realistic row counts.
 
-## Pré-condições
+## Preconditions
 
-- A consulta ou o esquema que será otimizado está disponível
-- Uma cópia instantânea do ambiente de homologação com contagens realistas de linhas está acessível para executar `EXPLAIN ANALYZE`
-- Os índices existentes nas tabelas envolvidas podem ser listados
-- O destino é PostgreSQL 16
+- The query or schema to optimize is available
+- A staging snapshot with realistic row counts is accessible for running `EXPLAIN ANALYZE`
+- Existing indexes on the tables involved can be listed
+- The target is PostgreSQL 16
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `selection`: a consulta ou o esquema que será otimizado
-- As tabelas envolvidas, seus índices e contagens realistas de linhas
-- Peça à pessoa usuária qualquer informação ausente
+- `selection`: the query or schema to optimize
+- The tables involved, their indexes, and realistic row counts
+- Ask the user for any missing information
 
-## O que farei
+## What I Will Do
 
-- Aplicarei à seleção o fluxo de otimização da habilidade [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md)
-- Lerei `EXPLAIN (ANALYZE, BUFFERS)` do início ao fim e identificarei o custo dominante
-- Recomendarei o tipo de índice correto (GIN/GiST/parcial/de cobertura) ou a reescrita da consulta com evidências
-- Expressarei as alterações de índice como migrações seguras durante a operação e na reversão
+- Apply the optimization workflow in the [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md) skill to the selection
+- Read `EXPLAIN (ANALYZE, BUFFERS)` from start to finish and identify the dominant cost
+- Recommend the correct index type (GIN/GiST/partial/covering) or a query rewrite with evidence
+- Express index changes as operationally safe and rollback-safe migrations
 
-## O que não farei
+## What I Will NOT Do
 
-- Recomendar um índice sem avaliar seu custo de escrita ou adicionar um para cada consulta
-- Confiar em `EXPLAIN` sem `ANALYZE` ou otimizar com dados da escala de desenvolvimento
-- Concatenar a entrada da pessoa usuária em SQL ou desalinhar o mapeamento JPA
-- Aplicar um `CREATE INDEX` bloqueante em uma tabela muito acessada. Uso `CONCURRENTLY`
+- Recommend an index without assessing its write cost or add one for every query
+- Rely on `EXPLAIN` without `ANALYZE` or optimize with development-scale data
+- Concatenate user input into SQL or misalign the JPA mapping
+- Apply a blocking `CREATE INDEX` on a heavily accessed table. I use `CONCURRENTLY`
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### Gargalo
-Seq Scan em `payment` (4 milhões de linhas) para um filtro seletivo de status.
+### Bottleneck
+Seq Scan on `payment` (4 million rows) for a selective status filter.
 
-### Recomendação
+### Recommendation
 CREATE INDEX CONCURRENTLY idx_payment_status ON payment (status) WHERE status <> 'CLOSED';
 
 ### EXPLAIN ANALYZE
-Antes: Seq Scan, 820 ms. Depois: Index Scan, 4 ms.
+Before: Seq Scan, 820 ms. After: Index Scan, 4 ms.
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] O gargalo dominante está nomeado e fundamentado por evidências do plano
-- [ ] A recomendação está fundamentada por um `EXPLAIN ANALYZE` de antes e depois
-- [ ] Todos os índices usam uma migração segura durante a operação (`CONCURRENTLY`) e na reversão
-- [ ] As consultas permanecem parametrizadas e consistentes com o mapeamento JPA
+- [ ] The dominant bottleneck is named and supported by plan evidence
+- [ ] The recommendation is supported by before-and-after `EXPLAIN ANALYZE` results
+- [ ] All indexes use an operationally safe (`CONCURRENTLY`) and rollback-safe migration
+- [ ] Queries remain parameterized and consistent with the JPA mapping
 
-## Corpo do prompt
+## Prompt Body
 
-A habilidade [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md) define o fluxo de diagnóstico, as heurísticas de índice e o conjunto de recursos do PostgreSQL. Leia-a e depois aplique-a à seleção.
+The [`postgresql-optimization`](../skills/postgresql-optimization/SKILL.md) skill defines the diagnostic workflow, index heuristics, and PostgreSQL feature set. Read it, then apply it to the selection.
 
-**Etapa 1: faça a medição.**
-Execute `EXPLAIN (ANALYZE, BUFFERS)` em uma cópia instantânea do ambiente de homologação e leia o plano do início ao fim.
+**Step 1: measure.**
+Run `EXPLAIN (ANALYZE, BUFFERS)` on a staging snapshot and read the plan from start to finish.
 
-**Etapa 2: aplique a habilidade.**
-Use a habilidade para escolher a correção: tipo de índice, reescrita da consulta, operador JSONB/de matriz, função de janela ou particionamento.
+**Step 2: apply the skill.**
+Use the skill to choose the fix: index type, query rewrite, JSONB/array operator, window function, or partitioning.
 
-**Etapa 3: respeite as regras do conjunto.**
-Use PostgreSQL 16, mantenha o mapeamento JPA sincronizado e entregue alterações de índice como migrações `CONCURRENTLY` em `db/migration/`.
+**Step 3: follow the kit's rules.**
+Use PostgreSQL 16, keep the JPA mapping synchronized, and deliver index changes as `CONCURRENTLY` migrations in `db/migration/`.
 
-**Etapa 4: comprove o resultado.**
-Execute `EXPLAIN ANALYZE` novamente e cole os tempos de antes e depois.
+**Step 4: prove the result.**
+Run `EXPLAIN ANALYZE` again and paste the before-and-after timings.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /postgresql-optimization selection="SELECT * FROM payment WHERE status = 'OPEN'"
 ```

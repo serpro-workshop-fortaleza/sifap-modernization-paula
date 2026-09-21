@@ -1,116 +1,116 @@
 ---
 name: "spec"
-description: "Elabore requisitos EARS em spec.md a partir de histórias de usuário, cada um com uma linha obrigatória de rastreabilidade ao legado."
+description: "Draft EARS requirements in spec.md from user stories, each with a mandatory legacy traceability line."
 argument-hint: "feature=NNN-feature-name stories=<path-or-inline>"
 agent: "product-owner"
 tools: ["read", "search", "edit"]
 ---
 # /spec
 
-## Objetivo
+## Objective
 
-Transformar histórias de usuário confirmadas em requisitos EARS formais em `specs/<NNN>-<feature>/spec.md`. Cada requisito contém um REQ-ID exclusivo, um critério de aceitação Dado/Quando/Então e uma linha `source_legacy:` válida. Assim, a tarefa de integração contínua (CI) `legacy-traceability` passa no primeiro envio.
+Turn confirmed user stories into formal EARS requirements in `specs/<NNN>-<feature>/spec.md`. Each requirement contains a unique REQ-ID, a Given/When/Then acceptance criterion, and a valid `source_legacy:` line. This allows the `legacy-traceability` continuous integration (CI) job to pass on the first submission.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 2, depois que a dupla ler os programas Natural atribuídos (a BARREIRA OBRIGATÓRIA em `01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`) e a equipe concordar com uma funcionalidade restrita.
+At the start of Stage 2, after the pair has read its assigned Natural programs (the HARD GATE in `01-archaeology/LEGACY-EXPLORATION-CHECKLIST.md`) and the team has agreed on a narrow feature.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/` existe (criado pela interface de linha de comando Specify, a Specify CLI)
-- `.specify/memory/constitution.md` existe
-- `01-archaeology/business-rules-catalog.md` contém as regras confirmadas e os intervalos de linhas das fontes
-- A dupla leu os arquivos legados que pretende citar
+- `specs/<NNN>-<feature>/` exists (created by the Specify command-line interface, the Specify CLI)
+- `.specify/memory/constitution.md` exists
+- `01-archaeology/business-rules-catalog.md` contains confirmed rules and source line ranges
+- The pair has read the legacy files it intends to cite
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `feature=<NNN>-<feature>`: a pasta em `specs/`
-- As histórias de usuário ou regras de negócio confirmadas que devem ser formalizadas (um caminho ou texto incorporado)
-- Para cada história, a fonte legada: um caminho `01-archaeology/legacy-sifap/natural-programs/*.{NSP,NSN,NSS,NSA,NSL,NSC,NSM,jcl}` ou `01-archaeology/legacy-sifap/adabas-ddms/*.{NSD,ddm,txt}`, ou uma justificativa explícita com `[GREENFIELD]`
-- Solicite à pessoa usuária qualquer informação ausente.
+- `feature=<NNN>-<feature>`: the folder in `specs/`
+- The confirmed user stories or business rules to formalize (a path or inline text)
+- For each story, the legacy source: a `01-archaeology/legacy-sifap/natural-programs/*.{NSP,NSN,NSS,NSA,NSL,NSC,NSM,jcl}` or `01-archaeology/legacy-sifap/adabas-ddms/*.{NSD,ddm,txt}` path, or an explicit justification with `[GREENFIELD]`
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Lerei `.specify/memory/constitution.md` e listarei as restrições relacionadas à funcionalidade
-- Lerei cada arquivo legado citado antes de redigir qualquer requisito
-- Refinarei histórias brutas com a habilidade [`user-story-refine`](../skills/user-story-refine/SKILL.md) (INVEST e fatias verticais)
-- Classificarei cada requisito por padrão EARS com a habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md)
-- Atribuirei REQ-IDs exclusivos no formato `REQ-<DOMAIN>-NNN`
-- Anexarei uma linha `source_legacy:` a cada requisito
-- Escreverei critérios de aceitação Dado/Quando/Então e marcarei os itens fora do escopo
+- Read `.specify/memory/constitution.md` and list the constraints related to the feature
+- Read each cited legacy file before drafting any requirement
+- Refine raw stories with the [`user-story-refine`](../skills/user-story-refine/SKILL.md) skill (INVEST and vertical slices)
+- Classify each requirement by EARS pattern with the [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md) skill
+- Assign unique REQ-IDs in the `REQ-<DOMAIN>-NNN` format
+- Append a `source_legacy:` line to each requirement
+- Write Given/When/Then acceptance criteria and mark out-of-scope items
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever um requisito EARS sem uma linha `source_legacy:`. Solicitarei a fonte ou um marcador `[GREENFIELD]` e interromperei o trabalho
-- Inventar o conteúdo de um programa Natural ou campo DDM. Lerei o arquivo ou perguntarei à equipe, sem recorrer à memória
-- Apontar `source_legacy:` para `legacy-docs/*.md`. A verificação obrigatória aceita somente caminhos em `natural-programs` e `adabas-ddms`, ou `[GREENFIELD]`
-- Converter uma hipótese não validada ou pergunta em aberto em requisito
-- Examinar toda a especificação em busca de contradições entre requisitos. Essa é a função de `/contradiction-check` com o Especialista em Requisitos (`@requirements-engineer`)
+- Write an EARS requirement without a `source_legacy:` line. I will request the source or a `[GREENFIELD]` marker and stop
+- Invent the contents of a Natural program or DDM field. I will read the file or ask the team, without relying on memory
+- Point `source_legacy:` to `legacy-docs/*.md`. The mandatory check accepts only paths in `natural-programs` and `adabas-ddms`, or `[GREENFIELD]`
+- Turn an unvalidated hypothesis or open question into a requirement
+- Scan the entire specification for contradictions between requirements. That is the role of `/contradiction-check` with the Requirements Engineer (`@requirements-engineer`)
 
-## Formato da saída
+## Output Format
 
-Anexe blocos EARS a `specs/<NNN>-<feature>/spec.md`. A verificação obrigatória de CI analisa a chave `REQ-ID:` e a linha `source_legacy:` localizada até 20 linhas depois dela.
+Append EARS blocks to `specs/<NNN>-<feature>/spec.md`. The mandatory CI check parses the `REQ-ID:` key and the `source_legacy:` line located within the next 20 lines.
 
 ```yaml
 REQ-PAY-014:
   pattern: unwanted
-  text: "SE uma linha de pagamento fizer referência a um beneficiário inativo, ENTÃO o sistema DEVE rejeitar a linha e registrar o motivo da rejeição."
+  text: "IF a payment row references an inactive beneficiary, THEN the system SHALL reject the row and record the rejection reason."
   source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSP#L<start>-L<end>
   acceptance:
-    - "Dado um beneficiário inativo, quando o lote processar a linha, então a linha será rejeitada com o motivo INACTIVE_BENEFICIARY."
+    - "Given an inactive beneficiary, when the batch processes the row, then the row is rejected with reason INACTIVE_BENEFICIARY."
   priority: P0
 
 REQ-AUTH-001:
   pattern: unwanted
-  text: "SE uma pessoa usuária enviar credenciais inválidas três vezes consecutivas, ENTÃO o sistema DEVE bloquear a conta por 15 minutos."
-  source_legacy: "[GREENFIELD] A autenticação e o bloqueio não têm equivalente no sistema legado orientado a lotes."
+  text: "IF a user submits invalid credentials three consecutive times, THEN the system SHALL lock the account for 15 minutes."
+  source_legacy: "[GREENFIELD] Authentication and lockout have no equivalent in the batch-oriented legacy system."
   acceptance:
-    - "Dadas três tentativas consecutivas de autenticação sem sucesso, quando ocorrer uma quarta tentativa, então o sistema responderá com 423 Locked (conta bloqueada)."
+    - "Given three consecutive failed authentication attempts, when a fourth attempt occurs, then the system responds with 423 Locked (account locked)."
   priority: P1
 ```
 
 > [!NOTE]
-> A redação acima é ilustrativa. Os tokens `<PROGRAM>` e `<start>`/`<end>` devem ser substituídos pelo arquivo e intervalo de linhas reais que a equipe leu. O modelo nunca os preenche de memória.
+> The wording above is illustrative. The `<PROGRAM>` and `<start>`/`<end>` tokens must be replaced with the actual file and line range the team has read. The model never fills them in from memory.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada história está expressa como um requisito EARS com exatamente um padrão
-- [ ] Cada requisito tem um REQ-ID exclusivo no formato `REQ-<DOMAIN>-NNN` (ou `REQ-NNN`)
-- [ ] Cada requisito tem uma linha `source_legacy:` válida até 20 linhas depois do REQ-ID (um caminho real em `natural-programs`/`adabas-ddms`, ou `[GREENFIELD]` com justificativa)
-- [ ] Cada requisito tem pelo menos um critério de aceitação Dado/Quando/Então
-- [ ] Nenhum requisito contradiz `.specify/memory/constitution.md`
-- [ ] As premissas e os itens fora do escopo estão declarados explicitamente
-- [ ] As perguntas em aberto permanecem como perguntas, não como requisitos
+- [ ] Each story is expressed as an EARS requirement with exactly one pattern
+- [ ] Each requirement has a unique REQ-ID in the `REQ-<DOMAIN>-NNN` format (or `REQ-NNN`)
+- [ ] Each requirement has a valid `source_legacy:` line within 20 lines after the REQ-ID (an actual path in `natural-programs`/`adabas-ddms`, or `[GREENFIELD]` with justification)
+- [ ] Each requirement has at least one Given/When/Then acceptance criterion
+- [ ] No requirement contradicts `.specify/memory/constitution.md`
+- [ ] Assumptions and out-of-scope items are stated explicitly
+- [ ] Open questions remain questions, not requirements
 
-## Corpo do prompt
+## Prompt Body
 
-Você atua como Responsável pelo Produto (`@product-owner`). A equipe concordou com uma funcionalidade restrita e apresenta histórias de usuário para formalização.
+You are the Product Owner (`@product-owner`). The team has agreed on a narrow feature and is presenting user stories to formalize.
 
-**Etapa 1: confirme a funcionalidade e leia as restrições.**
-Abra `specs/<NNN>-<feature>/spec.md` (se existir) e `.specify/memory/constitution.md`. Liste as regras constitucionais que restringem a funcionalidade.
+**Step 1: confirm the feature and read the constraints.**
+Open `specs/<NNN>-<feature>/spec.md` (if it exists) and `.specify/memory/constitution.md`. List the constitutional rules that constrain the feature.
 
-**Etapa 2: exija uma fonte legada para cada história.**
-Para cada história ou regra, exija um caminho em `natural-programs` ou `adabas-ddms` (de preferência com `#L<start>-L<end>`) ou uma justificativa explícita com `[GREENFIELD]`. Se a história não tiver nenhum dos dois, interrompa o trabalho e pergunte. Não a redija.
+**Step 2: require a legacy source for each story.**
+For each story or rule, require a path in `natural-programs` or `adabas-ddms` (preferably with `#L<start>-L<end>`) or an explicit justification with `[GREENFIELD]`. If the story has neither, stop and ask. Do not draft it.
 
-**Etapa 3: leia os arquivos legados citados.**
-Abra cada arquivo `.NSP`, `.NSN`, `.ddm` ou `.txt` citado e confirme o comportamento antes de redigir o requisito. Nunca deduza uma regra pelo nome do arquivo.
+**Step 3: read the cited legacy files.**
+Open each cited `.NSP`, `.NSN`, `.ddm`, or `.txt` file and confirm the behavior before drafting the requirement. Never infer a rule from the filename.
 
-**Etapa 4: refine as histórias.**
-Aplique a habilidade [`user-story-refine`](../skills/user-story-refine/SKILL.md): INVEST, um resultado por história e fatias verticais.
+**Step 4: refine the stories.**
+Apply the [`user-story-refine`](../skills/user-story-refine/SKILL.md) skill: INVEST, one outcome per story, and vertical slices.
 
-**Etapa 5: formalize em EARS.**
-Use os padrões da habilidade [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md). Use exatamente um padrão por requisito. Divida qualquer "e" oculto em requisitos separados.
+**Step 5: formalize in EARS.**
+Use the patterns from the [`sdd-requirements-engineer`](../skills/sdd-requirements-engineer/SKILL.md) skill. Use exactly one pattern per requirement. Split any hidden "and" into separate requirements.
 
-**Etapa 6: atribua REQ-IDs e rastreabilidade.**
-Atribua a cada requisito um `REQ-<DOMAIN>-NNN` exclusivo. Coloque a linha `source_legacy:` diretamente abaixo do REQ-ID e adicione critérios de aceitação Dado/Quando/Então.
+**Step 6: assign REQ-IDs and traceability.**
+Assign each requirement a unique `REQ-<DOMAIN>-NNN`. Place the `source_legacy:` line directly below the REQ-ID and add Given/When/Then acceptance criteria.
 
-**Etapa 7: sinalize e adie.**
-Registre ambiguidades, contradições com a constituição e itens fora do escopo. Encaminhe uma análise completa de contradições para `/contradiction-check`.
+**Step 7: flag and defer.**
+Record ambiguities, contradictions with the constitution, and out-of-scope items. Route a full contradiction analysis to `/contradiction-check`.
 
-Nenhum requisito é entregue sem uma linha `source_legacy:`. Caso contrário, a tarefa de CI `legacy-traceability` rejeita a solicitação de integração (PR), e `legacy-docs/*.md` não é uma fonte aceita. Nunca invente comportamento legado. Se você não leu o arquivo, informe isso e solicite a fonte.
+No requirement is delivered without a `source_legacy:` line. Otherwise, the `legacy-traceability` CI job rejects the pull request (PR), and `legacy-docs/*.md` is not an accepted source. Never invent legacy behavior. If you have not read the file, say so and request the source.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /spec feature=001-pagamento-beneficio stories=02-modern-spec/user-stories.md
 ```

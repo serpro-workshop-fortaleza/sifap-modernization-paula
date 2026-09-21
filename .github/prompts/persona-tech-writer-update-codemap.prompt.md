@@ -1,54 +1,54 @@
 ---
 name: "update-codemap"
-description: "Gere ou atualize docs/CODEMAP.md, um índice curado e navegável da base de código do SIFAP 2.0: módulos, responsáveis, pontos de entrada e testes."
+description: "Generate or update docs/CODEMAP.md, a curated, navigable index of the SIFAP 2.0 codebase: modules, owners, entry points, and tests."
 argument-hint: "mode=update|rebuild root=<repo-root>"
 agent: "tech-writer"
 tools: ["search", "edit"]
 ---
 # /update-codemap
 
-## Objetivo
+## Objective
 
-Manter `docs/CODEMAP.md` como guia de uma página que localize módulo, responsável, entradas e testes em dez minutos.
+Maintain `docs/CODEMAP.md` as a one-page guide that locates a module, its owner, entry points, and tests in ten minutes.
 
-## Quando usar
+## When to Invoke
 
-Nas Etapas 3 ou 4, após adição ou renomeação.
+In Stages 3 or 4, after an addition or rename.
 
-## Pré-condições
+## Preconditions
 
-- A equipe criou módulo
-- Valem [`DOC-STYLE-GUIDE.md`](../../docs/DOC-STYLE-GUIDE.md) e responsáveis de [`05-personas/`](../../05-personas/)
+- The team has created a module
+- [`DOC-STYLE-GUIDE.md`](../../docs/DOC-STYLE-GUIDE.md) and owners from [`05-personas/`](../../05-personas/) apply
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Raiz, `update` ou `rebuild` e mapa anterior
+- Root, `update` or `rebuild`, and the previous map
 
-## O que farei
+## What I Will Do
 
-- Registrarei propósito, entradas, estado, REQ-IDs, persona responsável, testes e linhagem confirmada
-- Sinalizarei mais de três dependências, ordenarei por valor e limitarei a 200 linhas
-- Aplicarei [`doc-style-lint`](../skills/doc-style-lint/SKILL.md)
+- Record purpose, entry points, state, REQ-IDs, owning persona, tests, and confirmed lineage
+- Flag more than three dependencies, order by value, and limit to 200 lines
+- Apply [`doc-style-lint`](../skills/doc-style-lint/SKILL.md)
 
-## O que não farei
+## What I Will NOT Do
 
-- Converter `find` em mapa, inventar Natural, listar cada arquivo, usar `*` para endpoints, equipes como responsáveis, emojis ou pragma
+- Turn `find` into a map, invent Natural behavior, list every file, use `*` for endpoints, teams as owners, emojis, or a pragma
 
-## Formato da saída
+## Output Format
 
-`docs/CODEMAP.md` com guia, backend, frontend, infraestrutura, bibliotecas, preocupações e atualização.
+`docs/CODEMAP.md` with a guide, backend, frontend, infrastructure, libraries, concerns, and update information.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada módulo tem Purpose, Path, Tests, Entry Points, State, REQ-IDs e Owner
-- [ ] Linhagem é confirmada; dependências estão declaradas; data e rodapé estão presentes
+- [ ] Each module has Purpose, Path, Tests, Entry Points, State, REQ-IDs, and Owner
+- [ ] Lineage is confirmed; dependencies are declared; date and footer are present
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@tech-writer`. Confirme modo e preserve curadoria no update. Localize serviços, rotas e módulos de infraestrutura criados. Registre cinco fatos e persona de `05-personas/`, vincule testes e cite somente linhagem comprovada. Sinalize dependências e ordene jornadas críticas antes da infraestrutura. Limite a 200 linhas ou divida com links. Atualize a data e o rodapé. Não gere automaticamente.
+You are `@tech-writer`. Confirm the mode and preserve curation during an update. Locate the services, routes, and infrastructure modules that have been created. Record five facts and the persona from `05-personas/`, link tests, and cite only proven lineage. Flag dependencies and place critical journeys before infrastructure. Limit to 200 lines or split with links. Update the date and footer. Do not generate automatically.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /update-codemap mode=update root=.
 ```

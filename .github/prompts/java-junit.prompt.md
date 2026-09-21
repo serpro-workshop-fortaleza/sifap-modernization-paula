@@ -1,52 +1,52 @@
 ---
 name: "java-junit"
-description: "Escreva testes unitários e parametrizados eficazes com JUnit 5, delegando a lista de boas práticas à skill java-junit."
+description: "Write effective JUnit 5 unit and parameterized tests, delegating the best-practices checklist to the java-junit skill."
 argument-hint: "class=<ClassUnderTest>"
 agent: "qa-engineer"
 tools: ["read", "search", "edit"]
 ---
 # /java-junit
 
-## Objetivo
+## Objective
 
-Produzir testes JUnit 5 focados, comuns e parametrizados, para uma classe ou comportamento. Seguir Preparar-Agir-Verificar, nomenclatura descritiva, isolamento adequado e rastreabilidade por REQ-ID. A lista de boas práticas está na habilidade [`java-junit`](../skills/java-junit/SKILL.md). Este prompt a aplica ao backend do SIFAP 2.0 sem repeti-la.
+Produce focused plain and parameterized JUnit 5 tests for a class or behavior. Follow Arrange-Act-Assert, descriptive naming, proper isolation, and REQ-ID traceability. The best-practices checklist is in the [`java-junit`](../skills/java-junit/SKILL.md) skill. This prompt applies it to the SIFAP 2.0 backend without repeating it.
 
 > [!IMPORTANT]
-> Escreva os testes junto com o código, nunca depois. O kit proíbe testes adaptados posteriormente.
+> Write tests alongside the code, never afterward. The kit prohibits retrofitted tests.
 
-## Quando usar
+## When to Invoke
 
-Durante as Etapas 3 ou 4, ao implementar lógica de negócio do backend, depois que o comportamento em teste estiver definido por um REQ-ID e por seus critérios de aceitação.
+During Stages 3 or 4, when implementing backend business logic, after the behavior under test is defined by a REQ-ID and its acceptance criteria.
 
-## Pré-condições
+## Preconditions
 
-- A classe ou o comportamento em teste existe ou está sendo escrito na mesma alteração
-- O módulo de backend tem `junit-jupiter` e `testcontainers` no classpath de teste
-- Os REQ-IDs que os testes devem cobrir são conhecidos
+- The class or behavior under test exists or is being written in the same change
+- The backend module has `junit-jupiter` and `testcontainers` on the test classpath
+- The REQ-IDs that the tests must cover are known
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `class`: a classe ou o comportamento em teste, por exemplo, `PaymentService`
-- Os REQ-IDs e critérios de aceitação que os testes devem atender
-- Solicite à pessoa usuária qualquer informação ausente.
+- `class`: the class or behavior under test, for example, `PaymentService`
+- The REQ-IDs and acceptance criteria that the tests must satisfy
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Seguirei as práticas de JUnit 5 da skill [`java-junit`](../skills/java-junit/SKILL.md) e as aplicarei à classe em teste
-- Escreverei um teste por critério de aceitação, nomeado `should_<expected>_when_<condition>`, cada um com um comentário `// REQ-NNN` no código
-- Usarei `@ParameterizedTest` com `@MethodSource` ou `@CsvSource` para casos orientados por dados e Mockito para colaboradores
-- Usarei Testcontainers com PostgreSQL 16 real em tudo o que acessar o banco de dados
+- Follow the JUnit 5 practices in the [`java-junit`](../skills/java-junit/SKILL.md) skill and apply them to the class under test
+- Write one test per acceptance criterion, named `should_<expected>_when_<condition>`, each with a `// REQ-NNN` comment in the code
+- Use `@ParameterizedTest` with `@MethodSource` or `@CsvSource` for data-driven cases and Mockito for collaborators
+- Use Testcontainers with real PostgreSQL 16 for anything that accesses the database
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever testes depois do código de produção ou omitir um caso de qualquer critério de aceitação
-- Substituir o PostgreSQL do Testcontainers por um banco em memória no caminho de integração
-- Testar vários comportamentos em um só método ou depender da ordem de execução
-- Deixar um teste sem comentário de REQ-ID, pois isso rompe `spec-traceability`
+- Write tests after production code or omit a case for any acceptance criterion
+- Replace Testcontainers PostgreSQL with an in-memory database in the integration path
+- Test multiple behaviors in one method or depend on execution order
+- Leave a test without a REQ-ID comment, as this breaks `spec-traceability`
 
-## Formato da saída
+## Output Format
 
-Uma classe de teste JUnit 5 com cada caso rastreável a um REQ-ID:
+A JUnit 5 test class with each case traceable to a REQ-ID:
 
 ```java
 // REQ-042: reject inactive beneficiary
@@ -57,31 +57,31 @@ void should_reject_when_beneficiary_is_inactive() {
 }
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Existe um teste para cada critério de aceitação de todos os REQ-IDs relacionados
-- [ ] Cada teste contém um comentário `// REQ-NNN`
-- [ ] Casos orientados por dados usam `@ParameterizedTest`; colaboradores são simulados
-- [ ] Testes de banco de dados usam Testcontainers e `./mvnw test` passa
+- [ ] There is a test for each acceptance criterion of all related REQ-IDs
+- [ ] Each test contains a `// REQ-NNN` comment
+- [ ] Data-driven cases use `@ParameterizedTest`; collaborators are mocked
+- [ ] Database tests use Testcontainers and `./mvnw test` passes
 
-## Corpo do prompt
+## Prompt Body
 
-A skill [`java-junit`](../skills/java-junit/SKILL.md) define as convenções para testes comuns e parametrizados. Leia-a e aplique-as à classe em teste.
+The [`java-junit`](../skills/java-junit/SKILL.md) skill defines conventions for plain and parameterized tests. Read it and apply them to the class under test.
 
-**Etapa 1 — Mapear o comportamento.**
-Liste cada critério de aceitação dos REQ-IDs relacionados. Cada critério se torna um teste.
+**Step 1 — Map the behavior.**
+List each acceptance criterion of the related REQ-IDs. Each criterion becomes a test.
 
-**Etapa 2 — Aplicar a skill.**
-Escreva os testes conforme a skill: AAA, `@DisplayName`, `assertAll`, `assertThrows` e `@ParameterizedTest`. Simule os colaboradores com Mockito.
+**Step 2 — Apply the skill.**
+Write tests according to the skill: AAA, `@DisplayName`, `assertAll`, `assertThrows`, and `@ParameterizedTest`. Mock collaborators with Mockito.
 
-**Etapa 3 — Respeitar as regras do kit.**
-Use Testcontainers com PostgreSQL 16 nos caminhos de banco de dados, adicione um comentário `// REQ-NNN` a cada teste e execute `./mvnw test`.
+**Step 3 — Follow the kit's rules.**
+Use Testcontainers with PostgreSQL 16 for database paths, add a `// REQ-NNN` comment to each test, and run `./mvnw test`.
 
-**Etapa 4 — Verificar.**
-Execute a suíte e confirme que cada caso passa pelo motivo correto.
+**Step 4 — Verify.**
+Run the suite and confirm that each case passes for the right reason.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /java-junit class=PaymentService
 ```

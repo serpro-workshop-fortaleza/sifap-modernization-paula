@@ -1,23 +1,23 @@
-# Referência de atributos do tipo Set do AzureRM
+# AzureRM Set-type attribute reference
 
-Este documento apresenta uma visão geral e explica a manutenção de `azurerm_set_attributes.json`.
+This document provides an overview and explains how to maintain `azurerm_set_attributes.json`.
 
-> **Última atualização**: 28 de janeiro de 2026
+> **Last updated**: January 28, 2026
 
-## Visão geral
+## Overview
 
-`azurerm_set_attributes.json` é um arquivo de definição para atributos tratados como tipo Set pelo provedor AzureRM.
-O script `analyze_plan.py` lê esse JSON para identificar "diferenças falsas positivas" em planos do Terraform.
+`azurerm_set_attributes.json` is a definition file for attributes treated as Set-type by the AzureRM provider.
+The `analyze_plan.py` script reads this JSON to identify "false-positive diffs" in Terraform plans.
 
-### O que são atributos do tipo Set?
+### What are Set-type attributes?
 
-O tipo Set do Terraform é uma coleção que **não garante a ordem**.
-Por isso, ao adicionar ou remover elementos, itens inalterados podem aparecer como "alterados".
-Isso é chamado de "diferença falsa positiva".
+Terraform's Set type is a collection that **does not guarantee order**.
+As a result, when adding or removing elements, unchanged items may appear as "changed".
+This is called a "false-positive diff".
 
-## Estrutura do arquivo JSON
+## JSON file structure
 
-### Formato básico
+### Basic format
 
 ```json
 {
@@ -29,12 +29,12 @@ Isso é chamado de "diferença falsa positiva".
 }
 ```
 
-- **key_attribute**: o atributo que identifica de maneira exclusiva os elementos do Set, como `name` ou `id`
-- **null**: usado quando não há atributo-chave (compara o elemento inteiro)
+- **key_attribute**: the attribute that uniquely identifies Set elements, such as `name` or `id`
+- **null**: used when there is no key attribute (compares the entire element)
 
-### Formato aninhado
+### Nested format
 
-Quando um atributo Set contém outro atributo Set:
+When a Set attribute contains another Set attribute:
 
 ```json
 {
@@ -49,15 +49,15 @@ Quando um atributo Set contém outro atributo Set:
 }
 ```
 
-- **`_key`**: o atributo-chave dos elementos Set nesse nível
-- **Outras chaves**: definições dos atributos Set aninhados
+- **`_key`**: the key attribute of Set elements at this level
+- **Other keys**: definitions of nested Set attributes
 
-### Exemplo: azurerm_application_gateway
+### Example: azurerm_application_gateway
 
 ```json
 "azurerm_application_gateway": {
-  "backend_address_pool": "name",           // Set simples (a chave é name)
-  "rewrite_rule_set": {                     // Set aninhado
+  "backend_address_pool": "name",           // Simple Set (key is name)
+  "rewrite_rule_set": {                     // Nested Set
     "_key": "name",
     "rewrite_rule": {
       "_key": "name",
@@ -67,21 +67,19 @@ Quando um atributo Set contém outro atributo Set:
 }
 ```
 
-## Manutenção
+## Maintenance
 
-### Como adicionar novos atributos
+### How to add new attributes
 
-1. **Consulte a documentação oficial**
-   - Procure o recurso no [Terraform Registry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs)
-   - Verifique se o atributo está listado como "Set of ..."
-   - Alguns recursos, como `azurerm_application_gateway`, têm atributos Set indicados explicitamente
+1. **Check the official documentation**
 
-2. **Consulte o código-fonte (mais confiável)**
-   - Procure o recurso no [GitHub do provedor AzureRM](https://github.com/hashicorp/terraform-provider-azurerm)
-   - Confirme `Type: pluginsdk.TypeSet` na definição do esquema
-   - Identifique os atributos no `Schema` do Set que podem servir como `_key`
+   Look up the resource in the [Terraform Registry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs). Check whether the attribute is listed as "Set of ...". Some resources, such as `azurerm_application_gateway`, have explicitly indicated Set attributes.
 
-3. **Adicione ao JSON**
+2. **Check the source code (most reliable)**
+
+   Look up the resource on the [AzureRM provider's GitHub](https://github.com/hashicorp/terraform-provider-azurerm). Confirm `Type: pluginsdk.TypeSet` in the schema definition and identify attributes in the Set's `Schema` that can serve as `_key`.
+
+3. **Add to the JSON**
 
    ```json
    "azurerm_new_resource": {
@@ -89,60 +87,60 @@ Quando um atributo Set contém outro atributo Set:
    }
    ```
 
-4. **Teste**
+**Test the addition:**
 
-   ```bash
-   # Verifique com um plano real
-   python3 scripts/analyze_plan.py your_plan.json
-   ```
+```bash
+# Check with a real plan
+python3 scripts/analyze_plan.py your_plan.json
+```
 
-### Como identificar atributos-chave
+### How to identify key attributes
 
-| Atributo-chave comum | Uso |
+| Common key attribute | Usage |
 |---------------------|-------|
-| `name` | Blocos nomeados (mais comum) |
-| `id` | Referência ao ID do recurso |
-| `location` | Localização geográfica |
-| `address` | Endereço de rede |
-| `host_name` | Nome do host |
-| `null` | Quando não há chave (compara o elemento inteiro) |
+| `name` | Named blocks (most common) |
+| `id` | Resource ID reference |
+| `location` | Geographic location |
+| `address` | Network address |
+| `host_name` | Host name |
+| `null` | When there is no key (compares the entire element) |
 
-## Ferramentas relacionadas
+## Related tools
 
 ### analyze_plan.py
 
-Analisa o JSON do plano do Terraform para identificar diferenças falsas positivas.
+Analyzes Terraform plan JSON to identify false-positive diffs.
 
 ```bash
-# Uso básico
+# Basic usage
 terraform show -json plan.tfplan | python3 scripts/analyze_plan.py
 
-# Ler de um arquivo
+# Read from a file
 python3 scripts/analyze_plan.py plan.json
 
-# Usar um arquivo de atributos personalizado
+# Use a custom attributes file
 python3 scripts/analyze_plan.py plan.json --attributes /path/to/custom.json
 ```
 
-## Recursos compatíveis
+## Supported resources
 
-Consulte diretamente `azurerm_set_attributes.json` para ver os recursos compatíveis no momento:
+Refer directly to `azurerm_set_attributes.json` for currently supported resources:
 
 ```bash
-# Listar recursos
+# List resources
 jq '.resources | keys' azurerm_set_attributes.json
 ```
 
-Principais recursos:
+Key resources:
 
-- `azurerm_application_gateway`: conjuntos de servidores de retaguarda, receptores (listeners), regras etc.
-- `azurerm_firewall_policy_rule_collection_group`: coleções de regras
-- `azurerm_frontdoor`: conjuntos de servidores de retaguarda e roteamento
-- `azurerm_network_security_group`: regras de segurança
-- `azurerm_virtual_network_gateway`: configuração de IP e do cliente VPN
+- `azurerm_application_gateway`: backend pools, listeners, rules, etc.
+- `azurerm_firewall_policy_rule_collection_group`: rule collections
+- `azurerm_frontdoor`: backend pools and routing
+- `azurerm_network_security_group`: security rules
+- `azurerm_virtual_network_gateway`: IP and VPN client configuration
 
-## Observações
+## Notes
 
-- O comportamento dos atributos pode variar conforme a versão do provedor ou da API
-- Novos recursos e atributos precisam ser adicionados quando forem disponibilizados
-- Definir todos os níveis de estruturas profundamente aninhadas melhora a precisão
+- Attribute behavior may vary by provider or API version
+- New resources and attributes need to be added as they become available
+- Defining all levels of deeply nested structures improves accuracy

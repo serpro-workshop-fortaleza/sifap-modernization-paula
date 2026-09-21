@@ -1,69 +1,69 @@
 ---
 name: "translate-natural-to-java"
-description: "Traduz um programa Natural para Java 21 + Spring Boot 3.3 idiomático, preservando a semântica de negócio."
+description: "Translates a Natural program into idiomatic Java 21 + Spring Boot 3.3, preserving business semantics."
 argument-hint: "file=01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSN context=<context> package=<java.package>"
 agent: "builder"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /translate-natural-to-java
 
-## Objetivo
+## Objective
 
-Traduzir Natural para Java 21 + Spring Boot 3.3 idiomático, preservando semântica, com compilação e Javadoc rastreável.
+Translate Natural into idiomatic Java 21 + Spring Boot 3.3, preserving semantics, with compilation and traceable Javadoc.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 3, ao implementar contextos da Etapa 2.
+At the start of Stage 3, when implementing Stage 2 contexts.
 
-## Pré-condições
+## Preconditions
 
-- `plan.md` e `spec.md` existem
-- Contexto, pacote, origem Natural e REQ-IDs são conhecidos
+- `plan.md` and `spec.md` exist
+- The context, package, Natural source, and REQ-IDs are known
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Caminho Natural, contexto, pacote e REQ-IDs
+- Natural path, context, package, and REQ-IDs
 
-## O que farei
+## What I Will Do
 
-- Lerei por blocos, identificarei finalidade, traduzirei com recursos do Java 21, gerarei Javadoc e stubs de teste
-- Sinalizarei lógica órfã sem REQ-ID
+- Read block by block, identify purpose, translate using Java 21 features, and generate Javadoc and test stubs
+- Flag orphan logic without a REQ-ID
 
-## O que não farei
+## What I Will NOT Do
 
-- Fazer port linha a linha (“JOBOL”), combinar conceitos silenciosamente, inventar significado ou ignorar EARS
+- Port line by line ("JOBOL"), silently combine concepts, invent meaning, or ignore EARS
 
-## Formato da saída
+## Output Format
 
-Arquivos em `src/main/java/` e stubs em `src/test/java/`, com Javadoc da origem.
+Files in `src/main/java/` and stubs in `src/test/java/`, with source Javadoc.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Compila
-- [ ] Métodos públicos citam arquivo e linhas Natural
-- [ ] Cada regra EARS tem método
-- [ ] Órfãos usam `// ORPHAN: [file:line] - Team decision required`
-- [ ] Há stub por método e uso idiomático de Java 21
+- [ ] Compiles
+- [ ] Public methods cite the Natural file and lines
+- [ ] Each EARS rule has a method
+- [ ] Orphans use `// ORPHAN: [file:line] - Team decision required`
+- [ ] There is a stub per method and idiomatic use of Java 21
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@builder`. Traduza o programa selecionado.
+You are `@builder`. Translate the selected program.
 
-**Etapa 1 — Ler EARS.** Leia `spec.md` e liste requisitos pertinentes.
+**Step 1 - Read EARS.** Read `spec.md` and list relevant requirements.
 
-**Etapa 2 — Ler Natural.** Analise `DEFINE DATA`, decisões `IF`, acessos `READ`/`FIND`, dependências `CALLNAT` e subrotinas `PERFORM`.
+**Step 2 - Read Natural.** Analyze `DEFINE DATA`, `IF` decisions, `READ`/`FIND` access, `CALLNAT` dependencies, and `PERFORM` subroutines.
 
-**Etapa 3 — Relacionar blocos.** Associe cada bloco a um REQ-ID. Para órfãos:
+**Step 3 - Map blocks.** Associate each block with a REQ-ID. For orphans:
 
 ```java
 // ORPHAN: [natural-file.NSN:L42-58] - No matching REQ. Team decision required: keep, modify, or remove?
 ```
 
-Consulte a equipe antes de prosseguir.
+Consult the team before proceeding.
 
-**Etapa 4 — Traduzir.** Mapeie variáveis para tipos Java; condições para `if/else` ou `switch`; `READ LOGICAL BY` para `findBy*`; `FIND WITH` para `@Query` nomeada; `CALLNAT` para serviço injetado; decimais para `BigDecimal` com escala e arredondamento; strings com atenção ao charset. Use records, sealed interfaces, `Optional`, injeção por construtor, `@Valid` e `@Transactional` somente em serviços.
+**Step 4 - Translate.** Map variables to Java types; conditions to `if/else` or `switch`; `READ LOGICAL BY` to `findBy*`; `FIND WITH` to named `@Query`; `CALLNAT` to an injected service; decimals to `BigDecimal` with scale and rounding; and strings with attention to charset. Use records, sealed interfaces, `Optional`, constructor injection, `@Valid`, and `@Transactional` only on services.
 
-**Etapa 5 — Gerar Javadoc.**
+**Step 5 - Generate Javadoc.**
 
 ```java
 /**
@@ -74,7 +74,7 @@ Consulte a equipe antes de prosseguir.
  */
 ```
 
-**Etapa 6 — Criar stubs.**
+**Step 6 - Create stubs.**
 
 ```java
 @Test
@@ -86,10 +86,10 @@ void should_[expected]_when_[condition]() {
 }
 ```
 
-**Etapa 7 — Compilar.** Corrija erros. Se não houver equivalente limpo, apresente duas alternativas e deixe a equipe escolher.
+**Step 7 - Compile.** Fix errors. If there is no clean equivalent, present two alternatives and let the team choose.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /translate-natural-to-java file=01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSN context=<context> package=<java.package>
 ```

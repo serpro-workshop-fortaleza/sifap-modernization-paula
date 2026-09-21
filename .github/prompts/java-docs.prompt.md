@@ -1,88 +1,88 @@
 ---
 name: "java-docs"
-description: "Aplique boas práticas de Javadoc a tipos e membros Java, delegando a lista de verificação completa à skill java-docs."
+description: "Apply Javadoc best practices to Java types and members, delegating the complete checklist to the java-docs skill."
 argument-hint: "target=<file-or-package>"
 agent: "tech-writer"
 tools: ["read", "edit", "search"]
 ---
 # /java-docs
 
-## Objetivo
+## Objective
 
-Adequar o Javadoc de um arquivo ou pacote Java ao padrão do projeto: frases de resumo, `@param`, `@return`, `@throws`, genéricos e blocos `{@code}`. Assim, membros públicos e protegidos ficam documentados de modo correto e consistente. A lista detalhada está na skill [`java-docs`](../skills/java-docs/SKILL.md). Este prompt a aplica ao backend do SIFAP 2.0 sem repeti-la.
+Bring the Javadoc of a Java file or package into line with the project standard: summary sentences, `@param`, `@return`, `@throws`, generics, and `{@code}` blocks. This documents public and protected members correctly and consistently. The detailed checklist is in the [`java-docs`](../skills/java-docs/SKILL.md) skill. This prompt applies it to the SIFAP 2.0 backend without repeating it.
 
 > [!NOTE]
-> Documente o motivo, não o conteúdo: a frase de resumo declara a intenção e não repete a assinatura do método.
+> Document the why, not the what: the summary sentence states intent and does not repeat the method signature.
 
-## Quando usar
+## When to Invoke
 
-Durante as Etapas 3 ou 4, ao implementar ou revisar Java no backend, depois que a classe ou o pacote compilar e sua interface pública estiver estável o suficiente para documentação.
+During Stages 3 or 4, when implementing or reviewing backend Java, after the class or package compiles and its public interface is stable enough for documentation.
 
-## Pré-condições
+## Preconditions
 
-- O arquivo ou pacote `.java` de destino existe e compila
-- A interface pública e protegida a documentar foi identificada
-- O código segue as convenções de Java 21 em [`backend.instructions.md`](../instructions/backend.instructions.md)
+- The target `.java` file or package exists and compiles
+- The public and protected interface to document has been identified
+- The code follows the Java 21 conventions in [`backend.instructions.md`](../instructions/backend.instructions.md)
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `target`: o arquivo ou pacote a documentar, por exemplo, `backend/src/main/java/com/sifap/payment`
-- Termos de domínio que esclareçam a intenção da frase de resumo
-- Solicite à pessoa usuária qualquer informação ausente.
+- `target`: the file or package to document, for example, `backend/src/main/java/com/sifap/payment`
+- Domain terms that clarify the intent of the summary sentence
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Aplicarei as convenções de Javadoc da skill [`java-docs`](../skills/java-docs/SKILL.md) a todos os membros públicos e protegidos do destino
-- Escreverei uma frase de resumo concisa para cada membro e documentarei parâmetros, retornos, exceções lançadas e parâmetros de tipo
-- Usarei `{@inheritDoc}` quando o comportamento não mudar e documentarei a diferença quando houver mudança
-- Manterei o comportamento compilado inalterado; modificarei somente a documentação
+- Apply the Javadoc conventions in the [`java-docs`](../skills/java-docs/SKILL.md) skill to all public and protected members of the target
+- Write a concise summary sentence for each member and document parameters, return values, thrown exceptions, and type parameters
+- Use `{@inheritDoc}` when behavior is unchanged and document the difference when it changes
+- Keep compiled behavior unchanged; modify documentation only
 
-## O que não farei
+## What I Will NOT Do
 
-- Adicionar comentários desnecessários que repitam a assinatura ou o óbvio
-- Alterar corpos, assinaturas ou visibilidade de métodos para facilitar a documentação
-- Incluir dados sensíveis, como CPF e valores de benefícios, em exemplos `{@code}`; farei o mascaramento
-- Escrever Javadoc em outro idioma que não seja inglês
+- Add unnecessary comments that repeat the signature or the obvious
+- Change method bodies, signatures, or visibility to make documentation easier
+- Include sensitive data, such as CPF and benefit amounts, in `{@code}` examples; I will mask it
+- Write Javadoc in any language other than English
 
-## Formato da saída
+## Output Format
 
-Os arquivos de destino com Javadoc adicionado no próprio local, além de um breve resumo:
+The target files with Javadoc added in place, plus a brief summary:
 
 ```markdown
-### Documentado
-| Membro | Javadoc adicionado |
+### Documented
+| Member | Javadoc added |
 |---|---|
-| `PaymentService#approve(PaymentId)` | resumo, `@param`, `@return`, `@throws` |
+| `PaymentService#approve(PaymentId)` | summary, `@param`, `@return`, `@throws` |
 
-### Ignorado
-- `PaymentService#toString()` — autoexplicativo; não precisa de Javadoc.
+### Skipped
+- `PaymentService#toString()` — self-explanatory; no Javadoc needed.
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada membro público e protegido tem uma frase de resumo terminada em ponto
-- [ ] `@param`, `@return`, `@throws` e `@param <T>` estão presentes quando aplicáveis
-- [ ] Nenhum exemplo contém dados sensíveis
-- [ ] Todo o Javadoc está em inglês e o arquivo continua compilando
+- [ ] Each public and protected member has a summary sentence ending with a period
+- [ ] `@param`, `@return`, `@throws`, and `@param <T>` are present where applicable
+- [ ] No example contains sensitive data
+- [ ] All Javadoc is in English and the file still compiles
 
-## Corpo do prompt
+## Prompt Body
 
-A skill [`java-docs`](../skills/java-docs/SKILL.md) define todas as convenções de Javadoc. Leia-a e aplique-a ao destino.
+The [`java-docs`](../skills/java-docs/SKILL.md) skill defines all Javadoc conventions. Read it and apply it to the target.
 
-**Etapa 1 — Localizar a interface.**
-Abra `target` e liste todos os tipos e membros públicos e protegidos sem Javadoc correto.
+**Step 1 — Locate the interface.**
+Open `target` and list all public and protected types and members without correct Javadoc.
 
-**Etapa 2 — Aplicar a skill.**
-Documente cada membro conforme a skill: primeiro uma frase de resumo; depois `@param` em minúsculas e sem ponto final, `@return`, `@throws`, `@param <T>` e `{@code}` ou `<pre>{@code ...}</pre>` quando forem úteis.
+**Step 2 — Apply the skill.**
+Document each member according to the skill: a summary sentence first; then lowercase `@param` descriptions without a final period, `@return`, `@throws`, `@param <T>`, and `{@code}` or `<pre>{@code ...}</pre>` where useful.
 
-**Etapa 3 — Respeitar as regras do kit.**
-Mantenha o comportamento inalterado, escreva em inglês e mascare CPF e valores de benefícios nos exemplos.
+**Step 3 — Follow the kit's rules.**
+Keep behavior unchanged, write in English, and mask CPF and benefit amounts in examples.
 
-**Etapa 4 — Relatar.**
-Resuma o que foi documentado e o que foi deliberadamente ignorado.
+**Step 4 — Report.**
+Summarize what was documented and what was deliberately skipped.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /java-docs target=backend/src/main/java/com/sifap/payment
 ```

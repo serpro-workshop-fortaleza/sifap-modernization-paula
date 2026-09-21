@@ -7,7 +7,7 @@ description: "Generate an end-to-end Playwright test in TypeScript from a descri
 Generate an end-to-end (E2E) Playwright test in TypeScript by exploring the described user flow with the Playwright MCP server, one step at a time. Then produce an `@playwright/test` spec and run it until it passes. This skill covers browser-level regression tests for the SIFAP 2.0 Next.js 15 UI. Unit and component behavior remains in Vitest + Testing Library (see [`tests.instructions.md`](../../instructions/tests.instructions.md)).
 
 > [!NOTE]
-> This skill drives the **Playwright MCP server**, which must be installed and running against an accessible UI. If the MCP server is unavailable, install and start it before using the skill. Do not write the test manually based only on the scenario.
+> This skill drives the **Playwright MCP server**, which must be available against an accessible UI. The owning agent or prompt must expose the `playwright/*` toolset. If the toolset is unavailable, report the workflow as blocked and identify the missing prerequisite. Do not install tools implicitly or write the test manually based only on the scenario.
 
 ## When to Invoke
 
@@ -21,11 +21,12 @@ Generate an end-to-end (E2E) Playwright test in TypeScript by exploring the desc
 Never write test code based only on the scenario description. First observe the real DOM through MCP, then generate the test.
 
 1. **Get the scenario.** If the user does not describe a flow, ask for it. Confirm the running UI's base URL.
-2. **Explore step by step.** Drive the flow, one action at a time, with Playwright MCP tools (navigate, click, fill, and verify). Use each observed page state to guide the next step.
-3. **Prefer accessible locators.** Select elements by role, label, or text (`getByRole`, `getByLabel`), not brittle CSS or `data-testid` when a role exists. This follows the Testing Library convention used throughout the kit.
-4. **Generate the spec.** Only after confirming every step, produce a TypeScript test with `@playwright/test` based on the recorded interactions. Structure it as Arrange-Act-Assert and add an inline `// REQ-NNN` comment when the flow traces to a requirement.
-5. **Save it** in the UI's `tests/` directory as `<feature>.spec.ts`.
-6. **Run and refine.** Run `npx playwright test <name>` and fix locators or waits until the test passes reliably. Never leave a failing or flaky spec.
+2. **Verify the tool boundary.** Confirm that `playwright/*` is available. If it is absent, stop and report a blocker; terminal HTTP requests are not equivalent to observed browser interaction.
+3. **Explore step by step.** Drive the flow, one action at a time, with Playwright MCP tools (navigate, click, fill, and verify). Use each observed page state to guide the next step.
+4. **Prefer accessible locators.** Select elements by role, label, or text (`getByRole`, `getByLabel`), not brittle CSS or `data-testid` when a role exists. This follows the Testing Library convention used throughout the kit.
+5. **Generate the spec.** Only after confirming every step, produce a TypeScript test with `@playwright/test` based on the recorded interactions. Structure it as Arrange-Act-Assert and add an inline `// REQ-NNN` comment when the flow traces to a requirement.
+6. **Save it** in the UI's `tests/` directory as `<feature>.spec.ts`.
+7. **Run and refine.** Run `npx playwright test <name>` and fix locators or waits until the test passes reliably. Never leave a failing or flaky spec.
 
 > [!WARNING]
 > Do not include secrets or environment-specific data in the spec. Read base URLs and credentials from environment variables or Playwright configuration. Never hardcode them.
@@ -69,6 +70,7 @@ npx playwright test payment-approval
 ## Quality Gate
 
 - [ ] The flow was explored step by step through Playwright MCP before writing code.
+- [ ] The owning prompt or agent exposed `playwright/*`; unavailable tooling was reported as a blocker.
 - [ ] The spec uses `@playwright/test` and is in the UI's `tests/` directory.
 - [ ] Elements are selected by accessible role or label, not brittle selectors.
 - [ ] Requirement-driven flows contain an inline `// REQ-NNN` comment.

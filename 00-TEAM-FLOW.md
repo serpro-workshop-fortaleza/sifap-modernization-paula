@@ -191,10 +191,10 @@ Bom: "Objetivo: validar CPF em `BeneficioService`. Tentei: `@CPF` do Bean Valida
 
 | Artefato | Caminho | Pronto significa |
 |---|---|---|
-| Backend funcionando | `backend/` | `mvn test` está verde; o OpenAPI está documentado |
-| Frontend funcionando | `frontend/` | `npm test` está verde; os fluxos principais são utilizáveis |
+| Backend funcionando | `backend/` | `./mvnw -B verify` está verde; o OpenAPI do escopo aprovado está documentado |
+| Frontend funcionando | `frontend/` | lint, typecheck, build e testes estão verdes; os fluxos aprovados são utilizáveis |
 | Migrações | `backend/src/main/resources/db/migration/` | Os scripts Flyway estão numerados e idempotentes (a Dupla 4 é responsável) |
-| Relatório de cobertura | Artefato da CI | Backend >= 70%, frontend >= 60% de cobertura de linhas (a Dupla 4 verifica) |
+| Relatório de cobertura | Artefato da CI | Backend e frontend >= 80% de linhas e >= 70% de branches (a Dupla 4 verifica) |
 
 ---
 

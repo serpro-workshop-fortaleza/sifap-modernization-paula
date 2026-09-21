@@ -14,7 +14,9 @@ DECLARATION = re.compile(
     r"(?:\s+\([^)]+\))?(?:\s*:|\s+-|\s*$))"
 )
 REFERENCE = re.compile(rf"\b({REQUIREMENT_ID})\b")
-SOURCE = re.compile(r"source_legacy\s*:(.+)")
+SOURCE = re.compile(
+    r"(?:[-*+]\s+)?(?:\*\*)?source_legacy(?:\*\*)?\s*:(.+)"
+)
 LEGACY_SOURCE = re.compile(
     r"01-archaeology/legacy-sifap/"
     r"(?:natural-programs/[A-Za-z0-9_-]+\."

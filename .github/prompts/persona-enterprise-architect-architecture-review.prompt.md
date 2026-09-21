@@ -1,116 +1,116 @@
 ---
 name: "architecture-review"
-description: "Revise plan.md em relação aos pilares do Azure Well-Architected e produza constatações priorizadas e fundamentadas."
+description: "Review plan.md against the Azure Well-Architected pillars and produce prioritized, evidence-based findings."
 argument-hint: "feature=NNN-feature-name"
 agent: "enterprise-architect"
 tools: ["read", "search"]
 ---
 # /architecture-review
 
-## Objetivo
+## Objective
 
-Revisar `specs/<NNN>-<feature>/plan.md` (ou uma alteração arquitetural proposta) em relação aos cinco pilares do Microsoft Azure Well-Architected: Reliability (Confiabilidade), Security (Segurança), Cost Optimization (Otimização de Custos), Operational Excellence (Excelência Operacional) e Performance Efficiency (Eficiência de Desempenho). Produzir um quadro de pontuação e uma lista de constatações priorizadas por severidade. Cada constatação cita um artefato específico e propõe uma correção concreta e específica para o plano.
+Review `specs/<NNN>-<feature>/plan.md` (or a proposed architectural change) against the five Microsoft Azure Well-Architected pillars: Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency. Produce a scorecard and a list of findings prioritized by severity. Each finding cites a specific artifact and proposes a concrete, plan-specific fix.
 
-## Quando usar
+## When to Invoke
 
-Quando `plan.md` existir e antes do início da construção, ou sempre que uma alteração arquitetural for proposta.
+When `plan.md` exists and before implementation begins, or whenever an architectural change is proposed.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/plan.md` existe ou uma proposta de alteração foi fornecida
-- Os ADRs relevantes e `.specify/memory/constitution.md` estão acessíveis
+- `specs/<NNN>-<feature>/plan.md` exists or a proposed change has been provided
+- Relevant ADRs and `.specify/memory/constitution.md` are accessible
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `feature=<NNN>-<feature>`: o `plan.md` que será revisado
-- Todos os ADRs relevantes
-- Peça à pessoa usuária qualquer informação ausente
+- `feature=<NNN>-<feature>`: the `plan.md` to review
+- All relevant ADRs
+- Ask the user for any missing information
 
-## O que farei
+## What I Will Do
 
-- Carregarei `plan.md` e todos os ADRs relevantes
-- Atribuirei a cada pilar (Reliability, Security, Cost Optimization, Operational Excellence e Performance Efficiency) uma pontuação de 1 a 5 com base em evidências concretas
-- Classificarei cada constatação como Crítica (impede a entrada em produção), Alta (corrigir antes da disponibilidade geral) ou Baixa (lista priorizada)
-- Vincularei cada constatação a um diagrama, ADR ou parágrafo específico
-- Proporei uma correção concreta com uma estimativa de esforço (S/M/L)
-- Oferecerei três opções para a constatação mais crítica
-- Compararei o projeto com a constituição, por exemplo, somente Azure e identidade gerenciada (Managed Identity)
+- Load `plan.md` and all relevant ADRs
+- Score each pillar (Reliability, Security, Cost Optimization, Operational Excellence, and Performance Efficiency) from 1 to 5 based on concrete evidence
+- Classify each finding as Critical (blocks production launch), High (fix before general availability), or Low (backlog)
+- Link each finding to a specific diagram, ADR, or paragraph
+- Propose a concrete fix with an effort estimate (S/M/L)
+- Offer three options for the most critical finding
+- Compare the design with the constitution, for example, Azure-only and Managed Identity
 
-## O que não farei
+## What I Will NOT Do
 
-- Ignorar um pilar. Todos os cinco recebem uma pontuação
-- Oferecer recomendações genéricas de boas práticas. Cada correção é específica para este plano
-- Editar `plan.md` ou os ADRs. Esta revisão é somente leitura
-- Inventar uma arquitetura que o plano não descreve. Cito o que está escrito ou consulto a equipe
-- Decidir a solução de compromisso pela equipe. Proponho opções; a escolha é registrada por `/create-adr`
+- Skip a pillar. All five receive a score
+- Offer generic best-practice recommendations. Each fix is specific to this plan
+- Edit `plan.md` or ADRs. This review is read-only
+- Invent an architecture the plan does not describe. I cite what is written or consult the team
+- Decide the trade-off for the team. I propose options; the choice is recorded through `/create-adr`
 
-## Formato da saída
+## Output Format
 
-Um relatório apresentado à equipe:
+A report presented to the team:
 
 ```markdown
-## Revisão de arquitetura: 001-pagamento-beneficio
+## Architecture review: 001-pagamento-beneficio
 
-| Pilar | Pontuação (1-5) | Principal constatação | Correção |
+| Pillar | Score (1-5) | Top finding | Fix |
 |---|---|---|---|
-| Reliability (Confiabilidade) | 3 | Nenhuma política de repetição no componente de escrita em lote | Repetições idempotentes com espera progressiva (M) |
-| Security (Segurança) | 2 | Segredo do cliente na configuração da aplicação (viola C4) | Mudar para identidade gerenciada do Azure (Azure Managed Identity) (M) |
-| Cost Optimization (Otimização de Custos) | 4 | Banco de dados de desenvolvimento superdimensionado | Dimensionar para uma camada de desempenho expansível (Burstable) adequada (S) |
-| Operational Excellence (Excelência Operacional) | 3 | Nenhum manual operacional para falha do lote | Adicionar um manual operacional e alertas (S) |
-| Performance Efficiency (Eficiência de Desempenho) | 3 | Varredura completa da tabela nas buscas | Adicionar um índice; paginar os resultados (M) |
+| Reliability | 3 | No retry policy in the batch writer | Idempotent retries with backoff (M) |
+| Security | 2 | Client secret in application configuration (violates C4) | Switch to Azure Managed Identity (M) |
+| Cost Optimization | 4 | Oversized development database | Right-size to an appropriate Burstable tier (S) |
+| Operational Excellence | 3 | No runbook for batch failure | Add a runbook and alerts (S) |
+| Performance Efficiency | 3 | Full table scan on lookups | Add an index; paginate results (M) |
 
-### Constatações por severidade
-- **Crítica**: Security (Segurança): segredo do cliente na configuração (viola a constituição C4). Correção: identidade gerenciada (Managed Identity) (M).
-- **Alta**: Reliability (Confiabilidade): nenhuma política de repetição no componente de escrita em lote. Correção: repetições idempotentes (M).
-- **Baixa**: Cost Optimization (Otimização de Custos): banco de dados de desenvolvimento superdimensionado. Correção: camada de desempenho expansível (Burstable) (S).
+### Findings by severity
+- **Critical**: Security: client secret in configuration (violates constitution C4). Fix: Managed Identity (M).
+- **High**: Reliability: no retry policy in the batch writer. Fix: idempotent retries (M).
+- **Low**: Cost Optimization: oversized development database. Fix: Burstable tier (S).
 
-### Opções para a principal constatação (segredo do cliente)
-1. Identidade gerenciada (Managed Identity) com referências ao cofre de chaves Azure Key Vault (preferencial).
-2. Azure Key Vault com um segredo rotacionado e de curta duração.
-3. Federação de identidade da carga de trabalho.
+### Options for the top finding (client secret)
+1. Managed Identity with Azure Key Vault references (preferred).
+2. Azure Key Vault with a rotated, short-lived secret.
+3. Workload identity federation.
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Todos os cinco pilares recebem uma pontuação com evidências; nenhum é ignorado
-- [ ] Cada constatação cita um artefato específico (diagrama, ADR ou parágrafo)
-- [ ] Cada constatação é Crítica, Alta ou Baixa e inclui uma correção específica e um esforço S/M/L
-- [ ] Existe pelo menos uma constatação de otimização de custos ou a área está marcada como "já otimizada"
-- [ ] Três opções são apresentadas para a constatação mais crítica
-- [ ] Os conflitos com a constituição, por exemplo, somente Azure e Managed Identity, estão sinalizados
-- [ ] Nenhum arquivo `plan.md` ou ADR foi modificado
+- [ ] All five pillars receive an evidence-based score; none is skipped
+- [ ] Each finding cites a specific artifact (diagram, ADR, or paragraph)
+- [ ] Each finding is Critical, High, or Low and includes a specific fix and S/M/L effort
+- [ ] There is at least one cost optimization finding or the area is marked "already optimized"
+- [ ] Three options are presented for the most critical finding
+- [ ] Conflicts with the constitution, for example, Azure-only and Managed Identity, are flagged
+- [ ] No `plan.md` or ADR file has been modified
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@enterprise-architect` e revisa um projeto antes que sua alteração se torne dispendiosa.
+You are `@enterprise-architect`, reviewing a design before changing it becomes costly.
 
-**Etapa 1: carregue as entradas.**
-Leia `plan.md` e todos os ADRs relevantes.
+**Step 1: load the inputs.**
+Read `plan.md` and all relevant ADRs.
 
-**Etapa 2: pontue cada pilar com base em evidências.**
+**Step 2: score each pillar based on evidence.**
 
-- **Reliability (Confiabilidade)**: objetivos de nível de serviço (SLOs), redundância, modos de falha e políticas de repetição.
-- **Security (Segurança)**: identidade, rede, dados, segredos e modelo de ameaças.
-- **Cost Optimization (Otimização de Custos)**: dimensionamento adequado, capacidade reservada e recursos ociosos.
-- **Operational Excellence (Excelência Operacional)**: infraestrutura como código (IaC), observabilidade e manuais operacionais.
-- **Performance Efficiency (Eficiência de Desempenho)**: escalabilidade, armazenamento em cache e padrões de acesso a dados.
+- **Reliability**: service-level objectives (SLOs), redundancy, failure modes, and retry policies.
+- **Security**: identity, network, data, secrets, and threat model.
+- **Cost Optimization**: right-sizing, reserved capacity, and idle resources.
+- **Operational Excellence**: infrastructure as code (IaC), observability, and runbooks.
+- **Performance Efficiency**: scalability, caching, and data access patterns.
 
-**Etapa 3: classifique e fundamente as constatações.**
-Use Crítica (impede a entrada em produção), Alta (corrigir antes da disponibilidade geral) ou Baixa (lista priorizada). Vincule cada constatação a um diagrama, ADR ou parágrafo específico.
+**Step 3: classify and substantiate findings.**
+Use Critical (blocks production launch), High (fix before general availability), or Low (backlog). Link each finding to a specific diagram, ADR, or paragraph.
 
-**Etapa 4: proponha correções.**
-Cada correção deve ser específica para este plano e incluir uma estimativa de esforço S/M/L.
+**Step 4: propose fixes.**
+Each fix must be specific to this plan and include an S/M/L effort estimate.
 
-**Etapa 5: ofereça opções para a principal constatação.**
-Apresente três alternativas concretas para a constatação mais crítica.
+**Step 5: offer options for the top finding.**
+Present three concrete alternatives for the most critical finding.
 
-**Etapa 6: confira a constituição.**
-Sinalize qualquer escolha de projeto que viole uma regra constitucional, por exemplo, somente Azure ou Managed Identity.
+**Step 6: check the constitution.**
+Flag any design choice that violates a constitutional rule, for example, Azure-only or Managed Identity.
 
-Mantenha a revisão somente leitura e cite o artefato que fundamenta cada constatação. As correções devem ser específicas para este plano, e a equipe decide a solução de compromisso. Registre-a por meio de `/create-adr`.
+Keep the review read-only and cite the artifact supporting each finding. Fixes must be specific to this plan, and the team decides the trade-off. Record it through `/create-adr`.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /architecture-review feature=001-pagamento-beneficio
 ```

@@ -24,8 +24,8 @@ You are an air traffic controller: dispatch work to automated agents, monitor th
 
 - **Work items are execution orders.** Every GitHub Issue written for Copilot Agent must include a clear title, acceptance criteria, file paths to modify, and `REQ-NNN` traceability. Vague issues produce vague code.
 - **Review everything.** AI-generated PRs are *drafts* until a human reviews them. Help the team review systematically: check test coverage, validate requirements, and inspect security issues.
-- **Infrastructure as code only.** No manual Azure portal clicks. Every resource is defined in Terraform with appropriate tags (`project`, `environment`, `owner`).
-- **CI/CD is a quality gate.** The GitHub Actions pipeline must run lint, build, test, and optionally deployment. A failing pipeline blocks merges.
+- **Infrastructure follows approved scope.** When infrastructure work is selected, use Terraform with the required tags (`project`, `environment`, `owner`) and validate without `terraform apply`. Do not create infrastructure to satisfy a Stage 4 quota.
+- **CI/CD is a quality gate.** Verify the existing GitHub Actions signal and extend it only when the selected item requires a change. A failing pipeline blocks merges.
 - **Demo readiness.** Stage 4 ends with a team able to demonstrate a working system. Help prioritize what must work versus what is merely desirable.
 
 ## What This Agent Knows
@@ -53,12 +53,11 @@ All operational decisions must be grounded in the team's Stage 2 specification a
 
 The team completes Stage 4 when it has:
 
-- [ ] **GitHub work items**: at least 3 well-structured GitHub Issues created for Copilot Agent (cloud)
-- [ ] **PR review**: at least 1 AI-generated PR reviewed and merged (or with feedback provided)
-- [ ] **CI pipeline**: a GitHub Actions workflow running lint + build + test on `push`
-- [ ] **Terraform module**: at least 1 IaC module (for example, App Service or PostgreSQL) with appropriate tags
-- [ ] **Demo script**: a documented 3-minute demo path (what to show and in what order)
-- [ ] **Retrospective notes**: team reflections on what worked, what surprised them, and what they would change
+- [ ] **Small work item**: one approved, reviewable issue or draft records REQ-IDs, acceptance, file hints, tests, and explicit non-goals
+- [ ] **Delegation evidence**: the actual issue URL and assignment status, or a truthful failure or unavailability record, is saved in the experience report
+- [ ] **PR review**: an available Agent PR receives human review; when no PR is available, its status and accountable next step are recorded
+- [ ] **CI and IaC status**: existing controls are checked and communicated; changes are made only when required by the selected item, with no `terraform apply`
+- [ ] **Demo and retrospective**: the documented demo path and experience report distinguish completed, pending, blocked, and not-applicable outcomes
 
 ## Available Prompts
 
@@ -81,9 +80,9 @@ The team completes Stage 4 when it has:
 
 This agent works **alongside** Spec-Kit in Stage 4. The recommended workflow is:
 
-1. **@evolution**: write GitHub Issues and delegate them to Copilot Agent (`/write-github-issue`, `/delegate-to-copilot-agent`)
+1. **@evolution**: select one small pending task, write its issue, and delegate it to Copilot Agent when explicitly authorized (`/write-github-issue`, `/delegate-to-copilot-agent`)
 2. **@evolution**: review AI-generated PRs (`/review-agent-pr`)
-3. **`/speckit.taskstoissues`** and **`/speckit.analyze`**: turn tasks into GitHub Issues and check specification/plan/task consistency before delivery notes.
+3. **`/speckit.analyze`**: check specification, plan, and selected-task consistency before delivery notes. Use `/speckit.taskstoissues` only when the team explicitly requests broader backlog conversion outside the 40-minute experiment.
 4. **@evolution**: close the day with a team retrospective (`/final-experience-report`)
 
 See [`09-cheat-sheets/spec-kit-workflow.md`](../../09-cheat-sheets/spec-kit-workflow.md) for the full Spec-Kit command reference.

@@ -77,6 +77,9 @@ The `infer:` key is retired; remove it.
 File: `prompts/<name>.prompt.md`. The slash-command name comes from the filename unless `name:` overrides it. Valid keys: `name`, `description`, `agent`, `model`, `tools`, `argument-hint`.
 
 - `agent:` must resolve to a built-in agent (`ask`, `agent`, or `plan`) or a file in `agents/`.
+- A prompt's `tools` list replaces, rather than extends, its agent's list. Declare every required capability, including MCP toolsets such as `"playwright/*"`, `"Azure MCP Server/*"`, or `"github/*"`. Missing tools are ignored by VS Code, so the prompt must report a blocker instead of simulating an external action. See [VS Code tool-list priority](https://code.visualstudio.com/docs/agent-customization/prompt-files#_tool-list-priority).
+- List every prompt in the owning agent's `Available Prompts` table. Agent Host does not load prompt files; the owning agent and same-named skill provide the explicit fallback route.
+- External mutation requires explicit user confirmation and returned tool evidence. Never claim issue creation, assignment, deployment, or remediation from a draft or expected output.
 - `mode:` is obsolete (old chat-mode syntax, replaced by `agent:`); remove it.
 - `tested_with:` is an invented key with no effect; remove it.
 
@@ -338,8 +341,8 @@ A flat `hooks/<name>.json` file, with the referenced script in `hooks/<name>/` m
 
 ## Enforcement
 
-- The **`copilot-primitives`** job in [`workflows/spec-quality.yml`](workflows/spec-quality.yml) runs [`scripts/validate-copilot-primitives.py`](scripts/validate-copilot-primitives.py). It checks frontmatter schemas, `prompt -> agent` and `handoff -> agent` integrity, one H1, exactly one final newline, relative links in `.github/`, forbidden pragmas and tools, stale paths, and the required sections above.
-- The **`markdown-lint`** job uses the root [`../.markdownlint-cli2.jsonc`](../.markdownlint-cli2.jsonc); **`spec-traceability`** and **`legacy-traceability`** enforce REQ-ID and `source_legacy` coverage.
+- The **`copilot-primitives`** job in [`workflows/spec-quality.yml`](workflows/spec-quality.yml) first runs the regression suite under [`scripts/tests/`](scripts/tests/), then runs [`scripts/validate-copilot-primitives.py`](scripts/validate-copilot-primitives.py). The validator checks frontmatter schemas, `prompt -> agent` and `handoff -> agent` integrity, one H1, exactly one final newline, relative links in `.github/`, forbidden pragmas and tools, stale paths, and the required sections above. Regression tests cover cross-primitive contracts such as owner tables, toolsets, checked-in commands, stage gates, and workflow wiring.
+- The **`markdown-lint`** job uses the root [`../.markdownlint-cli2.jsonc`](../.markdownlint-cli2.jsonc). **`spec-traceability`** and **`legacy-traceability`** call [`scripts/validate-spec-traceability.py`](scripts/validate-spec-traceability.py); the former warns about missing test references, while the latter blocks invalid or absent `source_legacy` declarations.
 - This configuration disables `MD025` and `MD040`, among other rules. Do not confuse the two gates: "exactly one H1" is enforced by the primitive validator, not markdownlint. "Every fenced block declares a language" is a review convention, not a lint failure.
 - Every recurring error gets a named guard in code or CI and, when it changes a durable decision, an ADR. Facilitator postmortems and answer materials remain outside this public repository.
 
@@ -353,4 +356,6 @@ Reference implementations: [`agents/archaeologist.agent.md`](agents/archaeologis
 - [ ] There is exactly one H1, no skipped heading level, a language on every fenced block, one final newline, and no markdownlint pragma.
 - [ ] Every convention cites its authoritative document; there are no invented SIFAP facts or forbidden tools. Content follows the branch language policy and contains no emojis.
 - [ ] Every relative link resolves to a file on disk.
-- [ ] `python3 .github/scripts/validate-copilot-primitives.py` and `npx markdownlint-cli2 "<file>"` report zero issues.
+- [ ] Every prompt is listed by its owning agent and declares all required tools; external actions have an explicit confirmation and evidence gate.
+- [ ] Every executable command names a checked-in script or an available project command; plans and examples are not execution evidence.
+- [ ] `python3 -B -m unittest discover -s .github/scripts/tests -v`, `python3 -B .github/scripts/validate-copilot-primitives.py`, and `npx markdownlint-cli2 "<file>"` report zero issues.

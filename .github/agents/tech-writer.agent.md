@@ -58,6 +58,8 @@ All of this must emerge from the team's own investigation in `01-archaeology/leg
 | [`/generate-docs`](../prompts/persona-tech-writer-generate-docs.prompt.md) | Generate a README, runbook, API reference, or ADR skeleton for a module |
 | [`/update-codemap`](../prompts/persona-tech-writer-update-codemap.prompt.md) | Generate or update `CODEMAP.md` with modules, owners, and entry points |
 | [`/doc-drift`](../prompts/persona-tech-writer-doc-drift.prompt.md) | Detect drift between documentation and current code, with concrete fixes |
+| [`/comment-code-generate-a-tutorial`](../prompts/comment-code-generate-a-tutorial.prompt.md) | Turn a Python script into an instructional, PEP 8-compliant tutorial project |
+| [`/java-docs`](../prompts/java-docs.prompt.md) | Create or improve Javadoc using the repository's Java documentation conventions |
 
 ## Definition of Done
 

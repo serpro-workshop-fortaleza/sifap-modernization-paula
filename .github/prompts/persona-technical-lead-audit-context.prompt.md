@@ -1,53 +1,53 @@
 ---
 name: "audit-context"
-description: "Audite a superfície de contexto do Copilot no repositório (AGENTS.md, CODEMAP.md, instruções, prompts e agentes) e retorne correções priorizadas."
+description: "Audit the repository's Copilot context surface (AGENTS.md, CODEMAP.md, instructions, prompts, and agents) and return prioritized fixes."
 argument-hint: "scope=.github"
 agent: "tech-lead"
 tools: ["read", "search"]
 ---
 # /audit-context
 
-## Objetivo
+## Objective
 
-Auditar `AGENTS.md`, `CODEMAP.md`, instruções, prompts e agentes e listar correções reais por gravidade.
+Audit `AGENTS.md`, `CODEMAP.md`, instructions, prompts, and agents, and list actual fixes by severity.
 
-## Quando usar
+## When to Invoke
 
-Periodicamente, antes de transições ou após mudanças em primitives.
+Periodically, before transitions, or after changes to primitives.
 
-## Pré-condições
+## Preconditions
 
-- `.github/` existe; os índices de instruções e [prompts](README.md) são referência
+- `.github/` exists; the instruction and [prompt](README.md) indexes are references
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Escopo opcional
+- Optional scope
 
-## O que farei
+## What I Will Do
 
-- Inventariarei arquivos e linhas; verificarei `applyTo`, frescor do CODEMAP, frontmatter, agentes, ferramentas, modelos, paths e links
-- Aplicarei [`context-audit`](../skills/context-audit/SKILL.md)
+- Inventory files and lines; check `applyTo`, CODEMAP freshness, frontmatter, agents, tools, models, paths, and links
+- Apply [`context-audit`](../skills/context-audit/SKILL.md)
 
-## O que não farei
+## What I Will NOT Do
 
-- Criar falso positivo, editar, sugerir modelo/provedor fixo ou reescrever primitives
+- Create false positives, edit, suggest a fixed model/provider, or rewrite primitives
 
-## Formato da saída
+## Output Format
 
-Tabela `Arquivo | Problema | Gravidade | Correção` e três principais.
+Table `File | Issue | Severity | Fix` and the top three findings.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Todo High tem correção concreta
-- [ ] Frescor, todos os `applyTo` e links foram verificados
-- [ ] Sem falso positivo ou sugestão sobre aplicação
+- [ ] Every High finding has a concrete fix
+- [ ] Freshness, all `applyTo` scopes, and links were checked
+- [ ] No false positives or application suggestions
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@tech-lead`. Inventarie `.github/instructions/`, `.github/prompts/` e `.github/agents/`. `applyTo: "**"` ou ausente é High. CODEMAP com mais de 30 dias ou arquivos apagados está desatualizado. Verifique descriptions, resolução de agent, ferramentas mínimas e ausência de modelo fixo. Pesquise paths e links quebrados. Ordene High, Medium, Low e termine com três correções.
+You are `@tech-lead`. Inventory `.github/instructions/`, `.github/prompts/`, and `.github/agents/`. `applyTo: "**"` or a missing scope is High. A CODEMAP older than 30 days or referencing deleted files is stale. Check descriptions, agent resolution, minimal tools, and the absence of a fixed model. Search for broken paths and links. Sort by High, Medium, Low, and finish with three fixes.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /audit-context scope=.github
 ```

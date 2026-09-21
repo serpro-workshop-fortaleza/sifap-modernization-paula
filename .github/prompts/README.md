@@ -4,12 +4,17 @@ This directory contains the GitHub Copilot prompt files for the immersion.
 
 > Important: keep `*.prompt.md` files directly in `.github/prompts/`. Copilot's documented workspace location is flat (`.github/prompts/*.prompt.md`). Filename prefixes and this index represent the organization by stage and persona.
 
+> [!NOTE]
+> Prompt files are slash commands for the VS Code Local agent. Agent Host sessions do not load prompt files. In Agent Host, select the owning custom agent and ask it to read the linked prompt procedure; when a same-named skill exists, invoke that skill directly. The owning agent's `Available Prompts` table is the navigable catalog for both routes.
+
 ## Naming convention
 
 | Prefix | Usage |
 | --- | --- |
 | `stage-<agent>-<task>.prompt.md` | Prompts for stage agents (`archaeologist`, `architect`, `builder`, `evolution`). |
 | `persona-<persona>-<task>.prompt.md` | Prompts for persona kits (`product-owner`, `developer`, `qa-engineer`, etc.). |
+| `<skill-name>.prompt.md` | Local-agent entry point that applies the same-named skill through its owning agent. |
+| `<workflow-name>.prompt.md` | A cross-cutting repository workflow whose name does not belong to one stage or persona. |
 
 ## Stage prompts
 
@@ -35,6 +40,16 @@ This directory contains the GitHub Copilot prompt files for the immersion.
 | DevOps Engineer | `persona-devops-engineer-*.prompt.md` |
 | Technical Writer | `persona-tech-writer-*.prompt.md` |
 
+## Skill and workflow entry prompts
+
+These prompts are linked from the `Available Prompts` table of the agent named in their frontmatter:
+
+- Azure operations: `az-cost-optimize`, `azure-resource-health-diagnose`
+- Java: `create-spring-boot-java-project`, `java-docs`, `java-junit`, `java-springboot`
+- Data: `postgresql-code-review`, `postgresql-optimization`
+- Testing and documentation: `playwright-generate-test`, `comment-code-generate-a-tutorial`
+- Requirements workflow: `gen-specs-as-issues`
+
 ## Maintenance rules
 
 - Every prompt must have valid YAML frontmatter.
@@ -44,4 +59,4 @@ This directory contains the GitHub Copilot prompt files for the immersion.
 - Prefer portable VS Code aliases (`read`, `search`, `edit`, `execute`, `agent`, `web`, `todo`) over implementation-specific IDs.
 - Do not specify capacity or provider in the prompt. The user decides how to execute the task.
 - When using a custom agent, reference its `name` in `.github/agents/` (for example, `archaeologist`, not the display name in the file body).
-- When adding a prompt, use one of the prefixes above to preserve discoverability and organization.
+- When adding a prompt, follow one of the naming forms above and add it to the owning agent's `Available Prompts` table. The primitive regression suite rejects assigned prompts that are not listed by their owner.

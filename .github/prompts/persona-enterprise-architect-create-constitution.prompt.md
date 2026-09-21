@@ -1,148 +1,148 @@
 ---
 name: "create-constitution"
-description: "Escreva .specify/memory/constitution.md, com as regras numeradas, testáveis e inegociáveis da funcionalidade."
+description: "Write .specify/memory/constitution.md with the feature's numbered, testable, nonnegotiable rules."
 argument-hint: "feature=NNN-feature-name"
 agent: "enterprise-architect"
 tools: ["read", "search", "edit"]
 ---
 # /create-constitution
 
-## Objetivo
+## Objective
 
-Produzir `.specify/memory/constitution.md`: um conjunto curto (≤ 80 linhas) e numerado de regras testáveis e inegociáveis, agrupadas por categoria. Cada regra inclui a consequência de uma violação e uma marcação de mutável ou imutável. ADRs registram decisões. A constituição define os limites que essas decisões não podem ultrapassar.
+Produce `.specify/memory/constitution.md`: a short (≤ 80 lines), numbered set of testable, nonnegotiable rules grouped by category. Each rule includes the consequence of a violation and a mutable or immutable designation. ADRs record decisions. The constitution defines the boundaries those decisions cannot cross.
 
-## Quando usar
+## When to Invoke
 
-No início de uma funcionalidade (ou do projeto), antes que ADRs e especificações dependam de restrições compartilhadas. Execute novamente esta instrução para alterar a constituição por meio do processo documentado.
+At the start of a feature (or project), before ADRs and specifications depend on shared constraints. Run this prompt again to amend the constitution through the documented process.
 
-## Pré-condições
+## Preconditions
 
-- `specs/<NNN>-<feature>/` existe, ou o escopo do projeto foi acordado
-- As restrições organizacionais são conhecidas (linha de base de segurança, uso exclusivo do Azure, OWASP Top 10 e LGPD)
-- Qualquer constituição superior que deva ser herdada está identificada
+- `specs/<NNN>-<feature>/` exists, or the project scope has been agreed
+- Organizational constraints are known (security baseline, Azure-only, OWASP Top 10, and LGPD)
+- Any parent constitution to inherit is identified
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `feature=<NNN>-<feature>` (ou `project`)
-- As restrições organizacionais existentes que devem ser codificadas
-- Qualquer constituição superior que deva ser herdada
-- As pessoas responsáveis pela aprovação, identificadas nominalmente (Arquiteto Corporativo, Líder Técnico e equipe de segurança da informação, ou InfoSec)
-- Solicite à pessoa usuária qualquer informação ausente.
+- `feature=<NNN>-<feature>` (or `project`)
+- The existing organizational constraints to codify
+- Any parent constitution to inherit
+- Named approvers (Enterprise Architect, Technical Lead, and the information security team, or InfoSec)
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Herdarei a constituição superior e a adaptarei com uma justificativa explícita
-- Agruparei as regras em Pilha, Segurança, Dados, Operações, Processo e Conformidade
-- Tornarei cada regra testável e atribuirei um ID (`C1`, `C2`, …)
-- Declararei a consequência da violação de cada regra
-- Marcarei cada regra como mutável (pode ser flexibilizada por ADR com aprovação da InfoSec) ou imutável
-- Registrarei a data, aplicarei versionamento semântico (semver) e identificarei as pessoas responsáveis pela aprovação
-- Manterei o arquivo com no máximo 80 linhas
+- Inherit the parent constitution and tailor it with an explicit justification
+- Group rules into Stack, Security, Data, Operations, Process, and Compliance
+- Make each rule testable and assign an ID (`C1`, `C2`, …)
+- State the consequence of violating each rule
+- Mark each rule as mutable (can be relaxed by an ADR with InfoSec approval) or immutable
+- Record the date, apply semantic versioning (semver), and identify approvers
+- Keep the file to at most 80 lines
 
-## O que não farei
+## What I Will NOT Do
 
-- Escrever princípios ("valorizamos a qualidade") em vez de regras ("somente Java 21")
-- Emitir uma regra sem ID ou consequência de violação
-- Ultrapassar 80 linhas. Uma constituição que ninguém consegue lembrar não funciona
-- Inventar uma restrição organizacional ou uma pessoa responsável pela aprovação. Perguntarei à equipe
-- Decidir uma escolha específica de projeto. Essa decisão deve ser registrada em um ADR por meio de `/create-adr`
+- Write principles ("we value quality") instead of rules ("Java 21 only")
+- Emit a rule without an ID or violation consequence
+- Exceed 80 lines. A constitution nobody can remember does not work
+- Invent an organizational constraint or an approver. I will ask the team
+- Decide a specific design choice. That decision must be recorded in an ADR through `/create-adr`
 
-## Formato da saída
+## Output Format
 
-A entrega é `.specify/memory/constitution.md`:
+The deliverable is `.specify/memory/constitution.md`:
 
 ```markdown
-# CONSTITUIÇÃO: 001-pagamento-beneficio
+# CONSTITUTION: 001-pagamento-beneficio
 
-- **Versão**: 1.0.0
-- **Data**: 2026-04-29
-- **Responsáveis pela aprovação**: @paula (Arquiteto Corporativo), @morgan (Líder Técnico), @infosec-lead
-- **Escopo**: regras aplicáveis a esta funcionalidade
+- **Version**: 1.0.0
+- **Date**: 2026-04-29
+- **Approvers**: @paula (Enterprise Architect), @morgan (Technical Lead), @infosec-lead
+- **Scope**: rules applicable to this feature
 
-## 1. Pilha
-| ID | Regra | Consequência |
+## 1. Stack
+| ID | Rule | Consequence |
 |---|---|---|
-| C1 | A camada de serviços é executada somente em Java 21 (Temurin) e Spring Boot 3.3. | A compilação falha. |
-| C2 | A interface acessada pelo navegador é executada em Next.js 15 com TypeScript `strict: true`. `any` é proibido. | A análise estática impede a integração. |
-| C3 | PostgreSQL 16 é o único sistema de registro dos dados do SIFAP. | Exige uma exceção da InfoSec. |
+| C1 | The backend runs only on Java 21 (Temurin) and Spring Boot 3.3. | The build fails. |
+| C2 | The frontend runs on Next.js 15 with TypeScript `strict: true`. `any` is prohibited. | Static analysis blocks merging. |
+| C3 | PostgreSQL 16 is the only system of record for SIFAP data. | Requires an InfoSec exception. |
 
-## 2. Segurança
-| ID | Regra | Consequência |
+## 2. Security
+| ID | Rule | Consequence |
 |---|---|---|
-| C4 | A autenticação entre serviços usa Azure Managed Identity (identidade gerenciada do Azure). Segredos de cliente são proibidos no código e na configuração. | A solicitação de integração (PR) é bloqueada. |
-| C5 | Os segredos são lidos do Azure Key Vault (cofre de chaves do Azure) no ambiente de execução. É proibido versionar `.env`. | O Gitleaks impede a integração. |
-| C6 | Linha de base OWASP Top 10: validação de entradas, SQL parametrizado e proibição de consultas construídas por concatenação de strings. | A solicitação de integração (PR) é rejeitada. |
+| C4 | Service-to-service authentication uses Azure Managed Identity. Client secrets are prohibited in code and configuration. | The pull request (PR) is blocked. |
+| C5 | Secrets are read from Azure Key Vault at runtime. Committing `.env` is prohibited. | Gitleaks blocks merging. |
+| C6 | OWASP Top 10 baseline: input validation, parameterized SQL, and no queries built by string concatenation. | The pull request (PR) is rejected. |
 
-## 3. Dados
-| ID | Regra | Consequência |
+## 3. Data
+| ID | Rule | Consequence |
 |---|---|---|
-| C7 | As colunas com informações de identificação pessoal (PII) contêm um `COMMENT` que as identifica como PII. | A revisão da administração de banco de dados (DBA) impede o avanço. |
-| C8 | PII de produção são proibidas em `dev` ou `stage`. Use somente dados sintéticos. | A InfoSec registra uma constatação e exige reversão imediata. |
+| C7 | Columns with personally identifiable information (PII) contain a `COMMENT` identifying them as PII. | The database administrator (DBA) review blocks progress. |
+| C8 | Production PII is prohibited in `dev` or `stage`. Use synthetic data only. | InfoSec records a finding and requires immediate rollback. |
 
-## 4. Operações
-| ID | Regra | Consequência |
+## 4. Operations
+| ID | Rule | Consequence |
 |---|---|---|
-| C9 | Cada ponto de extremidade público emite um registro estruturado com `requestId`, `userId` e `latencyMs`. | A revisão de código impede o avanço. |
-| C10 | Cada ponto de extremidade voltado à pessoa usuária tem um objetivo de nível de serviço (SLO) registrado em um `REQ-OPS-*`. | A revisão da especificação impede o avanço. |
+| C9 | Each public endpoint emits a structured log with `requestId`, `userId`, and `latencyMs`. | Code review blocks progress. |
+| C10 | Each user-facing endpoint has a service-level objective (SLO) recorded in a `REQ-OPS-*`. | Specification review blocks progress. |
 
-## 5. Processo
-| ID | Regra | Consequência |
+## 5. Process
+| ID | Rule | Consequence |
 |---|---|---|
-| C11 | Use uma ramificação por item de trabalho, criada a partir de `develop` com o prefixo do papel definido em `00-GIT-WORKFLOW.md` (`spec/`, `impl/`, `infra/`, `docs/`, `agent/`). Confirmações diretas em `develop` ou `main` são proibidas. | A solicitação de integração (PR) é rejeitada. |
-| C12 | Cada requisito usa a notação EARS e cada teste cita um `REQ-ID`. | A revisão da especificação impede o avanço. |
+| C11 | Use one branch per work item, created from `develop` with the role prefix defined in `00-GIT-WORKFLOW.md` (`spec/`, `impl/`, `infra/`, `docs/`, `agent/`). Direct commits to `develop` or `main` are prohibited. | The pull request (PR) is rejected. |
+| C12 | Each requirement uses EARS notation and each test cites a `REQ-ID`. | Specification review blocks progress. |
 
-## 6. Conformidade
-| ID | Regra | Consequência |
+## 6. Compliance
+| ID | Rule | Consequence |
 |---|---|---|
-| C13 | Os pontos de extremidade de direitos do titular previstos na LGPD (leitura, exclusão e exportação) têm cobertura de `REQ-COMP-*`. | A revisão de conformidade impede a liberação. |
+| C13 | LGPD data subject rights endpoints (read, delete, and export) are covered by `REQ-COMP-*`. | Compliance review blocks release. |
 
-## 7. Mutáveis e imutáveis
-- Mutáveis (podem ser flexibilizadas por ADR com aprovação da InfoSec): C9–C12.
-- Imutáveis (exigem mudança constitucional): C1, C3, C4, C5, C6, C7, C8, C13.
+## 7. Mutable and immutable
+- Mutable (can be relaxed by an ADR with InfoSec approval): C9–C12.
+- Immutable (require a constitutional amendment): C1, C3, C4, C5, C6, C7, C8, C13.
 
-## 8. Processo de alteração
-Abra uma solicitação de integração (PR) para este arquivo. O fórum de arquitetura faz a revisão e incrementa a versão (`1.0.0` -> `1.1.0` secundária, `-> 2.0.0` principal). As novas pessoas responsáveis registram a aprovação.
+## 8. Amendment process
+Open a pull request (PR) for this file. The architecture board reviews it and increments the version (`1.0.0` -> `1.1.0` minor, `-> 2.0.0` major). The new approvers record their approval.
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] O arquivo tem ≤ 80 linhas, sem contar as assinaturas
-- [ ] Cada regra tem um ID e uma consequência de violação
-- [ ] Existe pelo menos uma regra por categoria (Pilha, Segurança, Dados, Operações, Processo e Conformidade)
-- [ ] A distinção entre mutável e imutável está declarada
-- [ ] O processo de alteração está documentado
-- [ ] A constituição herda de uma constituição superior quando ela existe
-- [ ] As pessoas responsáveis pela aprovação, a data e uma versão conforme o versionamento semântico estão registradas
+- [ ] The file has ≤ 80 lines, excluding signatures
+- [ ] Each rule has an ID and a violation consequence
+- [ ] There is at least one rule per category (Stack, Security, Data, Operations, Process, and Compliance)
+- [ ] The distinction between mutable and immutable is stated
+- [ ] The amendment process is documented
+- [ ] The constitution inherits from a parent constitution when one exists
+- [ ] Approvers, the date, and a semantic version are recorded
 
-## Corpo do prompt
+## Prompt Body
 
-Você atua como Arquiteto Corporativo (`@enterprise-architect`). A equipe precisa fixar os limites antes que as decisões e o código dependam deles.
+You are the Enterprise Architect (`@enterprise-architect`). The team needs to establish boundaries before decisions and code depend on them.
 
-**Etapa 1: herde e adapte.**
-Comece pela constituição no nível do projeto. Torne-a mais ou menos restritiva somente para esta funcionalidade, com uma justificativa explícita.
+**Step 1: inherit and tailor.**
+Start from the project-level constitution. Make it more or less restrictive only for this feature, with an explicit justification.
 
-**Etapa 2: agrupe as regras por categoria.**
-Use Pilha, Segurança, Dados, Operações, Processo e Conformidade.
+**Step 2: group rules by category.**
+Use Stack, Security, Data, Operations, Process, and Compliance.
 
-**Etapa 3: torne cada regra testável.**
-"Use Java 21" é testável (`mvnw --version`); "use Java moderna" não é.
+**Step 3: make each rule testable.**
+"Use Java 21" is testable (`mvnw --version`); "use modern Java" is not.
 
-**Etapa 4: numere as regras.**
-Use `C1`, `C2`, … para que as pessoas responsáveis pela revisão possam citá-las.
+**Step 4: number the rules.**
+Use `C1`, `C2`, … so reviewers can cite them.
 
-**Etapa 5: declare a consequência.**
-Use "A compilação falha", "A solicitação de integração é rejeitada" ou "Exige uma exceção da InfoSec". Nunca omita a consequência.
+**Step 5: state the consequence.**
+Use "The build fails", "The pull request is rejected", or "Requires an InfoSec exception". Never omit the consequence.
 
-**Etapa 6: marque como mutável ou imutável.**
-Algumas regras podem ser flexibilizadas por meio de um ADR com aprovação da InfoSec. Outras exigem uma nova constituição.
+**Step 6: mark as mutable or immutable.**
+Some rules can be relaxed through an ADR with InfoSec approval. Others require a new constitution.
 
-**Etapa 7: registre data, versão e aprovações.**
-Registre a data do fórum, as pessoas responsáveis pela aprovação e a versão `1.0.0`. Incremente a versão somente quando a própria constituição mudar.
+**Step 7: record the date, version, and approvals.**
+Record the board date, approvers, and version `1.0.0`. Increment the version only when the constitution itself changes.
 
-Mantenha somente regras, não princípios, e limite o arquivo a 80 linhas. Uma escolha específica de projeto pertence a um ADR criado por meio de `/create-adr`, não a uma regra constitucional.
+Keep only rules, not principles, and limit the file to 80 lines. A specific design choice belongs in an ADR created through `/create-adr`, not a constitutional rule.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /create-constitution feature=001-pagamento-beneficio
 ```

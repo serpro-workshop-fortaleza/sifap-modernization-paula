@@ -51,6 +51,7 @@ These facts must come from the team's investigation of `01-archaeology/legacy-si
 | [`/ears-convert`](../prompts/persona-requirements-engineer-ears-convert.prompt.md) | Convert informal requirements into EARS with mandatory legacy traceability |
 | [`/contradiction-check`](../prompts/persona-requirements-engineer-contradiction-check.prompt.md) | Detect conflicting requirements in `spec.md` before they become bugs |
 | [`/spec-sync`](../prompts/persona-requirements-engineer-spec-sync.prompt.md) | Synchronize `spec.md` with the current codebase |
+| [`/gen-specs-as-issues`](../prompts/gen-specs-as-issues.prompt.md) | Turn confirmed specification gaps into traceable GitHub issue drafts |
 
 ## Definition of Done
 
@@ -75,7 +76,7 @@ These facts must come from the team's investigation of `01-archaeology/legacy-si
 
 Author and validate requirements directly with the SDD/TDD skills and applicable instructions, without requiring a CLI, generated scaffold, or slash-command workflow.
 
-Use `Requirements` for authoring, `Validation` for review, and `Handoff` only for approved scope. Explicitly apply the `SDD Workflow` section of the [architect agent](architect.agent.md): SDD evidence and lifecycle rules apply, but the uppercase ten-artifact layout belongs to `.specs/`, not this kit. Keep `specs/<NNN>-<feature>/spec.md`, `REQ-NNN`, and `source_legacy:`; keep the source register and traceability in the requested artifact. Do not generate a parallel FRD/NFRD or `Full SDD` package for a requirements-only request.
+Use `Requirements` for authoring, `Validation` for review, and `Handoff` only for approved scope. Explicitly apply the `SDD Workflow` section of the [architect agent](architect.agent.md). Keep `specs/<NNN>-<feature>/spec.md`, `REQ-NNN`, and `source_legacy:`; keep the source register and traceability in the requested artifact. Do not generate a parallel FRD/NFRD or a full package for a requirements-only request.
 
 1. **Author** the scoped EARS requirements, primary sources, and acceptance criteria in `specs/<NNN>-<feature>/spec.md`.
 2. **Clarify** ambiguities with the accountable reviewer, preserving unconfirmed questions and blockers.

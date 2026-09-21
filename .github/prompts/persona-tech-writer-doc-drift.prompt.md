@@ -1,53 +1,53 @@
 ---
 name: "doc-drift"
-description: "Detecte divergências entre a documentação do SIFAP 2.0 e o código atual e informe correções priorizadas com linhas e ajustes exatos."
+description: "Detect drift between SIFAP 2.0 documentation and current code, and report prioritized fixes with exact lines and corrections."
 argument-hint: "docs=<paths> code=<paths> horizon=since-release|all"
 agent: "tech-writer"
 tools: ["search"]
 ---
 # /doc-drift
 
-## Objetivo
+## Objective
 
-Auditar divergências entre documentação e código e propor correções com arquivo, linha, realidade e ajuste, sem editar silenciosamente.
+Audit documentation-to-code drift and propose corrections with file, line, actual behavior, and fix, without silently editing.
 
-## Quando usar
+## When to Invoke
 
-Antes de release, após integrações ou periodicamente.
+Before a release, after integrations, or periodically.
 
-## Pré-condições
+## Preconditions
 
-- Documentos e código existem
-- [`DOC-STYLE-GUIDE.md`](../../docs/DOC-STYLE-GUIDE.md) é o padrão
+- Documents and code exist
+- [`DOC-STYLE-GUIDE.md`](../../docs/DOC-STYLE-GUIDE.md) is the standard
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Documentos, código, horizonte e merges recentes
+- Documents, code, time horizon, and recent merges
 
-## O que farei
+## What I Will Do
 
-- Verificarei arquivos, rotas, tabelas, configuração, comandos, versões, REQ-IDs, linhagem e ADRs
-- Classificarei Critical, Major ou Minor e aplicarei [`doc-style-lint`](../skills/doc-style-lint/SKILL.md)
+- Check files, routes, tables, configuration, commands, versions, REQ-IDs, lineage, and ADRs
+- Classify findings as Critical, Major, or Minor and apply [`doc-style-lint`](../skills/doc-style-lint/SKILL.md)
 
-## O que não farei
+## What I Will NOT Do
 
-- Editar sem aprovação, relatar sem linha, inflar gravidade, inventar Natural ou sugerir pragma markdownlint
+- Edit without approval, report without a line number, inflate severity, invent Natural behavior, or suggest a markdownlint pragma
 
-## Formato da saída
+## Output Format
 
-Resumo e tabelas `nº | Arquivo | Linha | Declaração | Realidade | Correção`, mais agrupamento recomendado de PRs.
+Summary and tables `No. | File | Line | Statement | Reality | Correction`, plus recommended PR grouping.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Cada item tem linha, correção e gravidade
-- [ ] ADRs e linhagem foram verificados; problemas transversais foram agrupados
+- [ ] Each item has a line number, correction, and severity
+- [ ] ADRs and lineage were checked; cross-cutting issues were grouped
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@tech-writer`. Extraia afirmações verificáveis. Compare rotas com controladores, schemas com `db/migration/`, configuração com `application.yml` e comandos com manifests e Actions. Critical impede execução; Major engana; Minor afeta terminologia ou exemplo. Valide mapeamentos Natural apenas pela evidência citada. ADR Accepted não refletido no código é Critical. Ignore `docs/archive/`. Exponha e proponha; não reescreva.
+You are `@tech-writer`. Extract verifiable claims. Compare routes with controllers, schemas with `db/migration/`, configuration with `application.yml`, and commands with manifests and Actions. Critical prevents execution; Major misleads; Minor affects terminology or an example. Validate Natural mappings only through cited evidence. An Accepted ADR not reflected in code is Critical. Ignore `docs/archive/`. Expose and propose; do not rewrite.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /doc-drift docs=README.md,docs/CODEMAP.md code=backend/,frontend/ horizon=all
 ```

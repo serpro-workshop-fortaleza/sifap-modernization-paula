@@ -1,85 +1,89 @@
 ---
 name: "az-cost-optimize"
-description: "Analise recursos do Azure e IaC Terraform para reduzir custos e abra issues de acompanhamento no GitHub, delegando o fluxo de trabalho à skill az-cost-optimize."
+description: "Analyze Azure resources and Terraform IaC to reduce costs and open tracking issues on GitHub, delegating the workflow to the az-cost-optimize skill."
 argument-hint: "rg=<resource-group> repo=<owner/name>"
 agent: "devops-engineer"
-tools: ["read", "search", "execute"]
+tools: ["read", "search", "execute", "Azure MCP Server/*", "github/*"]
 ---
 # /az-cost-optimize
 
-## Objetivo
+## Objective
 
-Analisar os recursos implantados no Azure e a respectiva IaC Terraform, produzir recomendações de otimização de custos baseadas em evidências e abrir uma issue no GitHub para cada oportunidade, além de uma EPIC de coordenação. O fluxo de trabalho completo está na skill [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md). Este prompt o aplica ao kit SIFAP 2.0 sem repeti-lo.
+Analyze deployed Azure resources and their Terraform IaC, produce evidence-based cost optimization recommendations, and open a GitHub issue for each opportunity plus a coordinating EPIC. The complete workflow is in the [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md) skill. This prompt applies it to the SIFAP 2.0 kit without repeating it.
 
 > [!IMPORTANT]
-> A IaC do kit usa somente Terraform. Considere as referências da skill a Bicep/ARM fora do escopo e nunca abra uma issue sobre uma economia que não esteja respaldada por preços validados.
+> The kit's IaC uses Terraform only. Treat the skill's Bicep/ARM references as out of scope and never open an issue about savings that are not supported by validated pricing.
 
-## Quando usar
+## When to Invoke
 
-Durante a Etapa 4 (Evolução), depois que a equipe provisionar recursos do Azure e quiser acompanhar reduções de custos como issues do GitHub.
+During Stage 4 (Evolution), after the team provisions Azure resources and wants to track cost reductions as GitHub issues.
 
-## Pré-condições
+## Preconditions
 
-- A equipe está autenticada no Azure e no repositório GitHub de destino
-- O Terraform do sistema moderno existe em `infra/` (criado pela equipe nas Etapas 3 ou 4)
-- O grupo de recursos e a assinatura de destino são conhecidos
+- The team is authenticated to Azure and the target GitHub repository
+- The `Azure MCP Server/*` and `github/*` toolsets are available; for a cloud coding agent, configure Azure MCP through the supported `azd coding-agent config` workflow
+- Terraform for the modern system exists in `infra/` (created by the team in Stages 3 or 4)
+- The target resource group and subscription are known
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `rg`: o grupo de recursos do Azure de destino
-- `repo`: o `owner/name` do repositório GitHub das issues
-- Solicite à pessoa usuária qualquer informação ausente.
+- `rg`: the target Azure resource group
+- `repo`: the `owner/name` of the GitHub repository for the issues
+- Ask the user for any missing information.
 
-## O que farei
+## What I Will Do
 
-- Seguirei o fluxo de descoberta, métricas e recomendações da skill [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md)
-- Lerei somente o Terraform em `infra/` como fonte da verdade da IaC
-- Validarei cada custo atual e custo-alvo nos preços do Azure antes de recomendar
-- Abrirei uma issue no GitHub para cada otimização e uma EPIC, usando a CLI `gh`
+- Follow the discovery, metrics, and recommendations workflow in the [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md) skill
+- Read only Terraform in `infra/` as the IaC source of truth
+- Validate each current and target cost against Azure pricing before recommending
+- After explicit confirmation, search for duplicates and create one GitHub issue per optimization plus a coordinating epic with GitHub tools
 
-## O que não farei
+## What I Will NOT Do
 
-- Analisar templates Bicep ou ARM, pois estão fora do escopo deste kit
-- Inventar recursos ou economias quando não houver Terraform; informarei a situação e interromperei o trabalho
-- Abrir issues antes de a equipe confirmar o resumo
-- Recomendar uma alteração sem evidências validadas e sem considerar a reversão
+- Analyze Bicep or ARM templates, as they are outside this kit's scope
+- Invent resources or savings when Terraform is missing; I will report the situation and stop
+- Open issues before the team confirms the summary
+- Recommend a change without validated evidence and consideration of rollback
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### Resumo
-Recursos analisados: 7 · Atual: $X/mês · Economia potencial: $Y/mês · Oportunidades: 4
+### Summary
+Resources analyzed: <observed count>
+Current estimate: <amount and currency/month>
+Potential savings: <validated amount and currency/month>
+Opportunities: <evidence-backed count>
 
-### Issues a criar
-- [COST-OPT] Plano do App Service S3 → B2 — $X/mês (baixo risco)
-- [EPIC] Otimização de custos do Azure — potencial de $Y/mês
+### Issues to create
+- [COST-OPT] <resource> — <validated amount and currency/month> (<evidence-backed risk>)
+- [EPIC] Azure cost optimization — <validated amount and currency/month> potential savings
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Toda economia foi validada em relação ao SKU/nível do recurso e aos preços do Azure
-- [ ] As recomendações referenciam o Terraform em `infra/`, não Bicep/ARM
-- [ ] Uma issue por oportunidade e uma EPIC foram criadas via `gh` após a confirmação
-- [ ] Cada issue contém evidências, risco e etapas de validação
+- [ ] All savings have been validated against the resource SKU/tier and Azure pricing
+- [ ] Recommendations reference Terraform in `infra/`, not Bicep/ARM
+- [ ] One issue per opportunity and an epic have been created with GitHub tools after confirmation, with returned URLs recorded
+- [ ] Each issue contains evidence, risk, and validation steps
 
-## Corpo do prompt
+## Prompt Body
 
-A skill [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md) define o procedimento de descoberta, métricas, pontuação e criação de issues. Leia-a e aplique-a ao grupo de recursos de destino.
+The [`az-cost-optimize`](../skills/az-cost-optimize/SKILL.md) skill defines the discovery, metrics, scoring, and issue creation procedure. Read it and apply it to the target resource group.
 
-**Etapa 1 — Descobrir.**
-Enumere os recursos em `rg` e leia o Terraform em `infra/` como configuração pretendida.
+**Step 1 — Discover.**
+List the resources in `rg` and read Terraform in `infra/` as the intended configuration.
 
-**Etapa 2 — Aplicar a skill.**
-Colete métricas de uso, valide os custos atuais e gere recomendações pontuadas conforme a skill.
+**Step 2 — Apply the skill.**
+Collect usage metrics, validate current costs, and generate scored recommendations according to the skill.
 
-**Etapa 3 — Respeitar as regras do kit.**
-Ignore Bicep/ARM. Se não houver Terraform, informe e interrompa o trabalho. Mantenha o GitHub como fonte da verdade.
+**Step 3 — Follow the kit's rules.**
+Ignore Bicep/ARM. If Terraform is missing, report it and stop. Keep GitHub as the source of truth.
 
-**Etapa 4 — Confirmar e criar.**
-Apresente o resumo, aguarde a aprovação e abra as issues e a EPIC com `gh`.
+**Step 4 — Confirm and create.**
+Present the evidence-backed summary and wait for explicit approval. Use GitHub tools to identify the authenticated user and repository, search for duplicate open issues, list issue types for an organization repository, and create the approved issues and epic. Record returned URLs. If either toolset is unavailable, report the workflow as blocked; do not substitute unsupported estimates or claim issue creation.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /az-cost-optimize rg=sifap-prod-rg repo=my-org/sifap-2
 ```

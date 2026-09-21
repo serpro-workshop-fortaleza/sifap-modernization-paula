@@ -1,116 +1,116 @@
-# Bibliotecas de formas do draw.io
+# draw.io shape libraries
 
-Guia de referência para todas as bibliotecas de formas integradas. Habilite-as em `View > Shapes` ("Exibir > Formas") no editor draw.io ou no painel de formas da extensão do VS Code.
+Reference guide to all built-in shape libraries. Enable them under `View > Shapes` in the draw.io editor or in the VS Code extension's shapes panel.
 
 ---
 
-## Catálogo de bibliotecas
+## Library catalog
 
-### Geral
+### General
 
-**Habilitação**: sempre ativa por padrão
+**Enable**: always active by default
 
-Formas comuns para qualquer tipo de diagrama.
+Common shapes for any diagram type.
 
-| Forma | Chave de estilo | Uso |
+| Shape | Style key | Usage |
 | ------- | ----------- | --------- |
-| Retângulo | *(padrão)* | Caixas, etapas, componentes |
-| Retângulo arredondado | `rounded=1;` | Caixas de processo mais suaves |
-| Elipse | `ellipse;` | Estados, início/fim |
-| Triângulo | `triangle;` | Setas, portas |
-| Losango | `rhombus;` | Decisões |
-| Hexágono | `shape=hexagon;` | Rótulos, ícones técnicos |
-| Nuvem | `shape=cloud;` | Serviços de nuvem |
-| Cilindro | `shape=cylinder3;` | Bancos de dados |
-| Nota | `shape=note;` | Anotações |
-| Documento | `shape=document;` | Arquivos |
-| Formas de seta | Vários `mxgraph.arrows2.*` | Direções do fluxo |
-| Chamadas | `shape=callout;` | Balões de fala |
+| Rectangle | *(default)* | Boxes, steps, components |
+| Rounded rectangle | `rounded=1;` | Softer process boxes |
+| Ellipse | `ellipse;` | States, start/end |
+| Triangle | `triangle;` | Arrows, gates |
+| Diamond | `rhombus;` | Decisions |
+| Hexagon | `shape=hexagon;` | Labels, technical icons |
+| Cloud | `shape=cloud;` | Cloud services |
+| Cylinder | `shape=cylinder3;` | Databases |
+| Note | `shape=note;` | Annotations |
+| Document | `shape=document;` | Files |
+| Arrow shapes | Various `mxgraph.arrows2.*` | Flow directions |
+| Callouts | `shape=callout;` | Speech bubbles |
 
 ---
 
-### Fluxograma
+### Flowchart
 
-**Habilitação**: `View > Shapes > Flowchart`
-**Prefixo da forma**: `mxgraph.flowchart.`
+**Enable**: `View > Shapes > Flowchart`
+**Shape prefix**: `mxgraph.flowchart.`
 
-Símbolos-padrão de fluxograma ANSI/ISO.
+Standard ANSI/ISO flowchart symbols.
 
-| Símbolo | String de estilo | Nome ANSI |
+| Symbol | Style string | ANSI name |
 | -------- | ------------- | ----------- |
-| Início / Fim | `ellipse;` | Terminal |
-| Processo (retângulo) | `rounded=1;` | Processo |
-| Decisão | `rhombus;` | Decisão |
-| E/S (paralelogramo) | `shape=mxgraph.flowchart.io;` | Dados |
-| Processo predefinido | `shape=mxgraph.flowchart.predefined_process;` | Processo predefinido |
-| Operação manual | `shape=mxgraph.flowchart.manual_operation;` | Operação manual |
-| Entrada manual | `shape=mxgraph.flowchart.manual_input;` | Entrada manual |
-| Banco de dados | `shape=mxgraph.flowchart.database;` | Armazenamento de acesso direto |
-| Documento | `shape=mxgraph.flowchart.document;` | Documento |
-| Vários documentos | `shape=mxgraph.flowchart.multi-document;` | Vários documentos |
-| Conector na página | `ellipse;` (pequeno, 30×30) | Conector |
-| Conector fora da página | `shape=mxgraph.flowchart.off_page_connector;` | Conector fora da página |
-| Preparação | `shape=mxgraph.flowchart.preparation;` | Preparação |
-| Atraso | `shape=mxgraph.flowchart.delay;` | Atraso |
-| Exibição | `shape=mxgraph.flowchart.display;` | Exibição |
-| Armazenamento interno | `shape=mxgraph.flowchart.internal_storage;` | Armazenamento interno |
-| Ordenação | `shape=mxgraph.flowchart.sort;` | Ordenação |
-| Extração | `shape=mxgraph.flowchart.extract;` | Extração |
-| Mesclagem | `shape=mxgraph.flowchart.merge;` | Mesclagem |
-| Ou | `shape=mxgraph.flowchart.or;` | Ou |
-| Anotação | `shape=mxgraph.flowchart.annotation;` | Anotação |
-| Cartão | `shape=mxgraph.flowchart.card;` | Cartão perfurado |
+| Start / End | `ellipse;` | Terminal |
+| Process (rectangle) | `rounded=1;` | Process |
+| Decision | `rhombus;` | Decision |
+| I/O (parallelogram) | `shape=mxgraph.flowchart.io;` | Data |
+| Predefined process | `shape=mxgraph.flowchart.predefined_process;` | Predefined process |
+| Manual operation | `shape=mxgraph.flowchart.manual_operation;` | Manual operation |
+| Manual input | `shape=mxgraph.flowchart.manual_input;` | Manual input |
+| Database | `shape=mxgraph.flowchart.database;` | Direct access storage |
+| Document | `shape=mxgraph.flowchart.document;` | Document |
+| Multiple documents | `shape=mxgraph.flowchart.multi-document;` | Multiple documents |
+| On-page connector | `ellipse;` (small, 30×30) | Connector |
+| Off-page connector | `shape=mxgraph.flowchart.off_page_connector;` | Off-page connector |
+| Preparation | `shape=mxgraph.flowchart.preparation;` | Preparation |
+| Delay | `shape=mxgraph.flowchart.delay;` | Delay |
+| Display | `shape=mxgraph.flowchart.display;` | Display |
+| Internal storage | `shape=mxgraph.flowchart.internal_storage;` | Internal storage |
+| Sort | `shape=mxgraph.flowchart.sort;` | Sort |
+| Extract | `shape=mxgraph.flowchart.extract;` | Extract |
+| Merge | `shape=mxgraph.flowchart.merge;` | Merge |
+| Or | `shape=mxgraph.flowchart.or;` | Or |
+| Annotation | `shape=mxgraph.flowchart.annotation;` | Annotation |
+| Card | `shape=mxgraph.flowchart.card;` | Punched card |
 
-**Strings de estilo completas de exemplo para fluxogramas:**
+**Example complete style strings for flowcharts:**
 
 ```text
-Processo:         rounded=1;whiteSpace=wrap;html=1;
-Decisão:          rhombus;whiteSpace=wrap;html=1;
-Início/Fim:       ellipse;whiteSpace=wrap;html=1;
-Banco de dados:   shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;
-Documento:        shape=mxgraph.flowchart.document;whiteSpace=wrap;html=1;
-E/S (Dados):      shape=mxgraph.flowchart.io;whiteSpace=wrap;html=1;
+Process:          rounded=1;whiteSpace=wrap;html=1;
+Decision:         rhombus;whiteSpace=wrap;html=1;
+Start/End:        ellipse;whiteSpace=wrap;html=1;
+Database:         shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;
+Document:         shape=mxgraph.flowchart.document;whiteSpace=wrap;html=1;
+I/O (Data):       shape=mxgraph.flowchart.io;whiteSpace=wrap;html=1;
 ```
 
 ---
 
 ### UML
 
-**Habilitação**: `View > Shapes > UML`
+**Enable**: `View > Shapes > UML`
 
-#### Diagramas de caso de uso
+#### Use case diagrams
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Ator | `shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;` |
-| Caso de uso (elipse) | `ellipse;whiteSpace=wrap;html=1;` |
-| Limite do sistema | `swimlane;startSize=30;whiteSpace=wrap;html=1;` |
+| Actor | `shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;` |
+| Use case (ellipse) | `ellipse;whiteSpace=wrap;html=1;` |
+| System boundary | `swimlane;startSize=30;whiteSpace=wrap;html=1;` |
 
-#### Diagramas de classes
+#### Class diagrams
 
-Use contêineres de raias (`swimlane`) para caixas de classe:
+Use lane containers (`swimlane`) for class boxes:
 
 ```xml
-<!-- Contêiner da classe -->
+<!-- Class container -->
 <mxCell value="«interface»&#xa;IOrderService"
         style="swimlane;fontStyle=1;align=center;startSize=30;whiteSpace=wrap;html=1;"
         vertex="1" parent="1">
   <mxGeometry x="200" y="100" width="200" height="160" as="geometry" />
 </mxCell>
 
-<!-- Atributos (filhos da classe) -->
+<!-- Attributes (children of the class) -->
 <mxCell value="+ id: string&#xa;+ status: string"
         style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;html=1;"
         vertex="1" parent="classId">
   <mxGeometry y="30" width="200" height="60" as="geometry" />
 </mxCell>
 
-<!-- Linha separadora dos métodos -->
+<!-- Method separator line -->
 <mxCell value="" style="line;strokeWidth=1;fillColor=none;" vertex="1" parent="classId">
   <mxGeometry y="90" width="200" height="10" as="geometry" />
 </mxCell>
 
-<!-- Métodos (filhos da classe) -->
+<!-- Methods (children of the class) -->
 <mxCell value="+ create(): Order&#xa;+ cancel(): void"
         style="text;strokeColor=none;fillColor=none;align=left;verticalAlign=top;spacingLeft=4;overflow=hidden;html=1;"
         vertex="1" parent="classId">
@@ -118,166 +118,166 @@ Use contêineres de raias (`swimlane`) para caixas de classe:
 </mxCell>
 ```
 
-#### Setas de relacionamento UML
+#### UML relationship arrows
 
-| Relacionamento | String de estilo |
+| Relationship | Style string |
 | ------------- | ------------- |
-| Herança (extends) | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;` |
-| Implementação (implements) | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;` |
-| Associação | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;` |
-| Dependência | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=open;endFill=0;` |
-| Agregação | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=0;endArrow=none;` |
-| Composição | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=1;endArrow=none;` |
+| Inheritance (extends) | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;` |
+| Implementation (implements) | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;` |
+| Association | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;` |
+| Dependency | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=open;endFill=0;` |
+| Aggregation | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=0;endArrow=none;` |
+| Composition | `edgeStyle=orthogonalEdgeStyle;html=1;startArrow=diamond;startFill=1;endArrow=none;` |
 
-#### Diagrama de componentes
+#### Component diagram
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Componente | `shape=component;align=left;spacingLeft=36;whiteSpace=wrap;html=1;` |
-| Interface (pirulito) | `ellipse;whiteSpace=wrap;html=1;aspect=fixed;` (círculo pequeno) |
-| Porta | `shape=mxgraph.uml.port;` |
-| Nó | `shape=mxgraph.uml.node;whiteSpace=wrap;html=1;` |
-| Artefato | `shape=mxgraph.uml.artifact;whiteSpace=wrap;html=1;` |
+| Component | `shape=component;align=left;spacingLeft=36;whiteSpace=wrap;html=1;` |
+| Interface (lollipop) | `ellipse;whiteSpace=wrap;html=1;aspect=fixed;` (small circle) |
+| Port | `shape=mxgraph.uml.port;` |
+| Node | `shape=mxgraph.uml.node;whiteSpace=wrap;html=1;` |
+| Artifact | `shape=mxgraph.uml.artifact;whiteSpace=wrap;html=1;` |
 
-#### Diagramas de sequência
+#### Sequence diagrams
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Ator | `shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;` |
-| Linha de vida (objeto) | `shape=umlLifeline;startSize=40;whiteSpace=wrap;html=1;` |
-| Caixa de ativação | `shape=umlActivation;whiteSpace=wrap;html=1;` |
-| Mensagem síncrona | `edgeStyle=elbowEdgeStyle;elbow=vertical;html=1;endArrow=block;endFill=1;` |
-| Mensagem assíncrona | `edgeStyle=elbowEdgeStyle;elbow=vertical;html=1;endArrow=open;endFill=0;` |
-| Retorno | `edgeStyle=elbowEdgeStyle;elbow=vertical;dashed=1;html=1;endArrow=open;endFill=0;` |
-| Autochamada | `edgeStyle=elbowEdgeStyle;elbow=vertical;exitX=1;exitY=0.3;entryX=1;entryY=0.5;html=1;` |
+| Actor | `shape=mxgraph.uml.actor;whiteSpace=wrap;html=1;` |
+| Lifeline (object) | `shape=umlLifeline;startSize=40;whiteSpace=wrap;html=1;` |
+| Activation box | `shape=umlActivation;whiteSpace=wrap;html=1;` |
+| Synchronous message | `edgeStyle=elbowEdgeStyle;elbow=vertical;html=1;endArrow=block;endFill=1;` |
+| Asynchronous message | `edgeStyle=elbowEdgeStyle;elbow=vertical;html=1;endArrow=open;endFill=0;` |
+| Return | `edgeStyle=elbowEdgeStyle;elbow=vertical;dashed=1;html=1;endArrow=open;endFill=0;` |
+| Self-call | `edgeStyle=elbowEdgeStyle;elbow=vertical;exitX=1;exitY=0.3;entryX=1;entryY=0.5;html=1;` |
 
-#### Diagramas de estados
+#### State diagrams
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Estado inicial (círculo sólido) | `ellipse;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;` |
-| Estado | `rounded=1;whiteSpace=wrap;html=1;arcSize=50;` |
-| Estado final | `shape=doubleEllipse;fillColor=#000000;strokeColor=#000000;` |
-| Transição | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;` |
-| Bifurcação/Junção | `shape=mxgraph.uml.fork_or_join;html=1;fillColor=#000000;` |
+| Initial state (solid circle) | `ellipse;html=1;aspect=fixed;fillColor=#000000;strokeColor=#000000;` |
+| State | `rounded=1;whiteSpace=wrap;html=1;arcSize=50;` |
+| Final state | `shape=doubleEllipse;fillColor=#000000;strokeColor=#000000;` |
+| Transition | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;` |
+| Fork/Join | `shape=mxgraph.uml.fork_or_join;html=1;fillColor=#000000;` |
 
 ---
 
-### Entidade-relacionamento (diagramas ER)
+### Entity-relationship (ER diagrams)
 
-**Habilitação**: `View > Shapes > Entity Relation`
+**Enable**: `View > Shapes > Entity Relation`
 
-#### Tabelas ER modernas (notação pé de galinha)
+#### Modern ER tables (crow's foot notation)
 
 ```xml
-<!-- Contêiner da tabela -->
+<!-- Table container -->
 <mxCell id="tbl-orders" value="orders"
         style="shape=table;startSize=30;container=1;collapsible=1;childLayout=tableLayout;fillColor=#dae8fc;strokeColor=#6c8ebf;fontStyle=1;"
         vertex="1" parent="1">
   <mxGeometry x="80" y="80" width="240" height="210" as="geometry" />
 </mxCell>
 
-<!-- Linha da coluna -->
+<!-- Column row -->
 <mxCell id="col-id" value=""
         style="shape=tableRow;horizontal=0;startSize=0;swimmilaneHead=0;swimlaneBody=0;fillColor=none;collapsible=0;dropTarget=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;"
         vertex="1" parent="tbl-orders">
   <mxGeometry y="30" width="240" height="30" as="geometry" />
 </mxCell>
 
-<!-- Célula do marcador PK -->
+<!-- PK marker cell -->
 <mxCell value="PK" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;fontStyle=1;overflow=hidden;"
         vertex="1" parent="col-id">
   <mxGeometry width="40" height="30" as="geometry" />
 </mxCell>
 
-<!-- Célula do nome da coluna -->
+<!-- Column name cell -->
 <mxCell value="id" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;"
         vertex="1" parent="col-id">
   <mxGeometry x="40" width="140" height="30" as="geometry" />
 </mxCell>
 
-<!-- Célula do tipo de dados -->
+<!-- Data type cell -->
 <mxCell value="UUID" style="shape=partialRectangle;connectable=0;fillColor=none;top=0;left=0;bottom=0;right=0;overflow=hidden;fontStyle=2;"
         vertex="1" parent="col-id">
   <mxGeometry x="180" width="60" height="30" as="geometry" />
 </mxCell>
 ```
 
-#### Conectores de relacionamento ER (pé de galinha)
+#### ER relationship connectors (crow's foot)
 
-| Cardinalidade | String de estilo |
+| Cardinality | Style string |
 | ------------- | ------------- |
-| Um para um | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERmandOne;startFill=1;endFill=1;` |
-| Um para muitos | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERmany;startFill=1;endFill=1;` |
-| Zero para muitos | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=1;endFill=0;` |
-| Zero para um | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=1;endFill=0;` |
-| Muitos para muitos | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmany;endArrow=ERmany;startFill=1;endFill=1;` |
+| One-to-one | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERmandOne;startFill=1;endFill=1;` |
+| One-to-many | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERmany;startFill=1;endFill=1;` |
+| Zero-to-many | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToMany;startFill=1;endFill=0;` |
+| Zero-to-one | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERzeroToOne;startFill=1;endFill=0;` |
+| Many-to-many | `edgeStyle=entityRelationEdgeStyle;html=1;startArrow=ERmany;endArrow=ERmany;startFill=1;endFill=1;` |
 
 ---
 
-### Rede / Infraestrutura
+### Network / Infrastructure
 
-**Habilitação**: `View > Shapes > Networking`
+**Enable**: `View > Shapes > Networking`
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Servidor genérico | `shape=server;html=1;whiteSpace=wrap;` |
-| Servidor web | `shape=mxgraph.network.web_server;` |
-| Servidor de banco de dados | `shape=mxgraph.network.database;` |
-| Notebook | `shape=mxgraph.network.laptop;` |
-| Computador | `shape=mxgraph.network.desktop;` |
-| Telefone celular | `shape=mxgraph.network.mobile;` |
-| Roteador | `shape=mxgraph.cisco.routers.router;` |
-| Comutador | `shape=mxgraph.cisco.switches.workgroup_switch;` |
-| Barreira de rede (`firewall`) | `shape=mxgraph.cisco.firewalls.firewall;` |
-| Nuvem (genérica) | `shape=cloud;` |
+| Generic server | `shape=server;html=1;whiteSpace=wrap;` |
+| Web server | `shape=mxgraph.network.web_server;` |
+| Database server | `shape=mxgraph.network.database;` |
+| Laptop | `shape=mxgraph.network.laptop;` |
+| Desktop | `shape=mxgraph.network.desktop;` |
+| Mobile phone | `shape=mxgraph.network.mobile;` |
+| Router | `shape=mxgraph.cisco.routers.router;` |
+| Switch | `shape=mxgraph.cisco.switches.workgroup_switch;` |
+| Firewall (`firewall`) | `shape=mxgraph.cisco.firewalls.firewall;` |
+| Cloud (generic) | `shape=cloud;` |
 | Internet | `shape=mxgraph.network.internet;` |
-| Balanceador de carga | `shape=mxgraph.network.load_balancer;` |
+| Load balancer | `shape=mxgraph.network.load_balancer;` |
 
 ---
 
 ### BPMN 2.0
 
-**Habilitação**: `View > Shapes > BPMN`
-**Prefixo da forma**: `shape=mxgraph.bpmn.*`
+**Enable**: `View > Shapes > BPMN`
+**Shape prefix**: `shape=mxgraph.bpmn.*`
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Evento inicial | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.ellipsePerimeter;symbol=general;verticalLabelPosition=bottom;` |
-| Evento final | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.ellipsePerimeter;symbol=terminate;verticalLabelPosition=bottom;` |
-| Tarefa | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rectanglePerimeter;symbol=task;` |
-| Gateway exclusivo | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rhombusPerimeter;symbol=exclusiveGw;` |
-| Gateway paralelo | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rhombusPerimeter;symbol=parallelGw;` |
-| Subprocesso | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rectanglePerimeter;symbol=subProcess;` |
-| Fluxo de sequência | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;` |
-| Fluxo de mensagens | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;` |
-| Grupo de participantes (`Pool`) | `shape=pool;startSize=30;horizontal=1;` |
-| Raia | `swimlane;startSize=30;` |
+| Start event | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.ellipsePerimeter;symbol=general;verticalLabelPosition=bottom;` |
+| End event | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.ellipsePerimeter;symbol=terminate;verticalLabelPosition=bottom;` |
+| Task | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rectanglePerimeter;symbol=task;` |
+| Exclusive gateway | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rhombusPerimeter;symbol=exclusiveGw;` |
+| Parallel gateway | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rhombusPerimeter;symbol=parallelGw;` |
+| Subprocess | `shape=mxgraph.bpmn.shape;perimeter=mxPerimeter.rectanglePerimeter;symbol=subProcess;` |
+| Sequence flow | `edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;` |
+| Message flow | `edgeStyle=orthogonalEdgeStyle;dashed=1;html=1;endArrow=block;endFill=0;` |
+| Participant group (`Pool`) | `shape=pool;startSize=30;horizontal=1;` |
+| Lane | `swimlane;startSize=30;` |
 
 ---
 
 ### Mockup / Wireframe
 
-**Habilitação**: `View > Shapes > Mockup`
+**Enable**: `View > Shapes > Mockup`
 
-| Forma | String de estilo |
+| Shape | Style string |
 | ------- | ------------- |
-| Botão | `shape=mxgraph.mockup.forms.button;` |
-| Campo de entrada | `shape=mxgraph.mockup.forms.text1;` |
-| Caixa de seleção | `shape=mxgraph.mockup.forms.checkbox;` |
-| Lista suspensa | `shape=mxgraph.mockup.forms.comboBox;` |
-| Janela do navegador | `shape=mxgraph.mockup.containers.browser;` |
-| Tela de dispositivo móvel | `shape=mxgraph.mockup.containers.smartphone;` |
-| Lista | `shape=mxgraph.mockup.containers.list;` |
-| Tabela | `shape=mxgraph.mockup.containers.table;` |
+| Button | `shape=mxgraph.mockup.forms.button;` |
+| Input field | `shape=mxgraph.mockup.forms.text1;` |
+| Checkbox | `shape=mxgraph.mockup.forms.checkbox;` |
+| Dropdown | `shape=mxgraph.mockup.forms.comboBox;` |
+| Browser window | `shape=mxgraph.mockup.containers.browser;` |
+| Mobile device screen | `shape=mxgraph.mockup.containers.smartphone;` |
+| List | `shape=mxgraph.mockup.containers.list;` |
+| Table | `shape=mxgraph.mockup.containers.table;` |
 
 ---
 
 ### Kubernetes
 
-**Habilitação**: `View > Shapes > Kubernetes`
+**Enable**: `View > Shapes > Kubernetes`
 
-| Recurso | String de estilo |
+| Resource | Style string |
 | ---------- | ------------- |
 | Pod | `shape=mxgraph.kubernetes.pod;` |
 | Deployment | `shape=mxgraph.kubernetes.deploy;` |
@@ -291,40 +291,40 @@ Use contêineres de raias (`swimlane`) para caixas de classe:
 
 ---
 
-## Habilitar bibliotecas no VS Code
+## Enabling libraries in VS Code
 
-As bibliotecas são habilitadas no editor draw.io (incorporado pelo VS Code):
+Libraries are enabled in the draw.io editor (embedded in VS Code):
 
-1. Abra qualquer arquivo `.drawio` ou `.drawio.svg` no VS Code
-2. Clique no ícone `+` no painel de formas (barra lateral esquerda) → `Search Shapes` ("Pesquisar formas") ou `More Shapes` ("Mais formas")
-3. Marque a biblioteca que deseja ativar
-4. As formas aparecem no painel para arrastar e soltar
+1. Open any `.drawio` or `.drawio.svg` file in VS Code
+2. Click the `+` icon in the shapes panel (left sidebar) → `Search Shapes` or `More Shapes`
+3. Select the library you want to enable
+4. Shapes appear in the panel for drag and drop
 
-As bibliotecas são armazenadas por pessoa nas configurações do draw.io (não por projeto).
+Libraries are stored per user in draw.io settings (not per project).
 
 ---
 
-## Criar uma biblioteca de formas personalizada
+## Creating a custom shape library
 
-Uma biblioteca personalizada é um arquivo XML com extensão `.xml`, carregado por `File > Open Library` ("Arquivo > Abrir biblioteca"):
+A custom library is an XML file with the `.xml` extension, loaded through `File > Open Library`:
 
 ```xml
 <mxlibrary>
   [
     {
-      "xml": "&lt;mxCell value=\"Componente\" style=\"rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;\" vertex=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"60\" as=\"geometry\" /&gt;&lt;/mxCell&gt;",
+      "xml": "&lt;mxCell value=\"Component\" style=\"rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;\" vertex=\"1\"&gt;&lt;mxGeometry width=\"120\" height=\"60\" as=\"geometry\" /&gt;&lt;/mxCell&gt;",
       "w": 120,
       "h": 60,
       "aspect": "fixed",
-      "title": "Meu componente"
+      "title": "My component"
     }
   ]
 </mxlibrary>
 ```
 
-Cada entrada de forma contém:
+Each shape entry contains:
 
-- `xml`: definição de célula com escapes XML
-- `w` / `h`: largura/altura padrão
-- `aspect`: `"fixed"` para bloquear a proporção
-- `title`: nome exibido no painel
+- `xml`: XML-escaped cell definition
+- `w` / `h`: default width/height
+- `aspect`: `"fixed"` to lock the aspect ratio
+- `title`: name displayed in the panel

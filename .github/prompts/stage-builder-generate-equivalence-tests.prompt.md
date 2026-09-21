@@ -1,65 +1,65 @@
 ---
 name: "generate-equivalence-tests"
-description: "Gera testes JUnit que validam se a implementação Java moderna produz as mesmas saídas do programa Natural original para as mesmas entradas."
+description: "Generates JUnit tests that verify whether the modern Java implementation produces the same outputs as the original Natural program for the same inputs."
 argument-hint: "class=<java.package>.<Service> method=<method>"
 agent: "builder"
 tools: ["read", "search", "edit", "execute"]
 ---
 # /generate-equivalence-tests
 
-## Objetivo
+## Objective
 
-Gerar testes parametrizados JUnit 5 que comprovem que um método Java traduzido produz resultados de negócio equivalentes aos do programa Natural para as mesmas entradas.
+Generate JUnit 5 parameterized tests that prove a translated Java method produces business results equivalent to the Natural program for the same inputs.
 
-## Quando usar
+## When to Invoke
 
-Depois de `/translate-natural-to-java`, para verificar equivalência.
+After `/translate-natural-to-java`, to verify equivalence.
 
-## Pré-condições
+## Preconditions
 
-- A tradução Java existe e compila
-- A origem Natural está em `01-archaeology/legacy-sifap/`
-- O Javadoc referencia arquivo e linhas Natural
+- The Java translation exists and compiles
+- The Natural source is in `01-archaeology/legacy-sifap/`
+- The Javadoc references the Natural file and lines
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Classe e método Java
-- Caminho do arquivo Natural
-- Dados e casos-limite conhecidos na Etapa 1
+- Java class and method
+- Natural file path
+- Data and boundary cases known from Stage 1
 
-## O que farei
+## What I Will Do
 
-- Identificarei entradas, saídas e todos os ramos `IF/ELSE`, `DECIDE` e `AT BREAK`
-- Gerarei testes para fluxo esperado, ramos, limites, nulos e vazios
-- Executarei os testes, informarei resultados e listarei ramos sem cobertura
+- Identify inputs, outputs, and all `IF/ELSE`, `DECIDE`, and `AT BREAK` branches
+- Generate tests for the happy path, branches, boundaries, nulls, and empty values
+- Run the tests, report results, and list uncovered branches
 
-## O que não farei
+## What I Will NOT Do
 
-- Declarar equivalência sem um teste por ramo
-- Omitir limites numéricos ou caminhos de erro
-- Inventar valores esperados; todos serão derivados da lógica Natural
+- Declare equivalence without a test for each branch
+- Omit numeric boundaries or error paths
+- Invent expected values; all will be derived from Natural logic
 
-## Formato da saída
+## Output Format
 
 `src/test/java/.../[ClassName]EquivalenceTest.java`
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Há um teste por ramo
-- [ ] Testes parametrizados cobrem fluxo esperado, ramos, limites, nulos e vazios
-- [ ] Os testes compilam e executam
-- [ ] Resultados e cobertura de ramos são informados
-- [ ] Falhas identificam o ramo divergente
+- [ ] There is a test for each branch
+- [ ] Parameterized tests cover the happy path, branches, boundaries, nulls, and empty values
+- [ ] Tests compile and run
+- [ ] Results and branch coverage are reported
+- [ ] Failures identify the divergent branch
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@builder`. Gere testes de equivalência para uma tradução Natural–Java.
+You are `@builder`. Generate equivalence tests for a Natural-to-Java translation.
 
-**Etapa 1 — Localizar a origem.** Leia no Javadoc o arquivo e as linhas Natural e abra-os.
+**Step 1 - Locate the source.** Read the Natural file and line references in the Javadoc and open them.
 
-**Etapa 2 — Identificar ramos.** Liste condição, ação ou saída esperada e entradas que acionam cada caminho. Cada `IF...THEN...ELSE` cria dois ou mais caminhos; `DECIDE ON`, N caminhos; `AT BREAK`, um caminho de quebra de controle.
+**Step 2 - Identify branches.** List the condition, expected action or output, and inputs that trigger each path. Each `IF...THEN...ELSE` creates two or more paths; `DECIDE ON`, N paths; `AT BREAK`, a control-break path.
 
-**Etapa 3 — Derivar casos.** Crie pelo menos um caso por ramo:
+**Step 3 - Derive cases.** Create at least one case per branch:
 
 ```java
 @ParameterizedTest
@@ -74,13 +74,13 @@ void should_produce_equivalent_output(Type param1, Type param2, Type expected) {
 }
 ```
 
-Inclua mínimos e máximos, strings vazias ou de um caractere, nulos e precisão `BigDecimal` equivalente ao decimal compactado Natural.
+Include minimums and maximums, empty or single-character strings, nulls, and `BigDecimal` precision equivalent to Natural packed decimals.
 
-**Etapa 4 — Tratar estado de dados.** Para ramos dependentes de registro, simule respostas para registro existente e ausente.
+**Step 4 - Handle data state.** For record-dependent branches, mock responses for existing and missing records.
 
-**Etapa 5 — Executar.** Informe total, aprovados, falhas detalhadas e ramos cobertos sobre o total.
+**Step 5 - Run.** Report the total, passes, detailed failures, and covered branches out of the total.
 
-**Etapa 6 — Documentar ramos obscuros.**
+**Step 6 - Document unclear branches.**
 
 ```java
 @Test
@@ -90,8 +90,8 @@ void should_handle_mystery_branch() {
 }
 ```
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /generate-equivalence-tests class=<java.package>.<Service> method=<method>
 ```

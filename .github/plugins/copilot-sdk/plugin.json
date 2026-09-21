@@ -2,10 +2,22 @@
   "name": "copilot-sdk",
   "description": "Build applications with the GitHub Copilot SDK in multiple programming languages. Includes comprehensive instructions for C#, Go, Node.js/TypeScript, and Python to help you build AI-based applications.",
   "version": "1.0.0",
-  "author": { "name": "Awesome Copilot Community" },
+  "author": {
+    "name": "Awesome Copilot Community"
+  },
   "repository": "https://github.com/github/awesome-copilot",
   "license": "MIT",
-  "keywords": ["copilot-sdk", "sdk", "csharp", "go", "nodejs", "typescript", "python", "ai", "github-copilot"],
+  "keywords": [
+    "copilot-sdk",
+    "sdk",
+    "csharp",
+    "go",
+    "nodejs",
+    "typescript",
+    "python",
+    "ai",
+    "github-copilot"
+  ],
   "skills": [
     "../../skills/copilot-sdk/"
   ]

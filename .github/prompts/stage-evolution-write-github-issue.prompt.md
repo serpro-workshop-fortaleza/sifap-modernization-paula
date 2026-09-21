@@ -1,82 +1,82 @@
 ---
 name: "write-github-issue"
-description: "Escreve uma issue de alta qualidade no GitHub, pronta para o Copilot Agent na nuvem."
+description: "Writes a high-quality GitHub issue, ready for Copilot cloud agent."
 argument-hint: "feature=\"<scoped-work>\" context=<context> reqs=REQ-XXX"
 agent: "evolution"
 tools: ["read", "search", "edit", "github/*"]
 ---
 # /write-github-issue
 
-## Objetivo
+## Objective
 
-Criar issue estruturada para execução autônoma pelo Copilot Agent, com critérios claros, caminhos e rastreabilidade por REQ-ID.
+Create a structured issue for autonomous execution by Copilot Agent, with clear criteria, paths, and REQ-ID traceability.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 4, para trabalho delegável.
+At the start of Stage 4, for delegable work.
 
-## Pré-condições
+## Preconditions
 
-- Há protótipo da Etapa 3, `spec.md` EARS e trabalho específico
+- A Stage 3 prototype, an EARS `spec.md`, and specific work exist
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Funcionalidade ou correção, REQ-IDs, contexto e arquivos prováveis
+- Feature or fix, REQ-IDs, context, and likely files
 
-## O que farei
+## What I Will Do
 
-- Estruturarei Context, Acceptance Criteria, Affected Files, Testing Approach e Out of Scope
-- Copiarei REQ-IDs sem inventar comportamento e sugerirei labels e assignee
+- Structure Context, Acceptance Criteria, Affected Files, Testing Approach, and Out of Scope
+- Copy REQ-IDs without inventing behavior and suggest labels and an assignee
 
-## O que não farei
+## What I Will NOT Do
 
-- Publicar, escrever issue vaga, delegar decisão arquitetural ou correção de segurança, ou omitir testes
+- Publish, write a vague issue, delegate an architectural decision or security fix, or omit tests
 
-## Formato da saída
+## Output Format
 
 ```markdown
-# Issue: [Título]
-## Contexto
-## Critérios de aceitação
-## Arquivos provavelmente afetados
-## Abordagem de testes
-## Fora do escopo
+# Issue: [Title]
+## Context
+## Acceptance Criteria
+## Likely Affected Files
+## Testing Approach
+## Out of Scope
 ## Labels
-## Requisitos relacionados
+## Related Requirements
 ```
 
-Grave em `04-evolution/issues/<slug>.md`.
+Save to `04-evolution/issues/<slug>.md`.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] As cinco seções existem
-- [ ] Critérios são testáveis
-- [ ] Há REQ-ID ou declaração justificada de comportamento novo
-- [ ] Caminhos e testes estão indicados
-- [ ] Cabe em um PR
+- [ ] The five sections exist
+- [ ] Criteria are testable
+- [ ] There is a REQ-ID or a justified statement of new behavior
+- [ ] Paths and tests are indicated
+- [ ] Fits in one PR
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@evolution`.
+You are `@evolution`.
 
-**Etapa 1 — Entender.** Pergunte o que fazer, qual contexto, se atende `REQ-NNN` ou comportamento novo e quais arquivos.
+**Step 1 - Understand.** Ask what to do, which context, whether it addresses `REQ-NNN` or new behavior, and which files.
 
-**Etapa 2 — Contexto.** Descreva estado atual e desejado e vincule EARS.
+**Step 2 - Context.** Describe the current and desired states and link EARS.
 
-**Etapa 3 — Critérios.** Copie critérios verificáveis de `spec.md`. Se faltarem, registre a lacuna sem inventar resposta.
+**Step 3 - Criteria.** Copy verifiable criteria from `spec.md`. If missing, record the gap without inventing an answer.
 
-**Etapa 4 — Arquivos.** Liste os que serão modificados, criados e apenas consultados.
+**Step 4 - Files.** List those to modify, create, and only consult.
 
-**Etapa 5 — Testes.** Indique testes unitários, de integração e existentes a atualizar, seguindo padrões locais.
+**Step 5 - Tests.** Identify unit tests, integration tests, and existing tests to update, following local patterns.
 
-**Etapa 6 — Fora do escopo.** Declare exclusões, como esquema, autenticação ou frontend, para impedir ampliação.
+**Step 6 - Out of scope.** State exclusions, such as schema, authentication, or frontend, to prevent expansion.
 
-**Etapa 7 — Metadados.** Sugira `enhancement` ou `bug`, contexto e `copilot-agent`.
+**Step 7 - Metadata.** Suggest `enhancement` or `bug`, the context, and `copilot-agent`.
 
-**Etapa 8 — Rascunho.** Gere `<slug>` em kebab-case. Lembre que a equipe deve revisar e publicar manualmente pela interface ou `gh issue create`.
+**Step 8 - Draft.** Generate `<slug>` in kebab-case. Remind the team to review and publish manually through the UI or `gh issue create`.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /write-github-issue feature="<scoped-work>" context=<context> reqs=REQ-XXX
 ```

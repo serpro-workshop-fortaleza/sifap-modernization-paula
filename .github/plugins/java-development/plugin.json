@@ -2,10 +2,19 @@
   "name": "java-development",
   "description": "Comprehensive collection of prompts and rules for Java development, including Spring Boot, Quarkus, testing, documentation, and best practices.",
   "version": "1.0.0",
-  "author": { "name": "Awesome Copilot Community" },
+  "author": {
+    "name": "Awesome Copilot Community"
+  },
   "repository": "https://github.com/github/awesome-copilot",
   "license": "MIT",
-  "keywords": ["java", "springboot", "quarkus", "jpa", "junit", "javadoc"],
+  "keywords": [
+    "java",
+    "springboot",
+    "quarkus",
+    "jpa",
+    "junit",
+    "javadoc"
+  ],
   "skills": [
     "../../skills/create-spring-boot-java-project/",
     "../../skills/java-docs/",

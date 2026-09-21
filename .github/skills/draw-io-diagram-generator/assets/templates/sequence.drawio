@@ -1,5 +1,5 @@
 <mxfile host="Electron" modified="2026-03-25T00:00:00.000Z" version="26.0.0">
-  <diagram id="sequence" name="Diagrama de sequência">
+  <diagram id="sequence" name="Sequence diagram">
     <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1"
                   tooltips="1" connect="1" arrows="1" fold="1"
                   page="1" pageScale="1" pageWidth="1169" pageHeight="827"
@@ -8,37 +8,37 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- TÍTULO -->
-        <mxCell id="2" value="Diagrama de sequência"
+        <!-- TITLE -->
+        <mxCell id="2" value="Sequence diagram"
                 style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;"
                 vertex="1" parent="1">
           <mxGeometry x="334" y="20" width="500" height="40" as="geometry" />
         </mxCell>
 
-        <!-- ====== CAIXAS DE ATORES (linha superior) ====== -->
-        <!-- Ator A: cliente -->
-        <mxCell id="actorA" value="Cliente"
+        <!-- ====== ACTOR BOXES (top row) ====== -->
+        <!-- Actor A: client -->
+        <mxCell id="actorA" value="Client"
                 style="shape=mxgraph.uml.actor;pointerEvents=1;dashed=0;fillColor=#dae8fc;strokeColor=#6c8ebf;sketch=0;aspect=fixed;"
                 vertex="1" parent="1">
           <mxGeometry x="110" y="80" width="60" height="80" as="geometry" />
         </mxCell>
 
-        <!-- Ator B: servidor de API -->
-        <mxCell id="actorB" value="&lt;b&gt;Servidor de API&lt;/b&gt;"
+        <!-- Actor B: API server -->
+        <mxCell id="actorB" value="&lt;b&gt;API server&lt;/b&gt;"
                 style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=13;"
                 vertex="1" parent="1">
           <mxGeometry x="480" y="100" width="160" height="60" as="geometry" />
         </mxCell>
 
-        <!-- Ator C: banco de dados -->
-        <mxCell id="actorC" value="&lt;b&gt;Banco de dados&lt;/b&gt;"
+        <!-- Actor C: database -->
+        <mxCell id="actorC" value="&lt;b&gt;Database&lt;/b&gt;"
                 style="shape=mxgraph.flowchart.database;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;"
                 vertex="1" parent="1">
           <mxGeometry x="870" y="90" width="80" height="80" as="geometry" />
         </mxCell>
 
-        <!-- ====== LINHAS DE VIDA ====== -->
-        <!-- Linha de vida A -->
+        <!-- ====== LIFELINES ====== -->
+        <!-- Lifeline A -->
         <mxCell id="lifA" value=""
                 style="edgeStyle=none;dashed=1;endArrow=none;entryX=0.5;entryY=0;entryDx=0;entryDy=0;"
                 edge="1" parent="1">
@@ -49,7 +49,7 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- Linha de vida B -->
+        <!-- Lifeline B -->
         <mxCell id="lifB" value=""
                 style="edgeStyle=none;dashed=1;endArrow=none;"
                 edge="1" parent="1">
@@ -59,7 +59,7 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- Linha de vida C -->
+        <!-- Lifeline C -->
         <mxCell id="lifC" value=""
                 style="edgeStyle=none;dashed=1;endArrow=none;"
                 edge="1" parent="1">
@@ -69,30 +69,30 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- ====== CAIXAS DE ATIVAÇÃO (retângulos estreitos nas linhas de vida) ====== -->
-        <!-- Ativação em A durante o fluxo da solicitação -->
+        <!-- ====== ACTIVATION BOXES (narrow rectangles on lifelines) ====== -->
+        <!-- Activation on A during the request flow -->
         <mxCell id="actA1" value=""
                 style="fillColor=#dae8fc;strokeColor=#6c8ebf;"
                 vertex="1" parent="1">
           <mxGeometry x="130" y="220" width="20" height="200" as="geometry" />
         </mxCell>
 
-        <!-- Ativação em B durante o processamento -->
+        <!-- Activation on B during processing -->
         <mxCell id="actB1" value=""
                 style="fillColor=#fff2cc;strokeColor=#d6b656;"
                 vertex="1" parent="1">
           <mxGeometry x="550" y="260" width="20" height="120" as="geometry" />
         </mxCell>
 
-        <!-- Ativação em C durante a consulta ao banco de dados -->
+        <!-- Activation on C during the database query -->
         <mxCell id="actC1" value=""
                 style="fillColor=#d5e8d4;strokeColor=#82b366;"
                 vertex="1" parent="1">
           <mxGeometry x="900" y="300" width="20" height="60" as="geometry" />
         </mxCell>
 
-        <!-- ====== SETAS DE MENSAGEM ====== -->
-        <!-- 1. A → B: solicitação -->
+        <!-- ====== MESSAGE ARROWS ====== -->
+        <!-- 1. A → B: request -->
         <mxCell id="msg1" value="1: POST /api/orders"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;"
                 edge="1" parent="1">
@@ -102,8 +102,8 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- 2. B → B: validar entrada (automensagem) -->
-        <mxCell id="msg2" value="2: Validar e autenticar"
+        <!-- 2. B → B: validate input (self-message) -->
+        <mxCell id="msg2" value="2: Validate and authenticate"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;"
                 edge="1" parent="1">
           <mxGeometry relative="1" as="geometry">
@@ -116,7 +116,7 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- 3. B → C: consulta -->
+        <!-- 3. B → C: query -->
         <mxCell id="msg3" value="3: INSERT orders (...)"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=1;"
                 edge="1" parent="1">
@@ -126,7 +126,7 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- 4. C → B: retornar resultado -->
+        <!-- 4. C → B: return result -->
         <mxCell id="msg4" value="4: {id: 42, status: created}"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;"
                 edge="1" parent="1">
@@ -136,7 +136,7 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- 5. B → A: resposta -->
+        <!-- 5. B → A: response -->
         <mxCell id="msg5" value="5: 201 Created {orderId: 42}"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;endFill=0;dashed=1;"
                 edge="1" parent="1">
@@ -146,14 +146,14 @@
           </mxGeometry>
         </mxCell>
 
-        <!-- ====== NOTAS ====== -->
-        <mxCell id="note1" value="&lt;i&gt;Exige o cabeçalho Authorization&lt;/i&gt;"
+        <!-- ====== NOTES ====== -->
+        <mxCell id="note1" value="&lt;i&gt;Requires the Authorization header&lt;/i&gt;"
                 style="shape=note;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=11;fillColor=#fffacd;strokeColor=#aaa;"
                 vertex="1" parent="1">
           <mxGeometry x="200" y="220" width="200" height="40" as="geometry" />
         </mxCell>
 
-        <!-- conector da nota até a seta -->
+        <!-- connector from the note to the arrow -->
         <mxCell id="noteEdge1" value=""
                 style="edgeStyle=none;dashed=1;endArrow=none;"
                 edge="1" parent="1">

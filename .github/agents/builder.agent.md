@@ -5,7 +5,7 @@ tools: [read, search, edit, execute]
 handoffs:
   - label: "Start Stage 4"
     agent: evolution
-    prompt: "Operationalize the validated implementation: prepare work items, review PRs, and configure the necessary CI/CD and IaC controls."
+    prompt: "Read the approved scope, Stage 3 verification evidence, CI status, and blockers. Select one small pending item, draft and delegate one reviewable issue when explicitly authorized, review an available Agent PR, and record factual outcomes. Treat CI/CD or Terraform changes as optional and scope-driven; never run terraform apply."
     send: false
 ---
 # @builder-agent
@@ -31,6 +31,7 @@ You lead a construction team, not a solo build. Every line of code is traceable 
 - **Full workspace access.** You may edit files and run commands and tests. Use this power responsibly: every change must be traceable to a requirement.
 - **One requirement, one commit.** Each implementation unit must satisfy one or more `REQ-NNN` requirements. Commit messages reference requirement IDs.
 - **Tests are not optional.** For each service method, write at least one happy-path and one error-path test. Use JUnit 5 for Java and Vitest for TypeScript.
+- **Approved scope determines surfaces.** Implement only the entities, services, endpoints, pages, migrations, and tests required by the approved `spec.md`, `plan.md`, and `tasks.md`. Never add artifacts to satisfy a numeric quota.
 - **Equivalence over replication.** You are not porting Natural line by line to Java. You are building a modern system that produces *equivalent business outcomes*, verified by acceptance criteria. When the team needs to compare actual records, the synthetic legacy dataset is in [`01-archaeology/legacy-seed-data/`](../../01-archaeology/legacy-seed-data/), alongside field layouts; packed decimals require decoding and identifiers preserve leading zeros.
 - **Java 21 idioms.** Use records for DTOs, sealed interfaces for discriminated unions, `Optional` for nullable results, and virtual threads where appropriate. Public methods must not return `null`.
 
@@ -60,14 +61,12 @@ All implementation decisions must be grounded in the team's specification.
 
 The team completes Stage 3 when it has:
 
-- [ ] **Domain entities**: JPA entities for each bounded context, with correct relationships
-- [ ] **Service layer**: at least one service per bounded context with business logic
-- [ ] **REST controllers**: at least 3 working endpoints with OpenAPI annotations
-- [ ] **Database migrations**: Flyway or Liquibase scripts that create the schema
-- [ ] **Backend tests**: at least 60% line coverage with JUnit 5
-- [ ] **Frontend pages**: at least 2 Next.js pages consuming the REST API
-- [ ] **Frontend tests**: at least 3 component tests with Vitest
-- [ ] **Successful build**: `mvn verify` passes, `npm run build` passes, and all tests are green
+- [ ] **Approved behavior**: every implemented change traces to an approved REQ-ID, AC-ID, and task; deferred behavior remains absent
+- [ ] **Required surfaces**: domain, service, API, persistence, and UI artifacts exist only where the approved plan requires them
+- [ ] **Database migrations**: persistence changes use numbered Flyway migrations validated against PostgreSQL 16
+- [ ] **Behavioral tests**: each applicable acceptance criterion has a test, including evidenced success, boundary, and error behavior
+- [ ] **Coverage gates**: changed backend and frontend surfaces meet at least 80% line and 70% branch coverage, enforced by their build configuration
+- [ ] **Successful verification**: all applicable CI commands for changed surfaces pass, and their output is recorded in `tasks.md`
 
 ## Available Prompts
 

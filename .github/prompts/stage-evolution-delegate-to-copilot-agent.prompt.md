@@ -1,76 +1,73 @@
 ---
 name: "delegate-to-copilot-agent"
-description: "Delega uma issue ao GitHub Copilot Agent na nuvem e acompanha o PR resultante."
+description: "After explicit approval, creates a reviewed GitHub issue, assigns it to Copilot coding agent, and records the real delegation status."
 argument-hint: "issue=04-evolution/issues/<slug>.md"
 agent: "evolution"
 tools: ["read", "search", "edit", "github/*"]
 ---
 # /delegate-to-copilot-agent
 
-## Objetivo
+## Objective
 
-Orientar a publicação manual de uma issue revisada e preparar o acompanhamento do PR gerado por IA. A equipe revisa e integra.
+Create one approved GitHub issue, assign it to Copilot coding agent, and record the returned URLs and status. The team retains review and integration authority.
 
-## Quando usar
+## When to Invoke
 
-Após aprovação de um rascunho de `/write-github-issue`.
+After approval of a `/write-github-issue` draft.
 
-## Pré-condições
+## Preconditions
 
-- Existe `04-evolution/issues/<slug>.md`
-- A equipe aprovou e tem acesso de push
+- `04-evolution/issues/<slug>.md` exists and has passed team review
+- The user explicitly authorized creation and assignment in the current conversation
+- GitHub tools are available and the authenticated identity can access the repository
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Caminho do rascunho e confirmação de publicação
+- Draft path and explicit confirmation to create and assign the issue
 
-## O que farei
+## What I Will Do
 
-- Orientarei a publicação, criarei lista de acompanhamento e guia de revisão
+- Read the approved draft and repository context
+- Confirm the authenticated identity and search for duplicate open issues
+- Check organization issue types when the repository belongs to an organization
+- Create the issue, assign it to Copilot coding agent, and capture the actual result
+- Write a delegation record with issue URL, assignment status, PR URL when available, blockers, and the accountable next step
 
-## O que não farei
+## What I Will NOT Do
 
-- Publicar ou integrar pela equipe, presumir correção do PR ou omitir revisão humana
+- Create or assign anything without explicit confirmation
+- Duplicate an existing issue, merge a PR, or claim a successful action without a returned result
+- Wait indefinitely for a PR or replace human review with agent output
 
-## Formato da saída
+## Output Format
 
-`04-evolution/delegations/<issue-slug>.md`, com referência, resultados esperados, lista de acompanhamento, guia de revisão e responsabilidade.
+`04-evolution/delegations/<issue-slug>.md`, with the issue URL, assignment result, observed status, PR URL when available, review checklist, blockers, and accountable next step.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Há instruções de publicação, arquivos e testes esperados, falhas típicas e campo para URL
-- [ ] A equipe entende que decide revisão e integração
+- [ ] The user explicitly authorized the action and no duplicate open issue exists
+- [ ] The issue URL and Copilot assignment result come from GitHub tool output
+- [ ] The delegation record distinguishes observed results from pending work
+- [ ] The team retains review and integration responsibility
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@evolution`.
+You are `@evolution`.
 
-**Etapa 1 — Confirmar.** Pergunte se o rascunho foi revisado, se critérios são testáveis e se cabe em um PR. Se não, encaminhe a `/write-github-issue`.
+**Step 1 - Confirm authorization and readiness.** Ask whether the draft was reviewed, the acceptance criteria are testable, the work fits one PR, and the team authorizes issue creation and Copilot assignment now. If any answer is no, return to `/write-github-issue` or record a blocker. Do not mutate GitHub.
 
-**Etapa 2 — Orientar a publicação.**
+**Step 2 - Establish GitHub context.** Use GitHub tools to identify the authenticated user and repository. Search open issues for the title, REQ-IDs, and distinctive acceptance text. If the owner is an organization, list its issue types and use the applicable type. Stop on a likely duplicate or insufficient permission.
 
-```bash
-# Opção 1: GitHub CLI
-gh issue create --title "[title]" --body-file 04-evolution/issues/<slug>.md --label "enhancement,copilot-agent"
+**Step 3 - Create and assign.** Create the issue from the approved draft without rewriting its requirements. Add only labels that already exist. Assign the created issue to Copilot coding agent with the GitHub assignment tool. Treat creation and assignment as separate results; a created issue with a failed assignment is partial, not complete.
 
-# Opção 2: interface do GitHub
-# 1. Abra a guia Issues do repositório
-# 2. Selecione "New Issue"
-# 3. Copie o rascunho
-# 4. Adicione enhancement e copilot-agent
-# 5. Adicione @copilot ao corpo
-```
+**Step 4 - Observe without waiting indefinitely.** Read the initial Copilot job status once. If a PR already exists, record its URL for `/review-agent-pr`. Otherwise record `queued`, `in progress`, `failed`, or `unavailable` exactly as returned and identify who will check later.
 
-**Etapa 3 — Acompanhar.** Liste arquivos criados e modificados, testes esperados, tamanho small <100, medium 100–300 ou large 300+, e prazo esperado de minutos.
+**Step 5 - Record evidence.** Write `04-evolution/delegations/<issue-slug>.md` with timestamps, issue URL, issue number, assignment result, observed job status, PR URL when present, expected files and tests from the approved draft, review owner, blocker or next step, and the statement: "This is delegation, not approval. The team owns review, integration, and consequences."
 
-**Etapa 4 — Revisar.** Verifique imports inexistentes, APIs fabricadas, testes vazios, comentários divergentes, ampliação de escopo, erros não tratados e estilo.
+**Step 6 - Hand off review.** If a PR URL exists, invoke `/review-agent-pr`. Never merge as part of this prompt.
 
-**Etapa 5 — Responsabilidade.** Registre: “Isto é delegação, não automação. A equipe responde pela revisão, pela decisão de integração e pelas consequências. O Copilot Agent contribui, mas não aprova.”
+## Example Invocation
 
-**Etapa 6 — Escrever.** Gere o arquivo e deixe placeholder para URL.
-
-## Exemplo de chamada
-
-```
+```text
 /delegate-to-copilot-agent issue=04-evolution/issues/<slug>.md
 ```

@@ -76,7 +76,7 @@ After `/write-ears-spec` produces `specs/<NNN>-<feature>/spec.md` with `source_l
 
 ## Rules for SDD and TDD
 
-Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite. Keep design and its delivery trace in `specs/<NNN>-<feature>/plan.md`; do not generate the uppercase `.specs/` portfolio or select `Full SDD` for a design-only request. Use the SDD skill's output template to report the scoped result and distinguish a reviewable plan from an approved implementation handoff.
+Apply the `SDD Workflow` section of the [architect agent](../agents/architect.agent.md) directly. Keep design and its delivery trace in `specs/<NNN>-<feature>/plan.md`; do not generate a parallel portfolio or select `Full SDD` for a design-only request. Use the SDD skill's output template to report the scoped result and distinguish a reviewable plan from an approved implementation handoff.
 
 ## Definition of Done
 

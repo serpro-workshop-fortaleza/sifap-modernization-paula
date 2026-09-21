@@ -147,6 +147,10 @@ jobs:
         run: |
           set -euo pipefail
           pnpm typecheck
+      - name: Build production application
+        run: |
+          set -euo pipefail
+          pnpm build
       - name: Run tests
         run: |
           set -euo pipefail

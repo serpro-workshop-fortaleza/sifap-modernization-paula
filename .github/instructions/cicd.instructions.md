@@ -14,9 +14,10 @@ This file activates when you edit workflows in `.github/workflows/`, composite a
 | `ci.yml` · `detect-changes` | `dorny/paths-filter` sets `backend`/`frontend`/`infra` outputs so downstream jobs run only for relevant changes | n/a |
 | `ci.yml` · `natural-format` | Fails when Natural code uses comma decimal format declarations, such as `(P9,2)`, instead of Natural CE's dot format `(P9.2)` | Yes |
 | `ci.yml` · `backend` | JDK 21 (temurin) + `./mvnw -B verify`; uploads the Jacoco report | Yes |
-| `ci.yml` · `frontend` | pnpm 9 + Node 20; `pnpm lint`, `pnpm typecheck`, `pnpm test --run --coverage` | Yes |
+| `ci.yml` · `frontend` | pnpm 9 + Node 20; frozen install, lint, typecheck, production build, and tests with coverage | Yes |
 | `ci.yml` · `infra` | `terraform fmt -check -recursive`, then `init -backend=false` + `validate` per module | Yes |
 | `spec-quality.yml` · `markdown-lint` | `markdownlint-cli2` on `**/*.md` | Yes |
+| `spec-quality.yml` · `copilot-primitives` | Runs primitive-validator regression tests, then validates schemas, references, structure, links, hooks, and repository policies | Yes |
 | `spec-quality.yml` · `spec-traceability` | Reports REQ-IDs in `specs/` not yet referenced by a test (emits `::warning::`) | No |
 | `spec-quality.yml` · `legacy-traceability` | Every REQ-ID in `specs/` must have a valid `source_legacy:` line | Yes |
 | `pages.yml` · `build` | Resolves the three language snapshots, runs portal unit and browser tests, and rejects incomplete files, links, anchors, or original downloads | Yes |

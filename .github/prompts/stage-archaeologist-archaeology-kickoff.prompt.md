@@ -1,6 +1,6 @@
 ---
 name: "archaeology-kickoff"
-description: "Inicia a Etapa 1, orienta a equipe pelo diretório legado e produz um inventário inicial."
+description: "Starts Stage 1, guides the team through the legacy directory, and produces an initial inventory."
 argument-hint: "path=01-archaeology/legacy-sifap/"
 agent: "archaeologist"
 
@@ -8,88 +8,88 @@ tools: ["read", "search", "edit"]
 ---
 # /archaeology-kickoff
 
-## Objetivo
+## Objective
 
-Orientar a equipe pela base de código legada com um inventário de cima para baixo antes da leitura de qualquer programa. Esta é a primeira atividade da Etapa 1: mapear o terreno antes de investigar.
+Guide the team through the legacy codebase with a top-down inventory before reading any program. This is the first Stage 1 activity: map the terrain before investigating.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 1, imediatamente após a equipe receber acesso ao diretório `01-archaeology/legacy-sifap/`.
+At the start of Stage 1, immediately after the team receives access to the `01-archaeology/legacy-sifap/` directory.
 
-## Pré-condições
+## Preconditions
 
-- O diretório `01-archaeology/legacy-sifap/` está disponível no espaço de trabalho; ele faz parte do kit e não depende de um script de configuração
-- A equipe ainda não abriu programas individuais
+- The `01-archaeology/legacy-sifap/` directory is available in the workspace; it is part of the kit and does not depend on a setup script
+- The team has not opened individual programs yet
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- O caminho do diretório legado, normalmente `01-archaeology/legacy-sifap/`
-- A confirmação de que a equipe ainda não começou a ler arquivos individuais; este prompt serve para orientação, não para leitura aprofundada
+- The legacy directory path, usually `01-archaeology/legacy-sifap/`
+- Confirmation that the team has not started reading individual files; this prompt is for orientation, not in-depth reading
 
-## O que farei
+## What I Will Do
 
-- Percorrerei recursivamente `01-archaeology/legacy-sifap/` e listarei todos os diretórios
-- Contarei os arquivos por extensão (`.NSN`, `.cpy`, `.ddm`, `.map` e quaisquer outras)
-- Classificarei programas por prefixos de nomenclatura, por exemplo, `BN-*` para batch e `PG-*` para online
-- Sinalizarei os três itens que aparentarem ser incomuns pelo tamanho do nome, tamanho do arquivo ou localização
-- Proporei uma ordem de leitura baseada na classificação
+- Recursively traverse `01-archaeology/legacy-sifap/` and list all directories
+- Count files by extension (`.NSN`, `.cpy`, `.ddm`, `.map`, and any others)
+- Classify programs by naming prefixes, for example, `BN-*` for batch and `PG-*` for online
+- Flag the three items that appear unusual by name length, file size, or location
+- Propose a reading order based on the classification
 
-## O que não farei
+## What I Will NOT Do
 
-- Abrir ou ler arquivos de programas individuais; isso ocorrerá em prompts posteriores
-- Informar o que os programas fazem; a equipe fará essa descoberta de modo independente
-- Inventar explicações para convenções de nomenclatura; marcarei prefixos sem explicação como desconhecidos
-- Referenciar detalhes internos específicos do sistema; trabalharei somente com o que a estrutura de diretórios revelar
+- Open or read individual program files; later prompts will handle this
+- State what the programs do; the team will discover that independently
+- Invent explanations for naming conventions; mark unexplained prefixes as unknown
+- Reference system-specific internals; work only with what the directory structure reveals
 
-## Formato da saída
+## Output Format
 
-Um arquivo Markdown em `01-archaeology/inventory.md` com:
+A Markdown file at `01-archaeology/inventory.md` containing:
 
 ```markdown
-# Inventário do legado — [Nome da equipe]
-## Estrutura de diretórios
-## Quantidade de arquivos por tipo
-## Padrões de nomenclatura
-## Itens incomuns (três principais)
-## Ordem de leitura proposta
+# Legacy inventory - [Team name]
+## Directory structure
+## File counts by type
+## Naming patterns
+## Unusual items (top three)
+## Proposed reading order
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] O arquivo de inventário existe e documenta a estrutura de diretórios
-- [ ] As contagens estão corretas e podem ser verificadas por outra pessoa da equipe com `find`
-- [ ] Pelo menos três padrões de nomenclatura foram identificados com suas contagens
-- [ ] Três itens que aparentam ser incomuns foram sinalizados com caminhos e motivos
-- [ ] A ordem de leitura proposta foi justificada por padrões de nomenclatura ou posição estrutural
+- [ ] The inventory file exists and documents the directory structure
+- [ ] Counts are correct and another team member can verify them with `find`
+- [ ] At least three naming patterns have been identified with their counts
+- [ ] Three apparently unusual items have been flagged with paths and reasons
+- [ ] The proposed reading order is justified by naming patterns or structural position
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@archaeologist` e inicia com a equipe uma orientação da Etapa 1. A equipe acabou de receber a base de código legada e ainda não abriu arquivos.
+You are `@archaeologist`, starting a Stage 1 orientation with the team. The team has just received the legacy codebase and has not opened any files yet.
 
-Execute as etapas seguintes na ordem. Não omita nenhuma.
+Execute the following steps in order. Do not skip any.
 
-**Etapa 1 — Mapear a árvore de diretórios.**
-Liste todos os diretórios e subdiretórios no caminho legado fornecido. Exiba a árvore e conte o total de diretórios.
+**Step 1 - Map the directory tree.**
+List all directories and subdirectories under the supplied legacy path. Display the tree and count the total directories.
 
-**Etapa 2 — Contar arquivos por extensão.**
-Informe a quantidade de cada extensão encontrada (`.NSN`, `.cpy`, `.ddm`, `.map`, `.txt`, `.md` ou outra). Apresente a tabela `| Extensão | Quantidade | Finalidade provável |`. Em “Finalidade provável”, use apenas conhecimento geral de Natural/Adabas, por exemplo, `.NSN` = programa-fonte Natural, `.cpy` = copycode e `.ddm` = Data Definition Module. Não suponha o conteúdo de arquivos específicos.
+**Step 2 - Count files by extension.**
+Report the count for every extension found (`.NSN`, `.cpy`, `.ddm`, `.map`, `.txt`, `.md`, or another). Present the table `| Extension | Count | Likely purpose |`. For "Likely purpose", use only general Natural/Adabas knowledge, for example, `.NSN` = Natural source program, `.cpy` = copycode, and `.ddm` = Data Definition Module. Do not assume specific file contents.
 
-**Etapa 3 — Identificar padrões de nomenclatura.**
-Examine os nomes sem abrir os arquivos. Agrupe-os pelo prefixo formado pelos primeiros dois ou três caracteres antes de delimitadores como `-`, `_` ou um dígito. Para padrões com dois ou mais arquivos, apresente `| Prefixo | Quantidade | Hipótese |`. Baseie a hipótese somente em conhecimento geral das convenções Natural. Se o padrão não estiver claro, use `Desconhecido — investigar na próxima etapa`.
+**Step 3 - Identify naming patterns.**
+Examine names without opening files. Group them by the prefix formed by the first two or three characters before delimiters such as `-`, `_`, or a digit. For patterns with two or more files, present `| Prefix | Count | Hypothesis |`. Base the hypothesis only on general knowledge of Natural conventions. If the pattern is unclear, use `Unknown - investigate in the next step`.
 
-**Etapa 4 — Sinalizar itens incomuns.**
-Identifique os três itens mais incomuns: maior arquivo, aninhamento mais profundo, padrão de nome único ou extensão única. Informe caminho, motivo e ação sugerida para investigação.
+**Step 4 - Flag unusual items.**
+Identify the three most unusual items: largest file, deepest nesting, unique naming pattern, or unique extension. Report the path, reason, and suggested investigation action.
 
-**Etapa 5 — Propor uma ordem de leitura.**
-Priorize: (a) pontos de entrada batch, normalmente reconhecíveis por prefixos; (b) arquivos DDM, para compreender os dados antes do código; e (c) programas mais conectados, cujos nomes apareçam como argumentos em outros nomes de arquivo e sugiram relações CALLNAT. Declare que se trata de hipótese e que a ordem mudará quando a equipe rastrear dependências.
+**Step 5 - Propose a reading order.**
+Prioritize: (a) batch entry points, usually recognizable by prefixes; (b) DDM files, to understand data before code; and (c) the most connected programs, whose names appear as arguments in other filenames and suggest CALLNAT relationships. State that this is a hypothesis and the order will change when the team traces dependencies.
 
-**Etapa 6 — Gerar o inventário.**
-Escreva o inventário completo em `01-archaeology/inventory.md` com o formato acima. Inclua a data, um placeholder para o nome da equipe e uma observação de que esta é a primeira análise, que será revisada durante a leitura dos arquivos.
+**Step 6 - Generate the inventory.**
+Write the complete inventory to `01-archaeology/inventory.md` in the format above. Include the date, a team-name placeholder, and a note that this is the initial analysis, to be revised while reading the files.
 
-Não abra arquivos para ler o conteúdo. Este prompt atua somente sobre nomes e estrutura de diretórios. Se a equipe pedir a leitura de um arquivo, encaminhe-a para `/extract-business-rules` ou `/map-dependencies`.
+Do not open files to read their contents. This prompt operates only on names and directory structure. If the team asks to read a file, direct them to `/extract-business-rules` or `/map-dependencies`.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /archaeology-kickoff path=01-archaeology/legacy-sifap/
 ```

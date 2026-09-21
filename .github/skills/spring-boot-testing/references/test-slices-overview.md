@@ -1,25 +1,25 @@
-# Visão geral das fatias de teste
+# Test slices overview
 
-Referência rápida para selecionar a fatia de teste adequada do Spring Boot.
+Quick reference for selecting the appropriate Spring Boot test slice.
 
-## Matriz de decisão
+## Decision matrix
 
-| Anotação | Quando usar | Carrega | Velocidade |
+| Annotation | When to use | Loads | Speed |
 | ---------- | -------- | ----- | ----- |
-| **Nenhuma** (JUnit simples) | Lógica de negócio pura | Nada | Mais rápida |
-| `@WebMvcTest` | Controlador + camada HTTP | Controladores, MVC, Jackson | Rápida |
-| `@DataJpaTest` | Consultas de repositório | Repositórios, JPA, DataSource | Rápida |
-| `@RestClientTest` | Código de cliente REST | RestTemplate/RestClient, Jackson | Rápida |
-| `@JsonTest` | Serialização JSON | Somente ObjectMapper | Fatia mais rápida |
-| `@WebFluxTest` | Controladores reativos | Controladores, WebFlux | Rápida |
-| `@DataJdbcTest` | Repositórios JDBC | Repositórios, JDBC | Rápida |
-| `@DataMongoTest` | Repositórios MongoDB | Repositórios, MongoDB | Rápida |
-| `@DataRedisTest` | Repositórios Redis | Repositórios, Redis | Rápida |
-| `@SpringBootTest` | Integração completa | Aplicação inteira | Lenta |
+| **None** (plain JUnit) | Pure business logic | Nothing | Fastest |
+| `@WebMvcTest` | Controller + HTTP layer | Controllers, MVC, Jackson | Fast |
+| `@DataJpaTest` | Repository queries | Repositories, JPA, DataSource | Fast |
+| `@RestClientTest` | REST client code | RestTemplate/RestClient, Jackson | Fast |
+| `@JsonTest` | JSON serialization | ObjectMapper only | Fastest slice |
+| `@WebFluxTest` | Reactive controllers | Controllers, WebFlux | Fast |
+| `@DataJdbcTest` | JDBC repositories | Repositories, JDBC | Fast |
+| `@DataMongoTest` | MongoDB repositories | Repositories, MongoDB | Fast |
+| `@DataRedisTest` | Redis repositories | Repositories, Redis | Fast |
+| `@SpringBootTest` | Full integration | Entire application | Slow |
 
-## Guia de seleção
+## Selection guide
 
-### Sem anotação (teste unitário simples)
+### No annotation (plain unit test)
 
 ```java
 class PriceCalculatorTest {
@@ -33,7 +33,7 @@ class PriceCalculatorTest {
 }
 ```
 
-**Quando**: lógica de negócio pura, sem dependências ou com dependências simples que podem ser simuladas por injeção de construtor.
+**When**: pure business logic, with no dependencies or simple dependencies that can be mocked through constructor injection.
 
 ### Use @WebMvcTest
 
@@ -45,9 +45,9 @@ class OrderControllerTest {
 }
 ```
 
-**Quando**: para testar o mapeamento de solicitações, validação, mapeamento JSON, segurança e filtros.
+**When**: testing request mapping, validation, JSON mapping, security, and filters.
 
-**O que você obtém**: MockMvc, ObjectMapper, Spring Security (se presente) e manipuladores de exceção.
+**What you get**: MockMvc, ObjectMapper, Spring Security (if present), and exception handlers.
 
 ### Use @DataJpaTest
 
@@ -61,9 +61,9 @@ class OrderRepositoryTest {
 }
 ```
 
-**Quando**: para testar consultas JPA personalizadas, mapeamentos de entidades, comportamento transacional e operações em cascata.
+**When**: testing custom JPA queries, entity mappings, transactional behavior, and cascading operations.
 
-**O que você obtém**: beans de repositório, EntityManager, TestEntityManager e suporte a transações.
+**What you get**: repository beans, EntityManager, TestEntityManager, and transaction support.
 
 ### Use @RestClientTest
 
@@ -75,9 +75,9 @@ class WeatherServiceTest {
 }
 ```
 
-**Quando**: para testar clientes REST que chamam APIs externas.
+**When**: testing REST clients that call external APIs.
 
-**O que você obtém**: MockRestServiceServer para programar respostas HTTP.
+**What you get**: MockRestServiceServer to configure HTTP responses.
 
 ### Use @JsonTest
 
@@ -88,7 +88,7 @@ class OrderJsonTest {
 }
 ```
 
-**Quando**: para testar serializadores e desserializadores personalizados e mapeamento JSON complexo.
+**When**: testing custom serializers and deserializers and complex JSON mapping.
 
 ### Use @SpringBootTest
 
@@ -100,27 +100,27 @@ class OrderIntegrationTest {
 }
 ```
 
-**Quando**: para testar o fluxo completo da solicitação, filtros de segurança e interações com o banco de dados em conjunto.
+**When**: testing the complete request flow, security filters, and database interactions together.
 
-**O que você obtém**: contexto completo da aplicação, servidor integrado opcional e beans reais.
+**What you get**: full application context, optional embedded server, and real beans.
 
-## Erros comuns
+## Common mistakes
 
-1. **Usar @SpringBootTest para tudo**: torna a suíte desnecessariamente lenta
-2. **Usar @WebMvcTest sem simular serviços**: causa falhas no carregamento do contexto
-3. **Usar @DataJpaTest com @MockBean**: anula o objetivo, pois são necessários repositórios reais
-4. **Usar várias fatias em um teste**: cada fatia deve estar em uma classe de teste separada
+1. **Using @SpringBootTest for everything**: makes the suite unnecessarily slow
+2. **Using @WebMvcTest without mocking services**: causes context loading failures
+3. **Using @DataJpaTest with @MockBean**: defeats the purpose, since real repositories are needed
+4. **Using multiple slices in one test**: each slice should be in a separate test class
 
-## Recursos do Java 21 nos testes
+## Java 21 features in tests
 
-### Records para dados de teste
+### Records for test data
 
 ```java
 record OrderRequest(String product, int quantity) {}
 record OrderResponse(Long id, String status, BigDecimal total) {}
 ```
 
-### Correspondência de padrões nos testes
+### Pattern matching in tests
 
 ```java
 @Test
@@ -130,12 +130,12 @@ void shouldHandleDifferentOrderTypes() {
   switch (order) {
     case PhysicalOrder po -> assertThat(po.getShippingAddress()).isNotNull();
     case DigitalOrder do_ -> assertThat(do_.getDownloadLink()).isNotNull();
-    default -> throw new IllegalStateException("Tipo de pedido desconhecido");
+    default -> throw new IllegalStateException("Unknown order type");
   }
 }
 ```
 
-### Blocos de texto para JSON
+### Text blocks for JSON
 
 ```java
 @Test
@@ -158,7 +158,7 @@ void shouldParseComplexJson() {
 }
 ```
 
-### Coleções sequenciadas
+### Sequenced collections
 
 ```java
 @Test
@@ -171,7 +171,7 @@ void shouldReturnOrdersInSequence() {
 }
 ```
 
-## Dependências por fatia
+## Dependencies by slice
 
 ```xml
 <!-- WebMvcTest -->

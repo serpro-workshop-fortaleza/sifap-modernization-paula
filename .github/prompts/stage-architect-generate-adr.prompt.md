@@ -69,7 +69,7 @@ See [`02-modern-spec/templates/ADR.template.md`](../../02-modern-spec/templates/
 
 ## Rules for SDD and TDD
 
-Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite. Keep this supporting ADR in `02-modern-spec/ADRs/` and link canonical requirements from `specs/<NNN>-<feature>/spec.md`; do not invent requirements or generate a parallel `.specs/` or `Full SDD` package for one decision. The SDD skill owns evidence and lifecycle rules; TDD informs the verification approach, not implementation. Use the SDD skill's output template for the final report.
+Apply the `SDD Workflow` section of the [architect agent](../agents/architect.agent.md) directly. Keep this supporting ADR in `02-modern-spec/ADRs/` and link canonical requirements from `specs/<NNN>-<feature>/spec.md`; do not invent requirements or generate a parallel package for one decision. The SDD skill owns evidence and lifecycle rules; TDD informs the verification approach, not implementation. Use the SDD skill's output template for the final report.
 
 ## Definition of Done
 

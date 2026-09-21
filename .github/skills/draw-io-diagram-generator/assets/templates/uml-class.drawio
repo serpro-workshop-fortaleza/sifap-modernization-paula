@@ -1,5 +1,5 @@
 <mxfile host="Electron" modified="2026-03-25T00:00:00.000Z" version="26.0.0">
-  <diagram id="uml-class" name="Diagrama de classes UML">
+  <diagram id="uml-class" name="UML class diagram">
     <mxGraphModel dx="1422" dy="762" grid="1" gridSize="10" guides="1"
                   tooltips="1" connect="1" arrows="1" fold="1"
                   page="1" pageScale="1" pageWidth="1169" pageHeight="827"
@@ -8,8 +8,8 @@
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
 
-        <!-- TÍTULO -->
-        <mxCell id="2" value="Diagrama de classes UML"
+        <!-- TITLE -->
+        <mxCell id="2" value="UML class diagram"
                 style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontStyle=1;"
                 vertex="1" parent="1">
           <mxGeometry x="334" y="20" width="500" height="40" as="geometry" />
@@ -47,13 +47,13 @@
           <mxGeometry y="140" width="260" height="30" as="geometry" />
         </mxCell>
 
-        <!-- ====== CLASSE: Order ====== -->
+        <!-- ====== CLASS: Order ====== -->
         <mxCell id="cls_order" value="Order"
                 style="swimlane;fontStyle=1;align=center;startSize=40;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=13;"
                 vertex="1" parent="1">
           <mxGeometry x="80" y="370" width="280" height="290" as="geometry" />
         </mxCell>
-        <!-- Divisor da seção de atributos -->
+        <!-- Attribute section divider -->
         <mxCell id="cls_order_d1" value=""
                 style="swimlane;startSize=0;fillColor=none;strokeColor=#6c8ebf;"
                 vertex="1" parent="cls_order">
@@ -84,7 +84,7 @@
                 vertex="1" parent="cls_order">
           <mxGeometry y="150" width="280" height="25" as="geometry" />
         </mxCell>
-        <!-- Divisor dos métodos -->
+        <!-- Method divider -->
         <mxCell id="cls_order_d2" value=""
                 style="swimlane;startSize=0;fillColor=none;strokeColor=#6c8ebf;"
                 vertex="1" parent="cls_order">
@@ -111,7 +111,7 @@
           <mxGeometry y="260" width="280" height="25" as="geometry" />
         </mxCell>
 
-        <!-- ====== CLASSE: OrderItem ====== -->
+        <!-- ====== CLASS: OrderItem ====== -->
         <mxCell id="cls_item" value="OrderItem"
                 style="swimlane;fontStyle=1;align=center;startSize=40;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=13;"
                 vertex="1" parent="1">
@@ -195,23 +195,23 @@
           <mxGeometry y="150" width="200" height="25" as="geometry" />
         </mxCell>
 
-        <!-- ====== RELACIONAMENTOS ====== -->
+        <!-- ====== RELATIONSHIPS ====== -->
 
-        <!-- Order REALIZA IOrderRepository (tracejado + triângulo aberto) -->
+        <!-- Order REALIZES IOrderRepository (dashed + open triangle) -->
         <mxCell id="rel_realize" value=""
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=block;endFill=0;dashed=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;"
                 edge="1" source="cls_order" target="iface1" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- COMPOSIÇÃO de Order com OrderItem (losango preenchido no lado de Order) -->
+        <!-- COMPOSITION of Order with OrderItem (filled diamond on the Order side) -->
         <mxCell id="rel_compose" value="1        *"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;startArrow=ERmandOne;endArrow=ERmany;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
                 edge="1" source="cls_order" target="cls_item" parent="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
 
-        <!-- Order USA OrderStatus (dependência tracejada) -->
+        <!-- Order USES OrderStatus (dashed dependency) -->
         <mxCell id="rel_dep" value="«use»"
                 style="edgeStyle=orthogonalEdgeStyle;html=1;endArrow=open;startArrow=none;dashed=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;"
                 edge="1" source="cls_order" target="enum1" parent="1">

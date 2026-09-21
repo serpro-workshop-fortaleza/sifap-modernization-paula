@@ -1,91 +1,91 @@
 ---
 name: "postgresql-code-review"
-description: "Revise SQL e esquema segundo boas práticas e antipadrões do PostgreSQL 16, delegando a lista de verificação à skill postgresql-code-review."
+description: "Review SQL and schemas against PostgreSQL 16 best practices and anti-patterns, delegating the checklist to the postgresql-code-review skill."
 argument-hint: "selection=<sql-or-schema>"
 agent: "dba"
 tools: ["read", "search"]
 ---
 # /postgresql-code-review
 
-## Objetivo
+## Objective
 
-Revisar SQL, esquema, funções e recursos de segurança do PostgreSQL (JSONB, matrizes, tipos personalizados e segurança em nível de linha, Row Level Security) em uma seleção ou em todo o projeto. Retornar um parecer com correções concretas. A lista de verificação completa está na habilidade [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md). Este prompt a aplica ao banco de dados do SIFAP 2.0 (PostgreSQL 16 por meio de JPA/Hibernate) sem repeti-la.
+Review PostgreSQL SQL, schemas, functions, and security features (JSONB, arrays, custom types, and Row Level Security) in a selection or across the project. Return a verdict with concrete fixes. The complete checklist is in the [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md) skill. This prompt applies it to the SIFAP 2.0 database (PostgreSQL 16 through JPA/Hibernate) without repeating it.
 
 > [!IMPORTANT]
-> Toda entrada da pessoa usuária concatenada em SQL é uma falha de injeção e resulta em rejeição automática. Vincule todos os parâmetros.
+> Any user input concatenated into SQL is an injection flaw and results in automatic rejection. Bind all parameters.
 
-## Quando usar
+## When to Invoke
 
-Durante a revisão de código de uma migração, consulta, função ou alteração de esquema nas Etapas 3 ou 4, antes da mesclagem em `develop`.
+During code review of a migration, query, function, or schema change in Stages 3 or 4, before merging into `develop`.
 
-## Pré-condições
+## Preconditions
 
-- O SQL ou esquema em revisão está disponível (uma seleção, um arquivo de migração ou o projeto)
-- As tabelas envolvidas e seus índices existentes são conhecidos ou podem ser consultados em `db/migration/`
-- O destino é PostgreSQL 16
+- The SQL or schema under review is available (a selection, migration file, or the project)
+- The tables involved and their existing indexes are known or can be looked up in `db/migration/`
+- The target is PostgreSQL 16
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- `selection`: o SQL, esquema ou migração a revisar (o padrão é a seleção ou o projeto atual)
-- As tabelas envolvidas e todas as colunas de PII entre elas
-- Peça à pessoa usuária qualquer informação ausente
+- `selection`: the SQL, schema, or migration to review (defaults to the current selection or project)
+- The tables involved and all PII columns within them
+- Ask the user for any missing information
 
-## O que farei
+## What I Will Do
 
-- Aplicarei à seleção a lista de verificação da habilidade [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md)
-- Verificarei as escolhas de tipos de dados (CITEXT, TIMESTAMPTZ, ENUM e JSONB), tipos de índice (GIN/GiST/parcial) e restrições
-- Confirmarei se cada consulta está parametrizada e se cada coluna de PII está mascarada ou comentada
-- Emitirei um parecer, Aprovada / Correção necessária / Rejeitada, com o SQL corrigido
+- Apply the checklist in the [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md) skill to the selection
+- Check data type choices (CITEXT, TIMESTAMPTZ, ENUM, and JSONB), index types (GIN/GiST/partial), and constraints
+- Confirm that each query is parameterized and each PII column is masked or commented
+- Issue a verdict, Approved / Needs fixing / Rejected, with corrected SQL
 
-## O que não farei
+## What I Will NOT Do
 
-- Aprovar SQL com concatenação de cadeias de caracteres ou um parâmetro não vinculado
-- Reescrever aqui o mapeamento da entidade JPA. As alterações de mapeamento voltam para o módulo responsável
-- Tratar JSONB como uma cadeia de caracteres opaca ou ignorar operadores específicos do PostgreSQL
-- Presumir que uma coluna contém ou não PII. Sinalizo tudo o que não estiver identificado
+- Approve SQL with string concatenation or an unbound parameter
+- Rewrite the JPA entity mapping here. Mapping changes go back to the owning module
+- Treat JSONB as an opaque string or ignore PostgreSQL-specific operators
+- Assume whether a column contains PII. I flag anything that is not identified
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### Parecer
-Correção necessária: índice GIN ausente para uma consulta de contenção JSONB.
+### Verdict
+Needs fixing: missing GIN index for a JSONB containment query.
 
-### Constatações
-| # | Severidade | Constatação | Evidência |
+### Findings
+| # | Severity | Finding | Evidence |
 |---|---|---|---|
-| 1 | Alta | Filtro de status não parametrizado | `data->>'status' = '` + input |
-| 2 | Média | Nenhum índice para `data @> ...` | Seq Scan em `orders` |
+| 1 | High | Unparameterized status filter | `data->>'status' = '` + input |
+| 2 | Medium | No index for `data @> ...` | Seq Scan on `orders` |
 
-### SQL corrigido
+### Corrected SQL
 CREATE INDEX idx_orders_data ON orders USING gin(data);
 SELECT id FROM orders WHERE data @> :filter;
 ```
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Um parecer está declarado: Aprovada / Correção necessária / Rejeitada
-- [ ] Cada constatação tem severidade e evidência (arquivo/linha ou trecho de um plano)
-- [ ] O SQL corrigido está parametrizado e pronto para uso
-- [ ] Cada coluna de PII está mascarada ou contém um `COMMENT`
+- [ ] A verdict is stated: Approved / Needs fixing / Rejected
+- [ ] Each finding has severity and evidence (file/line or a plan excerpt)
+- [ ] The corrected SQL is parameterized and ready to use
+- [ ] Each PII column is masked or contains a `COMMENT`
 
-## Corpo do prompt
+## Prompt Body
 
-A habilidade [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md) define os antipadrões específicos do PostgreSQL e a lista de verificação de qualidade. Leia-a e depois aplique-a à seleção.
+The [`postgresql-code-review`](../skills/postgresql-code-review/SKILL.md) skill defines PostgreSQL-specific anti-patterns and the quality checklist. Read it, then apply it to the selection.
 
-**Etapa 1: execute a análise estática.**
-Rejeite a entrada concatenada da pessoa usuária. Sinalize `SELECT *` em tabelas largas, tipos genéricos quando houver tipos adequados do PostgreSQL e restrições ausentes.
+**Step 1: run static analysis.**
+Reject concatenated user input. Flag `SELECT *` on wide tables, generic types where suitable PostgreSQL types exist, and missing constraints.
 
-**Etapa 2: aplique a habilidade.**
-Percorra as áreas da habilidade: JSONB, matrizes, tipos/domínios personalizados, projeto de esquema, funções/gatilhos, extensões e RLS.
+**Step 2: apply the skill.**
+Work through the skill's areas: JSONB, arrays, custom types/domains, schema design, functions/triggers, extensions, and RLS.
 
-**Etapa 3: respeite as regras do conjunto.**
-Confirme os recursos do PostgreSQL 16, o acesso parametrizado por JPA/Hibernate, as migrações com reversão segura em `backend/src/main/resources/db/migration/` e um `COMMENT` em cada coluna de PII.
+**Step 3: follow the kit's rules.**
+Confirm PostgreSQL 16 features, parameterized access through JPA/Hibernate, rollback-safe migrations in `backend/src/main/resources/db/migration/`, and a `COMMENT` on every PII column.
 
-**Etapa 4: emita o parecer.**
-Declare Aprovada, Correção necessária ou Rejeitada com o SQL corrigido e as justificativas.
+**Step 4: issue the verdict.**
+State Approved, Needs fixing, or Rejected with the corrected SQL and rationale.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /postgresql-code-review selection=backend/src/main/resources/db/migration/V3__payment.sql
 ```

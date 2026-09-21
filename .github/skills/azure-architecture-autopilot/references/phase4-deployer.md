@@ -1,91 +1,91 @@
-# Fase 4: agente de implantação
+# Phase 4: deployment agent
 
-Este arquivo contém as instruções detalhadas da Fase 4. Leia-o e siga-o quando a implantação for aprovada após a conclusão da Fase 3 (revisão de código).
-
----
-
-**🚨🚨🚨 Ordem de execução obrigatória da Fase 4: nunca pule nenhuma etapa 🚨🚨🚨**
-
-Execute as cinco etapas abaixo **rigorosamente na ordem**. Nenhuma etapa pode ser omitida.
-Mesmo que a pessoa peça "implante", "pode seguir", "faça" etc., sempre comece pela Etapa 1.
-
-```
-Etapa 1: verificar os pré-requisitos (az login, assinatura, grupo de recursos)
-    ↓
-Etapa 2: análise de alterações, what-if (az deployment group what-if) ← execução obrigatória
-    ↓
-Etapa 3: gerar o diagrama de visualização (02_arch_diagram_preview.html) ← geração obrigatória
-    ↓
-Etapa 4: implantação real após a confirmação final (az deployment group create)
-    ↓
-Etapa 5: gerar o diagrama do resultado da implantação (03_arch_diagram_result.html)
-```
-
-**Nunca faça o seguinte:**
-
-- Executar `az deployment group create` diretamente, sem a análise de alterações (`what-if`)
-- Pular a geração do diagrama de visualização (`02_arch_diagram_preview.html`)
-- Prosseguir com a implantação sem apresentar o resultado da análise de alterações
-- Fornecer somente comandos `az` para execução manual
+This file contains detailed Phase 4 instructions. Read and follow it when deployment is approved after Phase 3 (code review) is complete.
 
 ---
 
-## Etapa 1: verificar os pré-requisitos
+**Mandatory Phase 4 execution order: never skip any step**
+
+Execute the five steps below **strictly in order**. No step may be omitted.
+Even if the user says "deploy", "go ahead", "do it", etc., always start with Step 1.
+
+```text
+Step 1: check prerequisites (az login, subscription, resource group)
+    ↓
+Step 2: change analysis, what-if (az deployment group what-if) ← execution required
+    ↓
+Step 3: generate the preview diagram (02_arch_diagram_preview.html) ← generation required
+    ↓
+Step 4: actual deployment after final confirmation (az deployment group create)
+    ↓
+Step 5: generate the deployment result diagram (03_arch_diagram_result.html)
+```
+
+**Never do the following:**
+
+- Run `az deployment group create` directly without change analysis (`what-if`)
+- Skip preview diagram generation (`02_arch_diagram_preview.html`)
+- Proceed with deployment without presenting the change analysis result
+- Provide only `az` commands for manual execution
+
+---
+
+## Step 1: check prerequisites
 
 ```powershell
-# Verifica a instalação e a autenticação da CLI az
+# Check az CLI installation and authentication
 az account show 2>&1
 ```
 
-Se não houver autenticação, peça para executar `az login`.
-O agente nunca deve inserir nem armazenar credenciais diretamente.
+If not authenticated, ask the user to run `az login`.
+The agent must never enter or store credentials directly.
 
-Crie o grupo de recursos:
+Create the resource group:
 
 ```powershell
-az group create --name "<RG_NAME>" --location "<LOCATION>"  # Local confirmado na Fase 1
+az group create --name "<RG_NAME>" --location "<LOCATION>"  # Location confirmed in Phase 1
 ```
 
-→ Após confirmar o sucesso, siga para a próxima etapa
+→ After confirming success, proceed to the next step
 
-## Etapa 2: validação (`validate`) → análise de alterações (`what-if`), 🚨 obrigatória
+## Step 2: validation (`validate`) → change analysis (`what-if`), required
 
-**Não pule esta etapa. Sempre a execute, independentemente da urgência da solicitação.**
+**Do not skip this step. Always execute it, regardless of the request's urgency.**
 
-**Etapa 2-A: executar primeiro o validate (pré-validação rápida)**
+**Step 2-A: run validate first (quick pre-validation)**
 
-A análise de alterações (`what-if`) pode **ficar travada indefinidamente sem mensagens de erro** quando há violações de Azure Policy, erros de referência de recursos etc.
-Para evitar isso, **sempre execute a validação (`validate`) primeiro**. Ela retorna erros rapidamente.
+Change analysis (`what-if`) may **hang indefinitely without error messages** when Azure Policy violations, resource reference errors, etc. occur.
+To avoid this, **always run validation (`validate`) first**. It returns errors quickly.
 
 ```powershell
-# validate: detecta rapidamente violações de política, erros de esquema e problemas de parâmetros
+# validate: quickly detect policy violations, schema errors, and parameter issues
 az deployment group validate `
   --resource-group "<RG_NAME>" `
   --parameters main.bicepparam
 ```
 
-- **Validação bem-sucedida** → siga para a Etapa 2-B (análise de alterações)
-- **Falha na validação** → analise as mensagens, corrija o Bicep, compile e valide novamente
-  - Violação de Azure Policy (`RequestDisallowedByPolicy`) → reflita no Bicep os requisitos da política (por exemplo, `azureADOnlyAuthentication: true`)
-  - Erro de esquema → corrija a versão da API ou as propriedades
-  - Erro de parâmetro → corrija o arquivo de parâmetros
+- **Validation succeeds** → proceed to Step 2-B (change analysis)
+- **Validation fails** → analyze messages, fix Bicep, build, and validate again
+  - Azure Policy violation (`RequestDisallowedByPolicy`) → reflect policy requirements in Bicep (for example, `azureADOnlyAuthentication: true`)
+  - Schema error → fix the API version or properties
+  - Parameter error → fix the parameter file
 
-**Etapa 2-B: executar a análise de alterações (`what-if`)**
+**Step 2-B: run change analysis (`what-if`)**
 
-Execute a análise de alterações após a aprovação da validação.
+Run change analysis after validation passes.
 
-**Escolha o método de passagem de parâmetros:**
+**Choose the parameter-passing method:**
 
-- Se todos os parâmetros `@secure()` tiverem valores padrão → use `.bicepparam`
-- Se parâmetros `@secure()` exigirem entrada → use `--template-file` + arquivo de parâmetros JSON
+- If all `@secure()` parameters have default values → use `.bicepparam`
+- If `@secure()` parameters require input → use `--template-file` + a JSON parameter file
 
 ```powershell
-# Método 1: usa .bicepparam (quando todos os parâmetros @secure() têm valores padrão)
+# Method 1: use .bicepparam (when all @secure() parameters have default values)
 az deployment group what-if `
   --resource-group "<RG_NAME>" `
   --parameters main.bicepparam
 
-# Método 2: usa arquivo de parâmetros JSON (quando parâmetros @secure() exigem entrada)
+# Method 2: use a JSON parameter file (when @secure() parameters require input)
 az deployment group what-if `
   --resource-group "<RG_NAME>" `
   --template-file main.bicep `
@@ -93,87 +93,87 @@ az deployment group what-if `
   --parameters secureParam='value'
 ```
 
-→ Resuma e apresente o resultado da análise de alterações.
+→ Summarize and present the change analysis result.
 
-**⏱️ Método de execução e tratamento do tempo limite da análise de alterações:**
+**Change analysis execution method and timeout handling:**
 
-A análise de alterações valida recursos no servidor do Azure. A duração depende do serviço e da região.
-**Sempre execute com `initial_wait: 300` (cinco minutos).** Se não terminar nesse prazo, o tempo limite será atingido automaticamente.
+Change analysis validates resources on the Azure server. Duration depends on the service and region.
+**Always run with `initial_wait: 300` (five minutes).** If it does not finish within that time, it will automatically time out.
 
 ```powershell
-# Sempre define initial_wait: 300 ao chamar a ferramenta powershell
+# Always set initial_wait: 300 when calling the powershell tool
 # mode: "sync", initial_wait: 300
 az deployment group what-if `
   --resource-group "<RG_NAME>" `
   --parameters main.bicepparam
 ```
 
-**Concluída em cinco minutos** → prossiga normalmente (resumo → diagrama de visualização → confirmação da implantação)
+**Completed within five minutes** → proceed normally (summary → preview diagram → deployment confirmation)
 
-**Não concluída em cinco minutos (tempo limite)** → interrompa imediatamente com `stop_powershell` e ofereça opções:
+**Not completed within five minutes (timeout)** → stop immediately with `stop_powershell` and offer options:
 
-```
+```text
 ask_user({
-  question: "A análise de alterações (what-if) não terminou em cinco minutos. A resposta do servidor do Azure está atrasada. Como você deseja prosseguir?",
+  question: "Change analysis (what-if) did not finish within five minutes. The Azure server response is delayed. How would you like to proceed?",
   choices: [
-    "Tentar novamente (Recomendado)",
-    "Pular a análise de alterações e implantar diretamente"
+    "Retry (Recommended)",
+    "Skip change analysis and deploy directly"
   ]
 })
 ```
 
-**Se "Tentar novamente" for selecionado:** execute o mesmo comando com `initial_wait: 300`. Faça no máximo duas tentativas.
-**Se "Pular a análise de alterações e implantar diretamente" for selecionado:**
+**If "Retry" is selected:** run the same command with `initial_wait: 300`. Make at most two attempts.
+**If "Skip change analysis and deploy directly" is selected:**
 
-- Gere o diagrama de visualização com base no rascunho da Fase 1
-- Informe os riscos:
-  > **⚠️ Implantação sem análise prévia de alterações (`what-if`).** Podem ocorrer alterações inesperadas nos recursos. Verifique-as no portal do Azure após a implantação.
+- Generate the preview diagram based on the Phase 1 draft
+- Explain the risks:
+  > **Deployment without prior change analysis (`what-if`).** Unexpected resource changes may occur. Check them in the Azure portal after deployment.
 
-**Nunca faça o seguinte:**
+**Never do the following:**
 
-- Executar sem definir `initial_wait`, causando espera indefinida
-- Permitir que o agente decida arbitrariamente que "a análise de alterações é opcional" e a pule
-- Passar automaticamente à implantação após atingir o tempo limite, sem perguntar
-- Pular a análise de alterações porque "a implantação é mais rápida"
+- Run without setting `initial_wait`, causing an indefinite wait
+- Allow the agent to arbitrarily decide that "change analysis is optional" and skip it
+- Automatically proceed to deployment after a timeout without asking
+- Skip change analysis because "deployment is faster"
 
-## Etapa 3: diagrama de visualização baseado no resultado da análise de alterações, 🚨 obrigatório
+## Step 3: preview diagram based on the change analysis result, required
 
-**Não pule esta etapa. Sempre gere o diagrama de visualização quando a análise de alterações for bem-sucedida.**
+**Do not skip this step. Always generate the preview diagram when change analysis succeeds.**
 
-Gere novamente o diagrama usando os recursos reais do resultado da análise de alterações (nomes, tipos, locais e quantidades).
-Mantenha inalterado o rascunho da Fase 1 (`01_arch_diagram_draft.html`) e gere `02_arch_diagram_preview.html`.
-O rascunho pode ser reaberto a qualquer momento.
+Regenerate the diagram using actual resources from the change analysis result (names, types, locations, and quantities).
+Keep the Phase 1 draft (`01_arch_diagram_draft.html`) unchanged and generate `02_arch_diagram_preview.html`.
+The draft can be reopened at any time.
 
+```text
+## Architecture to be deployed (based on change analysis)
+
+[Interactive diagram link: 02_arch_diagram_preview.html]
+(Design draft: 01_arch_diagram_draft.html)
+
+Resources to be created (N items):
+[Change analysis summary table]
+
+Deploy these resources? (Yes/No)
 ```
-## Arquitetura que será implantada (com base na análise de alterações)
 
-[Link do diagrama interativo: 02_arch_diagram_preview.html]
-(Rascunho do projeto: 01_arch_diagram_draft.html)
+Proceed to Step 4 after confirmation. **Do not proceed with deployment without the preview diagram.**
 
-Recursos que serão criados (N itens):
-[Tabela de resumo da análise de alterações]
+## Step 4: actual deployment
 
-Implantar estes recursos? (Sim/Não)
-```
-
-Siga para a Etapa 4 após a confirmação. **Não prossiga com a implantação sem o diagrama de visualização.**
-
-## Etapa 4: implantação real
-
-Execute somente após a revisão do diagrama, do resultado da análise de alterações e da aprovação da implantação.
-**Use o mesmo método de passagem de parâmetros da análise de alterações.**
+Execute only after the diagram and change analysis result have been reviewed and deployment approved.
+**Use the same parameter-passing method as for change analysis.**
 
 ```powershell
 $deployName = "deploy-$(Get-Date -Format 'yyyyMMdd-HHmmss')"
 
-# Método 1: usa .bicepparam
+# Method 1: use .bicepparam
 az deployment group create `
   --resource-group "<RG_NAME>" `
   --parameters main.bicepparam `
   --name $deployName `
   2>&1 | Tee-Object -FilePath deployment.log
 
-# Método 2: usa arquivo de parâmetros JSON
+# Method 2: use a JSON parameter file
 az deployment group create `
   --resource-group "<RG_NAME>" `
   --template-file main.bicep `
@@ -182,7 +182,7 @@ az deployment group create `
   2>&1 | Tee-Object -FilePath deployment.log
 ```
 
-Monitore periodicamente o progresso durante a implantação:
+Monitor progress periodically during deployment:
 
 ```powershell
 az deployment group show `
@@ -192,145 +192,150 @@ az deployment group show `
   -o table
 ```
 
-## Tratamento de falhas na implantação
+## Handling deployment failures
 
-Quando a implantação falha, alguns recursos podem permanecer no estado `Failed`. Reimplantar nesse estado causa erros como `AccountIsNotSucceeded`.
+When deployment fails, some resources may remain in the `Failed` state. Redeploying in this state causes errors such as `AccountIsNotSucceeded`.
 
-**⚠️ A exclusão de recursos é destrutiva. Sempre explique a situação e obtenha aprovação antes de executar.**
+**Resource deletion is destructive. Always explain the situation and obtain approval before executing.**
 
+```text
+[Resource name] failed during deployment.
+To redeploy, first delete the failed resources.
+
+Delete and redeploy? (Yes/No)
 ```
-[Nome do recurso] falhou durante a implantação.
-Para reimplantar, primeiro exclua os recursos com falha.
 
-Excluir e reimplantar? (Sim/Não)
-```
+After approval, delete the failed resources and redeploy.
 
-Após a aprovação, exclua os recursos com falha e reimplante.
+**Handling soft-deleted resources (avoid blocking redeployment):**
 
-**🔹 Tratamento de recursos excluídos de forma reversível (evitar bloqueio da reimplantação):**
+When a resource group is deleted after a failure, Cognitive Services (Foundry), Key Vault, etc. remain **soft-deleted (`soft-delete`)**.
+Redeploying with the same name causes `FlagMustBeSetForRestore` and `Conflict` errors.
 
-Quando um grupo de recursos é excluído após uma falha, Cognitive Services (Foundry), Key Vault etc. permanecem em **exclusão reversível (`soft-delete`)**.
-Reimplantar com o mesmo nome causa erros `FlagMustBeSetForRestore` e `Conflict`.
-
-**Sempre verifique antes da reimplantação:**
+**Always check before redeployment:**
 
 ```powershell
-# Verifica Cognitive Services em exclusão reversível
+# Check soft-deleted Cognitive Services
 az cognitiveservices account list-deleted -o table
 
-# Verifica Key Vault em exclusão reversível
+# Check soft-deleted Key Vaults
 az keyvault list-deleted -o table
 ```
 
-**Opções de resolução:**
+**Resolution options:**
 
-```
+```text
 ask_user({
-  question: "Foram encontrados recursos em exclusão reversível (soft-delete) de uma implantação anterior. Como você deseja tratá-los?",
+  question: "Soft-deleted resources from a previous deployment were found. How would you like to handle them?",
   choices: [
-    "Limpar e reimplantar (Recomendado): excluir definitivamente e criar novos recursos",
-    "Reimplantar em modo de restauração: recuperar os recursos existentes"
+    "Purge and redeploy (Recommended): permanently delete and create new resources",
+    "Redeploy in restore mode: recover existing resources"
   ]
 })
 ```
 
-**Cuidado: Key Vault com `enablePurgeProtection: true`:**
+**Caution: Key Vault with `enablePurgeProtection: true`:**
 
-- Não pode ser limpo definitivamente (aguarde o término do período de retenção)
-- Não pode ser recriado com o mesmo nome
-- **Solução: altere o nome do Key Vault** e reimplante (por exemplo, adicione uma marca de data e hora à semente de `uniqueString()`)
-- Explique a situação e oriente a alteração do nome
+- Cannot be purged (wait until the retention period ends)
+- Cannot be recreated with the same name
+- **Solution: change the Key Vault name** and redeploy (for example, add a timestamp to the `uniqueString()` seed)
+- Explain the situation and guide the name change
 
-## Etapa 5: implantação concluída, gerar o diagrama com os recursos reais e relatar
+## Step 5: deployment complete, generate the diagram with actual resources and report
 
-Após concluir a implantação, consulte os recursos realmente implantados e gere o diagrama final.
+After deployment is complete, query the actual deployed resources and generate the final diagram.
 
-**Etapa 1: consultar os recursos implantados**
+**Step 1: query deployed resources**
 
 ```powershell
 az resource list --resource-group "<RG_NAME>" --output json
 ```
 
-**Etapa 2: gerar o diagrama com os recursos reais**
+**Step 2: generate the diagram with actual resources**
 
-Extraia nomes, tipos, SKUs e pontos de extremidade dos recursos e gere o diagrama final com o mecanismo integrado.
-Tenha cuidado com os nomes dos arquivos para não sobrescrever diagramas anteriores:
+Extract resource names, types, SKUs, and endpoints and generate the final diagram with the built-in engine.
+Take care with filenames to avoid overwriting previous diagrams:
 
-- `01_arch_diagram_draft.html`: rascunho do projeto (manter)
-- `02_arch_diagram_preview.html`: visualização da análise de alterações (manter)
-- `03_arch_diagram_result.html`: versão final do resultado da implantação
+- `01_arch_diagram_draft.html`: design draft (keep)
+- `02_arch_diagram_preview.html`: change analysis preview (keep)
+- `03_arch_diagram_result.html`: final deployment result version
 
-Preencha o JSON `services` do diagrama com as informações reais:
+Populate the diagram's `services` JSON with actual information:
 
-- `name`: nome real do recurso (por exemplo, `foundry-duru57kxgqzxs`)
-- `sku`: SKU real
-- `details`: valores reais, como pontos de extremidade e local
+- `name`: actual resource name (for example, `foundry-duru57kxgqzxs`)
+- `sku`: actual SKU
+- `details`: actual values, such as endpoints and location
 
-**Etapa 3: relatar**
+**Step 3: report**
 
-```
-## Implantação concluída
+```text
+## Deployment complete
 
-[Diagrama interativo da arquitetura: 03_arch_diagram_result.html]
-(Rascunho do projeto: 01_arch_diagram_draft.html | Visualização da análise de alterações: 02_arch_diagram_preview.html)
+[Interactive architecture diagram: 03_arch_diagram_result.html]
+(Design draft: 01_arch_diagram_draft.html | Change analysis preview: 02_arch_diagram_preview.html)
 
-Recursos criados (N itens):
-[Nomes, tipos e pontos de extremidade extraídos dinamicamente do resultado real]
+Resources created (N items):
+[Names, types, and endpoints dynamically extracted from the actual result]
 
-## Próximas etapas
-1. Verifique os recursos no portal do Azure
-2. Verifique o estado da conexão do Private Endpoint
-3. Consulte orientações de configuração adicionais, se necessário
+## Next steps
+1. Check resources in the Azure portal
+2. Check the Private Endpoint connection state
+3. Consult additional configuration guidance if needed
 
-## Comando de limpeza (se necessário)
+## Cleanup command (if needed)
 az group delete --name <RG_NAME> --yes --no-wait
 ```
 
 ---
 
-## Tratamento de solicitações de alteração após a implantação
+## Handling post-deployment change requests
 
-**Quando houver uma solicitação de adição, alteração ou exclusão após a implantação, NÃO vá diretamente para o Bicep/implantação.**
-Sempre retorne à Fase 1 e atualize primeiro a arquitetura.
+**When an addition, modification, or deletion is requested after deployment, do NOT go directly to Bicep/deployment.**
+Always return to Phase 1 and update the architecture first.
 
-**Processo:**
+**Process:**
 
-1. **Confirme a intenção**: pergunte primeiro se a pessoa quer adicionar à arquitetura implantada:
+### 1. Confirm intent
 
-   ```
-   Você quer adicionar uma VM à arquitetura implantada?
-   Configuração atual: [Resumo dos serviços implantados]
-   ```
+First ask whether the user wants to add to the deployed architecture:
 
-2. **Retorne à Fase 1 e aplique a Regra de Confirmação das Alterações**
-   - Use o resultado existente (`03_arch_diagram_result.html`) como referência do estado atual
-   - Verifique os campos obrigatórios dos novos serviços (SKU, rede, disponibilidade regional etc.)
-   - Confirme itens em aberto por `ask_user`
-   - Verifique os fatos (consulta ao Microsoft Docs + validação cruzada)
+```text
+Do you want to add a VM to the deployed architecture?
+Current configuration: [Summary of deployed services]
+```
 
-3. **Gere o diagrama atualizado**
-   - Combine os recursos implantados e os novos recursos em `04_arch_diagram_update_draft.html`
-   - Apresente o diagrama e obtenha confirmação:
+### 2. Return to Phase 1 and apply the Change Confirmation Rule
 
-   ```
-   ## Arquitetura atualizada
+- Use the existing result (`03_arch_diagram_result.html`) as the current-state reference
+- Check required fields for new services (SKU, network, regional availability, etc.)
+- Confirm unresolved items through `ask_user`
+- Verify facts (Microsoft Docs lookup + cross-validation)
 
-   [Diagrama interativo: 04_arch_diagram_update_draft.html]
-   (Resultado da implantação anterior: 03_arch_diagram_result.html)
+### 3. Generate the updated diagram
 
-   **Alterações:**
-   - Adicionados: [Lista de novos serviços]
-   - Removidos: [Lista de serviços removidos] (se houver)
+- Combine deployed and new resources in `04_arch_diagram_update_draft.html`
+- Present the diagram and obtain confirmation:
 
-   Prosseguir com esta configuração?
-   ```
+```text
+## Updated architecture
 
-4. **Após a confirmação, execute as Fases 2 → 3 → 4 na ordem**
-   - Adicione incrementalmente os módulos dos novos recursos ao Bicep existente
-   - Revisão → análise de alterações (`what-if`) → implantação incremental
+[Interactive diagram: 04_arch_diagram_update_draft.html]
+(Previous deployment result: 03_arch_diagram_result.html)
 
-**Nunca faça o seguinte:**
+**Changes:**
+- Added: [List of new services]
+- Removed: [List of removed services] (if any)
 
-- Ir diretamente para a geração de Bicep sem atualizar o diagrama após uma solicitação de alteração
-- Ignorar o estado da implantação existente e criar novos recursos isoladamente
-- Prosseguir sem confirmar se os recursos devem ser adicionados à arquitetura existente
+Proceed with this configuration?
+```
+
+### 4. After confirmation, execute Phases 2 → 3 → 4 in order
+
+- Incrementally add new resource modules to the existing Bicep
+- Review → change analysis (`what-if`) → incremental deployment
+
+**Never do the following:**
+
+- Go directly to Bicep generation without updating the diagram after a change request
+- Ignore the existing deployment state and create new resources in isolation
+- Proceed without confirming whether resources should be added to the existing architecture

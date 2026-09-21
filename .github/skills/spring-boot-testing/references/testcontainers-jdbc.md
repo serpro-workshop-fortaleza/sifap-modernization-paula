@@ -1,14 +1,14 @@
 # Testcontainers JDBC
 
-Teste de repositórios JPA com bancos de dados reais usando Testcontainers.
+Testing JPA repositories with real databases using Testcontainers.
 
-## Visão geral
+## Overview
 
-O Testcontainers fornece instâncias reais de bancos de dados em contêineres Docker para testes de integração. É mais confiável que o H2 para manter a paridade com produção.
+Testcontainers provides real database instances in Docker containers for integration tests. It is more reliable than H2 for maintaining production parity.
 
-## Configuração do PostgreSQL
+## PostgreSQL setup
 
-### Dependências
+### Dependencies
 
 ```xml
 <dependency>
@@ -23,7 +23,7 @@ O Testcontainers fornece instâncias reais de bancos de dados em contêineres Do
 </dependency>
 ```
 
-### Teste básico
+### Basic test
 
 ```java
 @DataJpaTest
@@ -43,7 +43,7 @@ class OrderRepositoryPostgresTest {
 }
 ```
 
-## Configuração do MySQL
+## MySQL setup
 
 ```xml
 <dependency>
@@ -59,7 +59,7 @@ class OrderRepositoryPostgresTest {
 static MySQLContainer<?> mysql = new MySQLContainer<>("mysql:8.4");
 ```
 
-## Vários bancos de dados
+## Multiple databases
 
 ```java
 @DataJpaTest
@@ -77,15 +77,15 @@ class MultiDatabaseTest {
 }
 ```
 
-## Reutilização de contêineres (otimização de velocidade)
+## Container reuse (speed optimization)
 
-Adicione a `~/.testcontainers.properties`:
+Add to `~/.testcontainers.properties`:
 
 ```properties
 testcontainers.reuse.enable=true
 ```
 
-Em seguida, habilite a reutilização no código:
+Then enable reuse in the code:
 
 ```java
 @Container
@@ -94,9 +94,9 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16"
   .withReuse(true);
 ```
 
-## Inicialização do banco de dados
+## Database initialization
 
-### Com scripts SQL
+### With SQL scripts
 
 ```java
 @Container
@@ -105,7 +105,7 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16"
   .withInitScript("schema.sql");
 ```
 
-### Com Flyway
+### With Flyway
 
 ```java
 @SpringBootTest
@@ -123,14 +123,14 @@ class MigrationTest {
   @Test
   void shouldApplyMigrations() {
     flyway.migrate();
-    // Código do teste
+    // Test code
   }
 }
 ```
 
-## Configuração avançada
+## Advanced configuration
 
-### Banco de dados ou esquema personalizado
+### Custom database or schema
 
 ```java
 @Container
@@ -142,7 +142,7 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16"
   .withInitScript("init-schema.sql");
 ```
 
-### Estratégias de espera
+### Wait strategies
 
 ```java
 @Container
@@ -150,7 +150,7 @@ static PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16"
   .waitingFor(Wait.forLogMessage(".*database system is ready.*", 1));
 ```
 
-## Exemplo de teste
+## Test example
 
 ```java
 @DataJpaTest
@@ -170,32 +170,32 @@ class OrderRepositoryTest {
 
   @Test
   void shouldFindOrdersByStatus() {
-    // Dado
+    // Given
     entityManager.persist(new Order("PENDING"));
     entityManager.persist(new Order("COMPLETED"));
     entityManager.flush();
 
-    // Quando
+    // When
     List<Order> pending = orderRepository.findByStatus("PENDING");
 
-    // Então
+    // Then
     assertThat(pending).hasSize(1);
     assertThat(pending.get(0).getStatus()).isEqualTo("PENDING");
   }
 
   @Test
   void shouldSupportPostgresSpecificFeatures() {
-    // Pode usar recursos específicos do Postgres, como:
-    // - colunas JSONB
-    // - tipos array
-    // - busca textual
+    // Can use Postgres-specific features, such as:
+    // - JSONB columns
+    // - array types
+    // - full-text search
   }
 }
 ```
 
-## Alternativa com @DynamicPropertySource
+## Alternative with @DynamicPropertySource
 
-Se não usar @ServiceConnection:
+If not using @ServiceConnection:
 
 ```java
 @SpringBootTest
@@ -214,9 +214,9 @@ class OrderServiceTest {
 }
 ```
 
-## Bancos de dados compatíveis
+## Supported databases
 
-| Banco de dados | Classe do contêiner | Artefato Maven |
+| Database | Container class | Maven artifact |
 | -------- | --------------- | -------------- |
 | PostgreSQL | PostgreSQLContainer | testcontainers-postgresql |
 | MySQL | MySQLContainer | testcontainers-mysql |
@@ -225,10 +225,10 @@ class OrderServiceTest {
 | Oracle | OracleContainer | testcontainers-oracle-free |
 | MongoDB | MongoDBContainer | testcontainers-mongodb |
 
-## Práticas recomendadas
+## Best practices
 
-1. Use @ServiceConnection quando possível (Spring Boot 3.1+)
-2. Habilite a reutilização de contêineres para acelerar compilações locais
-3. Use versões específicas (postgres:16), não a versão mais recente
-4. Mantenha a configuração do contêiner em um campo estático
-5. Use @DataJpaTest com AutoConfigureTestDatabase.Replace.NONE
+1. Use @ServiceConnection when possible (Spring Boot 3.1+)
+2. Enable container reuse to speed up local builds
+3. Use specific versions (postgres:16), not the latest version
+4. Keep container configuration in a static field
+5. Use @DataJpaTest with AutoConfigureTestDatabase.Replace.NONE

@@ -1,7 +1,7 @@
 name: Specification request
 description: Propose a new feature specification (Stage 2 - Specification)
 title: "[SPEC] "
-labels: [ "spec", "stage-2" ]
+labels: ["spec", "stage-2"]
 projects: []
 assignees: []
 body:
@@ -32,7 +32,8 @@ body:
     id: business-goal
     attributes:
       label: Business goal
-      description: What outcome does this feature enable? Link it to a SIFAP business rule
+      description:
+        What outcome does this feature enable? Link it to a SIFAP business rule
         when possible.
       placeholder: "<describe the outcome identified by the team>"
     validations:

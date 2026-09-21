@@ -140,7 +140,7 @@ it("should_render_an_accessible_approve_control_when_given_an_id", () => {
 - [ ] Mutations go through Server Actions; no secrets or privileged fetches are sent to the client
 - [ ] `strict` passes without `any`; components use named exports only
 - [ ] Loading, empty, and error states are handled and announced accessibly (WCAG 2.1 AA)
-- [ ] Vitest + Testing Library tests cover behavior, and `npm run build` is green
+- [ ] Vitest + Testing Library tests cover behavior, and `pnpm lint`, `pnpm typecheck`, `pnpm build`, and `pnpm test --run --coverage` are green
 
 ## Anti-Patterns This Agent Rejects
 

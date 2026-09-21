@@ -1,54 +1,54 @@
 ---
 name: "routing-table"
-description: "Relacione as tarefas de uma funcionalidade ao modo do Copilot e à categoria de modelo adequados, com justificativa e categoria de custo, conforme os cartões de roteamento do kit."
+description: "Map a feature's tasks to the appropriate Copilot mode and model tier, with rationale and cost tier, following the kit's routing cards."
 argument-hint: "tasks=specs/<NNN>-<feature>/tasks.md"
 agent: "tech-lead"
 tools: ["read", "search"]
 ---
 # /routing-table
 
-## Objetivo
+## Objective
 
-Relacionar tarefas ao modo e à categoria de modelo suficientes, com justificativa e custo, conforme os cartões do kit.
+Map tasks to a sufficient mode and model tier, with rationale and cost, following the kit's cards.
 
-## Quando usar
+## When to Invoke
 
-No início de uma funcionalidade, após `tasks.md`.
+At the start of a feature, after `tasks.md`.
 
-## Pré-condições
+## Preconditions
 
-- Tarefas existem
-- [`model-routing.md`](../../09-cheat-sheets/model-routing.md) e [`copilot-3-modes.md`](../../09-cheat-sheets/copilot-3-modes.md) são as fontes
+- Tasks exist
+- [`model-routing.md`](../../09-cheat-sheets/model-routing.md) and [`copilot-3-modes.md`](../../09-cheat-sheets/copilot-3-modes.md) are the sources
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- Caminho das tarefas
+- Path to the tasks
 
-## O que farei
+## What I Will Do
 
-- Classificarei Discovery, Design, Implementation, Refactor, Review ou Mechanical
-- Recomendarei Ask, Plan ou Agent e Haiku 4.5, Sonnet 4.6 ou Opus 4.6
-- Justificarei por tarefa, custo Low/Medium/High e opções mais baratas
+- Classify tasks as Discovery, Design, Implementation, Refactor, Review, or Mechanical
+- Recommend Ask, Plan, or Agent and Haiku 4.5, Sonnet 4.6, or Opus 4.6
+- Provide a per-task rationale, Low/Medium/High cost, and cheaper options
 
-## O que não farei
+## What I Will NOT Do
 
-- Fixar modelo no frontmatter, inventar categoria, usar Opus por padrão ou redefinir escopo
+- Pin a model in frontmatter, invent a tier, use Opus by default, or redefine scope
 
-## Formato da saída
+## Output Format
 
-Tabela `Task ID | Categoria | Modo Copilot | Categoria de modelo | Justificativa | Custo`.
+Table `Task ID | Category | Copilot mode | Model tier | Rationale | Cost`.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] Toda tarefa tem modo, categoria e justificativa específica
-- [ ] Há candidato mais barato ou “nenhum aplicável”; recomendações seguem os cartões
+- [ ] Every task has a mode, tier, and specific rationale
+- [ ] There is a cheaper candidate or "none applicable"; recommendations follow the cards
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@tech-lead`. Leia as tarefas e avalie ambiguidade e risco. Classifique. Use o modo Ask (Perguntar) para exploração, Plan (Planejar) para mudança em vários arquivos e Agent (Agente) para uma issue bem definida até a PR. Use Haiku 4.5 para trabalho mecânico, Sonnet 4.6 como padrão e Opus 4.6 somente para arquitetura, compromisso técnico ou impacto. Justifique a elevação. Atribua custo e sinalize economia sem perda de qualidade. Nunca fixe o modelo.
+You are `@tech-lead`. Read the tasks and assess ambiguity and risk. Classify them. Use Ask mode for exploration, Plan for changes across multiple files, and Agent for a well-defined issue through to a PR. Use Haiku 4.5 for mechanical work, Sonnet 4.6 by default, and Opus 4.6 only for architecture, technical trade-offs, or impact. Justify escalation. Assign cost and flag savings without loss of quality. Never pin the model.
 
-## Exemplo de chamada
+## Example Invocation
 
-```
+```text
 /routing-table tasks=specs/014-registration/tasks.md
 ```
