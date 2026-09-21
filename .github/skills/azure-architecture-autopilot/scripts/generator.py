@@ -3046,13 +3046,13 @@ def generate_diagram(services, connections, title="Azure Architecture", vnet_inf
     """Generate an interactive Azure architecture diagram as an HTML string.
 
     Arguments:
-      services: list of dictionaries with the keys id, name, type, sku, private, details, etc.
-      connections: list of dictionaries with the keys from, to, label, and type.
-      title: string containing the diagram title.
-      vnet_info: string containing VNet CIDR information.
-      hierarchy: optional list of the subscription/RG hierarchy.
+        services: list of dictionaries with the keys id, name, type, sku, private, details, etc.
+        connections: list of dictionaries with the keys from, to, label, and type.
+        title: string containing the diagram title.
+        vnet_info: string containing VNet CIDR information.
+        hierarchy: optional list of the subscription/RG hierarchy.
 
     Returns:
-      HTML string containing the interactive diagram.
-      """
+        HTML string containing the interactive diagram.
+    """
     return generate_html(services, connections, title, vnet_info=vnet_info, hierarchy=hierarchy)
