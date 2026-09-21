@@ -1,101 +1,115 @@
 ---
 name: "carve-bounded-contexts"
-description: "Avalia as hipóteses de limites da Etapa 1 e define contextos delimitados para o Monólito Modular."
+description: "Evaluates scoped Stage 1 boundary hypotheses using SDD, TDD testability planning, and Modular Monolith instructions for a human decision."
 argument-hint: "report=01-archaeology/discovery-report.md"
 agent: "architect"
 tools: ["read", "search", "edit"]
 ---
 # /carve-bounded-contexts
 
-## Objetivo
+## Objective
 
-Transformar as hipóteses de limites do relatório da Etapa 1 em contextos delimitados avaliados e decididos. Cada contexto recebe nome, responsabilidades, dados próprios e regras de comunicação.
+Evaluate boundary hypotheses for the selected feature and record proposals separately from human-approved decisions. Describe responsibilities, evidenced data ownership, and in-process communication without prescribing a number of contexts.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 2, logo após a revisão de `01-archaeology/discovery-report.md`.
+At the start of Stage 2, immediately after reviewing `01-archaeology/discovery-report.md`.
 
-## Pré-condições
+## Preconditions
 
-- O relatório existe e contém pelo menos três hipóteses
-- A equipe revisou o relatório e está pronta para decidir
+- The report identifies the selected scope and evidenced boundary hypotheses; do not invent extra hypotheses to reach a quota
+- The team has reviewed the report and is ready to decide
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
-- O caminho do relatório de descoberta
-- Restrições ou preferências adicionais
+- The discovery report path
+- Additional constraints or preferences
 
-## O que farei
+## What I Will Do
 
-- Lerei as hipóteses e avaliarei cada uma por coesão, acoplamento e frequência de mudança
-- Apresentarei a análise à equipe e registrarei rejeições com justificativa
-- Formalizarei os contextos aceitos com nomes, responsabilidades e propriedade dos dados
+- Load SDD/TDD and scoped instructions before evaluating hypotheses; apply the relevant SDD procedure and `Validation` gates without generating a `Full SDD` package
+- Read the hypotheses and assess each for cohesion, coupling, and change frequency
+- Present the analysis to the team and record rejections with rationale
+- Formalize accepted contexts with names, responsibilities, and data ownership
 
-## O que não farei
+## What I Will NOT Do
 
-- Decidir automaticamente; a decisão final é da equipe
-- Propor microsserviços; o destino é um Monólito Modular
-- Inventar contexto de negócio ou omitir critérios de avaliação
+- Decide automatically; the team makes the final decision
+- Propose microservices; the target is a Modular Monolith
+- Invent business context or omit evaluation criteria
+- Write requirements, executable tests, product code, or commits, or treat testability planning as executed TDD
 
-## Formato da saída
+## Output Format
 
-Um arquivo `02-modern-spec/bounded-contexts.md`:
+A file at `02-modern-spec/bounded-contexts.md`:
 
 ```markdown
-# Mapa de contextos delimitados
-## Critérios de avaliação
-## Avaliação das hipóteses
-### [Nome da hipótese] — ACEITA / REJEITADA
-## Contextos delimitados finais
-### [Nome do contexto]
-- Responsabilidade:
-- Dados próprios (DDMs/tabelas):
-- Interface pública:
-- Motivo para ser um contexto separado:
-## Comunicação entre contextos
-## Diagrama Mermaid do mapa de contextos
+# Bounded context map
+## Evaluation criteria
+## Hypothesis evaluation
+### [Hypothesis name] - Proposed / Accepted / Rejected
+## Final bounded contexts
+### [Context name]
+- Responsibility:
+- Owned data (DDMs/tables):
+- Public interface:
+- Reason for a separate context:
+## Communication between contexts
+## Planned verification and traceability
+## Open decisions and validation status
+## Context diagram, when needed
 ```
 
-## Definição de pronto
+## Rules for SDD and TDD
 
-- [ ] Cada hipótese foi avaliada pelos três critérios
-- [ ] Rejeições têm justificativa
-- [ ] Entre dois e cinco contextos foram definidos com nomes de negócio
-- [ ] Cada contexto tem responsabilidade, dados próprios e interface pública
-- [ ] Um diagrama Mermaid mostra as relações e os caminhos de comunicação
+Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite: keep supporting boundary decisions here and canonical requirements in `specs/<NNN>-<feature>/spec.md`. Link existing REQ-ID and AC-ID where available; before requirements exist, retain primary evidence and mark downstream mapping `PENDING`, rather than inventing IDs. Use the SDD skill's output template for the final report, without turning a proposed map into an implementation handoff.
 
-## Corpo do prompt
+## Definition of Done
 
-Você é `@architect`. A equipe inicia a Etapa 2 e precisa definir contextos delimitados para o Monólito Modular.
+- [ ] Every hypothesis has been assessed against all three criteria
+- [ ] Rejections have a rationale
+- [ ] Contexts are proportional to the evidenced scope, with no minimum count
+- [ ] Each context has responsibilities, evidenced data ownership or a justified stateless boundary, and any necessary interface
+- [ ] Any diagram uses the SDD light theme; an omitted diagram has an applicability rationale
+- [ ] SDD/TDD and applicable instructions were applied; proposals, human decisions, planned checks, and blockers remain distinct
 
-**Etapa 1 — Ler o relatório.**
-Extraia cada hipótese, seus programas, DDMs e justificativa.
+## Prompt Body
 
-**Etapa 2 — Avaliar três critérios.**
+You are `@architect`. The team is starting Stage 2 and needs to define bounded contexts for the Modular Monolith.
 
-- **Coesão**: as regras representam a mesma capacidade de negócio? Consulte regras confirmadas em `01-archaeology/business-rules-catalog.md`.
-- **Acoplamento**: quantas dependências cruzam o limite? Conte as arestas em `01-archaeology/dependency-map.md`. Baixo acoplamento fortalece a hipótese.
-- **Frequência de mudança**: use padrões de nomes e chamadas como aproximações. Programas fortemente conectados provavelmente mudam juntos.
+**Step 0 - Load SDD, TDD, and instructions.**
+Explicitly read [SDD artifact instructions](../instructions/sdd-artifacts.instructions.md) and load [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) and [tdd-workflow](../skills/tdd-workflow/SKILL.md) before analysis. If skill loading is unavailable, read each `SKILL.md` directly. Read [Modular Monolith instructions](../instructions/modular-monolith.instructions.md), [test instructions](../instructions/tests.instructions.md) for planned checks, and [Natural/Adabas instructions](../instructions/natural-adabas.instructions.md) before legacy sources. Their `applyTo` patterns do not automatically cover this artifact. Read the [SDD quality gates](../skills/sdd-requirements-engineer/references/quality-gates.md) for scoped `Validation`; do not invoke `Full SDD` merely to evaluate boundaries.
 
-Apresente High/Medium/Low para cada critério.
+**Step 1 - Read the report.**
+Extract the selected scope and each relevant hypothesis with its programs, data ownership, and primary evidence. Inspect existing scope and boundary decisions before proposing changes; preserve deferred work and legacy question status.
 
-**Etapa 3 — Solicitar a decisão.**
-Apresente placar, recomendação e justificativa. Pergunte: “A equipe aceita esta recomendação? Caso contrário, o que mudaria?” Registre a justificativa de qualquer decisão diferente.
+**Step 2 - Assess three criteria.**
 
-**Etapa 4 — Formalizar contextos aceitos.**
-Para cada um, registre nome de negócio confirmado, responsabilidade, DDMs ou tabelas exclusivas, operações públicas em assinaturas ou eventos e uma frase que relacione o limite aos critérios.
+- **Cohesion**: do the rules represent the same business capability? Consult confirmed rules in `01-archaeology/business-rules-catalog.md`.
+- **Coupling**: how many dependencies cross the boundary? Count the edges in `01-archaeology/dependency-map.md`. Low coupling strengthens the hypothesis.
+- **Change frequency**: use dated change history or explicit team evidence. Names and call structure do not prove change frequency; record `PENDING` with an owner and impact when evidence is unavailable.
 
-**Etapa 5 — Definir a comunicação.**
-Registre direção, mecanismo (chamada em processo por interface, evento de domínio ou tipo de kernel compartilhado) e dados trocados. A comunicação é em processo, nunca HTTP entre serviços.
+Use High/Medium/Low only when supported by cited evidence. Keep unknown assessments explicit; a proposed boundary is not an accepted decision.
 
-**Etapa 6 — Desenhar o mapa.**
-Crie um diagrama Mermaid com caixas e setas rotuladas. Preserve a paleta `#0f172a`, `#334155`, `#e2e8f0`.
+**Step 3 - Request the decision.**
+Present the assessment, recommendation, and rationale. Ask: "Does the team accept this recommendation? If not, what would you change?" Record the rationale for any different decision.
 
-**Etapa 7 — Escrever a saída.**
-Escreva em `02-modern-spec/bounded-contexts.md`.
+**Step 4 - Formalize accepted contexts.**
+For each approved context, record its confirmed name, responsibility, owned DDMs or tables when applicable, necessary public operations, and rationale. A stateless capability does not need an invented repository or data store. Keep unapproved alternatives as `Proposed` with an accountable decision owner.
 
-## Exemplo de chamada
+**Step 5 - Define communication.**
+Record direction, mechanism (an in-process interface call, domain event, or shared kernel type), and exchanged data. Communication is in-process, never HTTP between services.
 
-```
+Assess testability using TDD and the test instructions: link each material boundary to existing acceptance criteria and a planned observable check or sourced architecture constraint. If the decision has no executable behavior, record TDD as `NOT APPLICABLE` with a reason. Do not write tests or claim a red-green-refactor cycle occurred.
+
+**Step 6 - Draw the map.**
+Add a diagram only when it clarifies the selected boundary or communication decision. First read and apply the [SDD document and Mermaid standard](../skills/sdd-requirements-engineer/references/sdd-document-and-mermaid-standard.md), including its universal light theme and applicable graph classes. Do not define a competing palette in this prompt.
+
+**Step 7 - Write the output.**
+Apply the scoped `Validation` gates and record `PASS`, `FAIL`, `BLOCKED`, or `NOT APPLICABLE` with evidence or reasons. Check whether each cited validator exists and applies; with read/search/edit only, report commands as not executed and provide the checks to the team. Write `02-modern-spec/bounded-contexts.md` as `Draft` or `Ready for review` until explicit approval, retaining evidence, owners, and unresolved blockers.
+
+## Example Invocation
+
+```text
 /carve-bounded-contexts report=01-archaeology/discovery-report.md
 ```

@@ -1,146 +1,142 @@
 ---
 name: "write-ears-spec"
-description: "Registra requisitos EARS confirmados em spec.md usando as instruções de artefatos SDD e a skill sdd-requirements-engineer, com rastreabilidade obrigatória."
+description: "Writes confirmed EARS requirements in spec.md using SDD/TDD skills and scoped instructions, with source traceability and planned acceptance checks."
 argument-hint: "feature=NNN-feature-name rules=01-archaeology/business-rules-catalog.md"
 agent: "architect"
 tools: ["read", "search", "edit"]
 ---
 # /write-ears-spec
 
-## Objetivo
+## Objective
 
-Transformar somente regras confirmadas da Etapa 1 em requisitos EARS formais em `specs/<NNN>-<feature>/spec.md`. Questões em aberto permanecem como perguntas; não preencha requisitos, critérios ou arquitetura por suposição.
+Turn only confirmed Stage 1 rules into formal EARS requirements in `specs/<NNN>-<feature>/spec.md`. Open questions remain questions; do not fill in requirements, criteria, or architecture through assumptions.
 
-## Quando usar
+## When to Invoke
 
-No início da Etapa 2, após a Dupla 2 selecionar a funcionalidade restrita e concluir a transição H1, na branch `spec/<NNN>-<feature>` criada de `develop`.
+At the start of Stage 2, after Pair 2 selects the narrow feature and completes the H1 handoff. Work on `spec/<NNN>-<feature>`, branched from `develop`.
 
 > [!NOTE]
-> Não use para explorar o legado, catalogar questões (`/catalog-mysteries`) ou projetar módulos (`/design-modular-monolith`). Registre somente requisitos com evidências confirmadas.
+> Do not use this prompt to explore legacy code, catalog questions (`/catalog-mysteries`), or design modules (`/design-modular-monolith`). Record only requirements backed by confirmed evidence.
 
-## Pré-condições
+## Preconditions
 
-- `01-archaeology/business-rules-catalog.md` contém as evidências
-- A equipe identificou `specs/<NNN>-<feature>/`
-- A equipe leu cada origem legada citada
+- `01-archaeology/business-rules-catalog.md` contains the evidence
+- The team has identified `specs/<NNN>-<feature>/`
+- The team has read each cited legacy source
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
 - `feature=<NNN>-<feature-name>`
 - `rules=01-archaeology/business-rules-catalog.md`
-- O subconjunto de regras **Confirmed** pertencente à funcionalidade
-- Justificativa `[GREENFIELD]` confirmada para capacidades sem equivalente legado
+- The subset of **Confirmed** rules belonging to the feature
+- A confirmed `[GREENFIELD]` justification for capabilities without a legacy equivalent
 
-## O que farei
+## What I Will Do
 
-- Lerei as [instruções de artefatos SDD](../instructions/sdd-artifacts.instructions.md) e carregarei a skill [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) antes da autoria, no modo `Requirements`
-- Confirmarei o escopo e registrarei adiamentos em `02-modern-spec/scope-decisions.md`
-- Validarei a origem `.NSP`, `.NSN`, `.NSC`, `.NSA`, `.NSL`, `.jcl` ou `.ddm`
-- Preservarei REQ-IDs existentes e atribuirei IDs exclusivos aos requisitos novos, com `source_legacy:` e caminho e linhas; usarei `[GREENFIELD]` somente com justificativa fornecida
-- Registrarei padrão EARS, fonte `SRC-###`, prioridade justificada, justificativa do comportamento, status e método de verificação planejado conforme o contrato da skill
-- Registrarei Dado/Quando/Então somente quando apoiado por evidência ou decisão de escopo
-- Preservarei questões não validadas de `mysteries-found.md`, com todos os campos
-- Manterei uma matriz de rastreabilidade e aplicarei o modo `Validation` antes da entrega
+- Load SDD/TDD and the applicable instructions before authoring; use `Requirements` then `Validation`, applying TDD only to acceptance planning
+- Confirm scope and record deferred work in `02-modern-spec/scope-decisions.md`
+- Validate the `.NSP`, `.NSN`, `.NSC`, `.NSA`, `.NSL`, `.jcl`, or `.ddm` source
+- Preserve existing REQ-IDs and assign unique IDs to new requirements, with `source_legacy:`, paths, and lines; use `[GREENFIELD]` only with a supplied justification
+- Record the EARS pattern, `SRC-###` source, justified priority, behavior rationale, status, and planned verification method according to the skill's contract
+- Record Given/When/Then only when supported by evidence or a scope decision
+- Preserve unvalidated questions from `mysteries-found.md`, including every field
+- Maintain a traceability matrix and apply `Validation` before delivery
 
-## O que não farei
+## What I Will NOT Do
 
-- Criar requisito sem `source_legacy:` ou `[GREENFIELD]` justificado
-- Promover, responder ou alterar o status de hipóteses e questões
-- Exigir quantidade fixa de requisitos, diagramas C4, ADRs ou endpoints
-- Migrar implicitamente `specs/` para `.specs/`, trocar o esquema `REQ-NNN` ou gerar um pacote `Full SDD` para esta solicitação de requisitos
-- Colocar artefatos Spec-Kit em `02-modern-spec/`
-- Inventar fatos de negócio do SIFAP
+- Create a requirement without `source_legacy:` or a justified `[GREENFIELD]` designation
+- Promote, answer, or change the status of hypotheses and questions
+- Require a fixed number of requirements, C4 diagrams, ADRs, or endpoints
+- Implicitly migrate `specs/` to `.specs/`, change the `REQ-NNN` scheme, or generate a `Full SDD` package for this requirements request
+- Put canonical feature specifications, plans, or tasks in `02-modern-spec/`
+- Invent SIFAP business facts
+- Write executable tests, product code, or commits, or report a planned check as an observed TDD result
 
-## Formato da saída
+## Output Format
 
 ```markdown
-### REQ-007 — Título imperativo curto do comportamento
+### REQ-007 - Short imperative behavior title
 
 IF <confirmed unwanted condition>, THEN the system SHALL <one observable response>.
 
-- Padrão EARS: Indesejado
-- Prioridade: <P0 | P1 | P2 | P3, com justificativa baseada no escopo confirmado>
+- EARS pattern: Unwanted
+- Priority: <P0 | P1 | P2 | P3, with rationale based on confirmed scope>
 - Status: Proposed
-- Fonte: SRC-001
-- Justificativa: <razão apoiada pela regra confirmada>
-- source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAMA>.NSN:L<início>-L<fim>
-- Verificação planejada: <teste, inspeção, análise, demonstração ou medição; evidência esperada>
-- AC-REQ-007-01 — Aceitação (Dado/Quando/Então):
-  - Dado <pré-condição apoiada pela evidência>
-  - Quando <gatilho>
-  - Então <resultado observável e testável>
+- Source: SRC-001
+- Rationale: <reason supported by the confirmed rule>
+- source_legacy: 01-archaeology/legacy-sifap/natural-programs/<PROGRAM>.NSN:L<start>-L<end>
+- Planned verification: <test, inspection, analysis, demonstration, or measurement; expected evidence>
+- AC-REQ-007-01 - Acceptance (Given/When/Then):
+  - Given <evidenced precondition>
+  - When <trigger>
+  - Then <observable, testable outcome>
 ```
 
-Mantenha no mesmo `spec.md` o registro das fontes e a matriz de rastreabilidade:
+Keep the source register and traceability matrix in the same `spec.md`:
 
-| SRC-ID | Tipo de fonte | Evidência primária | Regra confirmada |
+| SRC-ID | Source type | Primary evidence | Confirmed rule |
 |---|---|---|---|
-| SRC-001 | Legado | `<caminho completo do programa>:L<início>-L<fim>` | Regra 4 |
+| SRC-001 | Legacy | `<full program path>:L<start>-L<end>` | Rule 4 |
 
-| REQ-ID | Padrão EARS | source_legacy | Regra de origem | Arquivo de origem | SRC-ID | AC-ID |
+| REQ-ID | EARS Pattern | source_legacy | Source Rule | Source File | SRC-ID | AC-ID |
 |---|---|---|---|---|---|---|
-| REQ-007 | Indesejado | `<PROGRAMA>.NSN:L<início>-L<fim>` | Regra 4 | `business-rules-catalog.md` | SRC-001 | AC-REQ-007-01 |
+| REQ-007 | Unwanted | `<PROGRAM>.NSN:L<start>-L<end>` | Rule 4 | `business-rules-catalog.md` | SRC-001 | AC-REQ-007-01 |
 
-## Regras de SDD e compatibilidade com o Spec-Kit
+## Rules for SDD and Traceability
 
-- As instruções SDD só são carregadas automaticamente para `.specs/**`; leia-as explicitamente neste prompt e aplique as regras de evidência, atomicidade EARS, rastreabilidade e status.
-- Preserve `specs/<NNN>-<feature>/spec.md` e o esquema `REQ-NNN` do [fluxo Spec-Kit do kit](../../09-cheat-sheets/spec-kit-workflow.md). O contrato de dez artefatos em maiúsculas é específico de `.specs/`, não uma autorização para substituir as convenções existentes.
-- Use `SHALL` nas cláusulas normativas conforme a skill. Preserve significado e IDs ao normalizar requisitos existentes. `SRC-###` complementa, mas nunca substitui, `source_legacy:`.
-- Não invente prioridade, métrica, aprovação ou resultado de teste para completar o modelo. Campos sem evidência ficam `PENDING` ou `BLOCKED`, com impacto e responsável registrados; requisitos bloqueados não são apresentados como prontos.
-- Carregue somente os recursos necessários ao modo selecionado. Não presuma que geradores e validadores citados pela skill existem neste repositório ou se aplicam ao Spec-Kit; registre portões não executados e o motivo.
+- SDD instructions load automatically only for `.specs/**`; read them explicitly for this prompt and apply the evidence, EARS atomicity, traceability, and status rules.
+- Preserve `specs/<NNN>-<feature>/spec.md` and the `REQ-NNN` scheme as repository conventions. The uppercase ten-artifact contract belongs to `.specs/`; it does not authorize replacing the existing artifact paths.
+- Use `SHALL` in normative clauses as defined by the skill. Preserve meaning and IDs when normalizing existing requirements. `SRC-###` supplements but never replaces `source_legacy:`.
+- Do not invent priorities, metrics, approvals, or test results to complete the template. Unevidenced fields remain `PENDING` or `BLOCKED`, with an impact and owner; do not present blocked requirements as ready.
+- Load only resources needed by the selected mode. Do not assume generators or validators named by the skill exist or cover this repository's artifacts; record unexecuted checks and the reason.
+- Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite. Keep test planning in the requirement's verification field; do not create `tasks.md` or a parallel FRD/NFRD unless requested. Use the SDD skill's output template for the final report.
 
-## Definição de pronto
+## Definition of Done
 
-- [ ] As instruções SDD e a skill foram lidas e aplicadas nos modos `Requirements` e `Validation`
-- [ ] `spec.md` contém somente requisitos da funcionalidade
-- [ ] Cada requisito tem uma resposta EARS observável com `SHALL`, os metadados da skill, critério com ID estável e `source_legacy:` válido ou `[GREENFIELD]` justificado
-- [ ] Questões em aberto permanecem fora dos requisitos e sem mudança de status
-- [ ] A matriz relaciona cada REQ-ID às evidências revisadas
-- [ ] Portões aplicáveis e bloqueios estão registrados; a especificação permanece `Draft` ou `Ready for review` até aprovação humana explícita
+- [ ] SDD/TDD and applicable instructions were loaded and applied in `Requirements` and `Validation`, with TDD limited to planned acceptance checks
+- [ ] `spec.md` contains only requirements for the feature
+- [ ] Each requirement has an observable EARS response using `SHALL`, the skill's metadata, a stable acceptance ID, and valid `source_legacy:` or a justified `[GREENFIELD]` designation
+- [ ] Open questions remain outside requirements and retain their status
+- [ ] The matrix links each REQ-ID to the reviewed evidence
+- [ ] Test-verifiable acceptance criteria identify the planned behavior check and expected evidence; other verification methods have an explicit applicability rationale
+- [ ] Applicable gates and blockers are recorded; the specification remains `Draft` or `Ready for review` until explicit human approval
 
-## Corpo do prompt
+## Prompt Body
 
-Você é `@architect`. Promova regras confirmadas da Etapa 1 a requisitos EARS formais sem inventar evidências.
+You are `@architect`. Promote confirmed Stage 1 rules to formal EARS requirements without inventing evidence.
 
-**Etapa 0 — Carregar o fluxo SDD.**
-Leia as [instruções de artefatos SDD](../instructions/sdd-artifacts.instructions.md) e carregue a skill [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md). Se a ferramenta de skills estiver indisponível, leia o `SKILL.md` diretamente. Selecione `Requirements` para este prompt e consulte a [referência EARS](../skills/sdd-requirements-engineer/references/ears-notation.md) e os [portões de qualidade](../skills/sdd-requirements-engineer/references/quality-gates.md). Aplique a compatibilidade com o Spec-Kit definida acima, sem criar artefatos fora do escopo solicitado.
+**Step 0 - Load SDD, TDD, and instructions.**
+Before reading feature inputs or authoring, explicitly read [SDD artifact instructions](../instructions/sdd-artifacts.instructions.md) and load [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) and [tdd-workflow](../skills/tdd-workflow/SKILL.md). If skill loading is unavailable, read each `SKILL.md` directly. Read [test instructions](../instructions/tests.instructions.md) for acceptance planning and [Natural/Adabas instructions](../instructions/natural-adabas.instructions.md) before legacy sources. Do not rely on `applyTo` matching `specs/`. Select `Requirements` and read the [EARS reference](../skills/sdd-requirements-engineer/references/ears-notation.md) and [quality gates](../skills/sdd-requirements-engineer/references/quality-gates.md); apply the compatibility rules above.
 
-**Etapa 1 — Confirmar o escopo.**
-Liste somente linhas **Confirmed** atribuídas pela equipe à funcionalidade. Registre adiamentos em `scope-decisions.md`. Não inclua **Inferred** ou **Mystery**.
+**Step 1 - Confirm scope.**
+List only **Confirmed** entries that the team assigned to the feature. Record deferred work in `scope-decisions.md`. Do not include **Inferred** or **Mystery** entries.
 
-**Etapa 2 — Validar cada origem.**
-Abra cada membro citado e confirme as linhas. Se a referência falhar, devolva a regra como questão em aberto. Nunca cite `.NSD`; não há esse arquivo no corpus.
-Associe cada evidência primária a um `SRC-###` estável e à regra confirmada, mantendo o caminho completo em `source_legacy:`.
+**Step 2 - Validate each source.**
+Open each cited member and confirm the lines. If the reference is invalid, return the rule as an open question. Never cite `.NSD`; no such file exists in the corpus.
+Associate each primary source with a stable `SRC-###` and the confirmed rule, retaining the full path in `source_legacy:`.
 
-**Etapa 3 — Escrever o requisito EARS.**
-Preserve IDs existentes e atribua `REQ-NNN` exclusivo aos requisitos novos. Classifique cada requisito em exatamente um dos seis padrões da skill e escreva uma única resposta observável:
+**Step 3 - Write the EARS requirement.**
+Preserve existing IDs and assign a unique `REQ-NNN` to each new requirement. Apply the SDD skill's requirement contract and EARS reference: exactly one classification and one observable response using `SHALL`. Do not maintain a competing set of EARS templates in this prompt.
 
-- Ubíquo: `The system SHALL <response>.`
-- Orientado a evento: `WHEN <event>, the system SHALL <response>.`
-- Orientado a estado: `WHILE <state>, the system SHALL <response>.`
-- Opcional: `WHERE <feature is present>, the system SHALL <response>.`
-- Indesejado: `IF <unwanted condition>, THEN the system SHALL <response>.`
-- Complexo: `WHILE <state>, WHEN <event>, the system SHALL <response>.`
+Attach `source_legacy:`. For new capabilities, use `[GREENFIELD]` followed only by the justification supplied by the team.
+Populate the remaining template fields from evidence and keep gaps explicit. A non-functional target is normative only when its metric, workload, observation window, environment, and owner are defined.
 
-Anexe `source_legacy:`. Para capacidade nova, use `[GREENFIELD]` seguido somente da justificativa fornecida pela equipe.
-Preencha os demais campos do modelo com evidência; mantenha lacunas explícitas. Um alvo não funcional só pode ser normativo quando sua métrica, carga, janela de observação, ambiente e responsável estiverem definidos.
+**Step 4 - Record acceptance criteria.**
+Add Given/When/Then only for evidenced behavior. Preserve existing acceptance IDs and use `AC-REQ-NNN-NN` for new criteria. For each test-verifiable criterion, apply TDD to identify the smallest behavior-scoped check, its input or precondition, why it should fail before implementation, and its expected passing outcome. Keep all of this as planned verification in `spec.md`, not executable test code or execution evidence. For inspection, analysis, demonstration, or measurement, retain the appropriate method and mark the TDD cycle `NOT APPLICABLE` with a reason where needed.
 
-**Etapa 4 — Registrar critérios.**
-Adicione Dado/Quando/Então somente para comportamento apoiado por evidências. Preserve IDs de aceitação existentes; para novos critérios, use `AC-REQ-NNN-NN` e registre método de verificação planejado, sem apresentá-lo como teste executado.
+**Step 5 - Preserve open questions.**
+Copy unvalidated items to "Open questions", preserving `path:line` evidence, impact, unconfirmed hypothesis, owner, and status. Do not answer or change them.
 
-**Etapa 5 — Preservar questões em aberto.**
-Copie itens não validados para “Questões em aberto”, preservando evidência `path:line`, impacto, hipótese não confirmada, pessoa responsável e status. Não responda nem altere.
+**Step 6 - Build the matrix.**
+Maintain the `REQ-ID | EARS Pattern | source_legacy | Source Rule | Source File | SRC-ID | AC-ID` table and the source register. Check bidirectional links between rules, sources, requirements, and acceptance.
 
-**Etapa 6 — Construir a matriz.**
-Mantenha a tabela `REQ-ID | EARS Pattern | source_legacy | Source Rule | Source File | SRC-ID | AC-ID` e o registro de fontes. Verifique a ligação nos dois sentidos entre regra, fonte, requisito e aceitação.
+**Step 7 - Validate and write.**
+Apply `Validation` to the relevant requirement and traceability gates. Record each result as `PASS`, `FAIL`, `BLOCKED`, or `NOT APPLICABLE`, with evidence or a reason. Verify that any named validator exists and covers this artifact. With read/search/edit only, report commands as not executed and list the applicable checks for the team. Save `specs/<NNN>-<feature>/spec.md` as `Draft` or `Ready for review`; approval and implementation readiness are separate, evidenced decisions. Do not expand scope to complete the report.
 
-**Etapa 7 — Validar e escrever.**
-Aplique o modo `Validation` da skill aos requisitos e os portões pertinentes ao escopo. Registre resultados, lacunas e verificações não executadas. Grave em `specs/<NNN>-<feature>/spec.md` como `Draft` ou `Ready for review`, sem presumir aprovação humana. Não infle o escopo quando faltar tempo.
-
-## Exemplo de chamada
+## Example Invocation
 
 ```text
 /write-ears-spec feature=001-benefit-calculation rules=01-archaeology/business-rules-catalog.md
 ```
 
-Espere um `spec.md` com requisitos EARS apoiados por evidências, `source_legacy:`, matriz de rastreabilidade e questões em aberto preservadas.
+Expect a `spec.md` with evidence-backed EARS requirements, `source_legacy:`, a traceability matrix, and preserved open questions.

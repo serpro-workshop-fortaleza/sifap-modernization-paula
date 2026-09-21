@@ -1,96 +1,121 @@
 ---
 name: "design-modular-monolith"
-description: "Registra em plan.md somente o projeto do Monólito Modular necessário à funcionalidade selecionada."
+description: "Records the smallest Modular Monolith design and first planned TDD cycle in plan.md using SDD/TDD skills and applicable instructions."
 argument-hint: "feature=NNN-feature-name"
 agent: "architect"
 tools: ["read", "search", "edit"]
 ---
 # /design-modular-monolith
 
-## Objetivo
+## Objective
 
-Registrar em `specs/<NNN>-<feature>/plan.md` somente as decisões de projeto que liberam a primeira implementação. Não criar arquitetura genérica, endpoints, contratos nem diagramas sem evidências da funcionalidade.
+Record only the design decisions needed to start implementation in `specs/<NNN>-<feature>/plan.md`. Do not create generic architecture, endpoints, contracts, or diagrams without feature evidence.
 
-## Quando usar
+## When to Invoke
 
-Depois que `/write-ears-spec` produzir `specs/<NNN>-<feature>/spec.md`, com `source_legacy:` em cada REQ-ID, e a equipe declarar uma questão concreta de projeto que bloqueie a primeira tarefa, ainda na branch `spec/<NNN>-<feature>`.
+After `/write-ears-spec` produces `specs/<NNN>-<feature>/spec.md` with `source_legacy:` for every REQ-ID. The team must identify a concrete design question blocking the first task. Remain on `spec/<NNN>-<feature>`.
 
 > [!NOTE]
-> Não use para projetar o sistema inteiro, adicionar módulos sem requisito ou trabalhar antes da especificação. Planeje a menor estrutura necessária.
+> Do not use this prompt to design the entire system, add modules without requirements, or work before the specification. Plan the smallest necessary structure.
 
-## Pré-condições
+## Preconditions
 
-- `spec.md` existe e cada REQ-ID tem `source_legacy:`
-- A equipe confirmou o escopo e declarou a questão de projeto
+- `spec.md` exists and every REQ-ID has `source_legacy:`
+- The team has confirmed the scope and stated the design question
 
-## Entradas que a equipe deve fornecer
+## Inputs the Team Must Provide
 
 - `feature=<NNN>-<feature-name>`
-- A questão concreta que bloqueia a primeira tarefa
-- Restrições de dados, integração ou contrato
+- The concrete question blocking the first task
+- Data, integration, or contract constraints
 
-## O que farei
+## What I Will Do
 
-- Lerei `spec.md`, `plan.md` existente e `02-modern-spec/scope-decisions.md`
-- Solicitarei evidências para limites, integrações e contratos não descritos
-- Descreverei a menor estrutura de módulos, dados e comunicação necessária
-- Criarei diagrama ou contrato somente se resolver uma questão concreta
-- Relacionarei cada decisão aos REQ-IDs e decisões de apoio
+- Load SDD/TDD and scoped instructions before design; apply only the relevant SDD design procedure and `Validation` gates
+- Read `spec.md`, any existing `plan.md`, and `02-modern-spec/scope-decisions.md`
+- Request evidence for undocumented boundaries, integrations, and contracts
+- Describe the smallest necessary module, data, and communication structure
+- Create a diagram or contract only when it resolves a concrete question
+- Link each decision to REQ-IDs and supporting decisions
+- Map REQ-ID and AC-ID to the first planned red-green-refactor cycle, dependencies, and expected evidence
 
-## O que não farei
+## What I Will NOT Do
 
-- Sugerir microsserviços, escrever código ou preencher requisitos e decisões não confirmados
-- Colocar `spec.md`, `plan.md` ou `tasks.md` em `02-modern-spec/`
-- Exigir quantidade fixa de módulos, diagramas ou contratos
+- Suggest microservices, write code, or fill in unconfirmed requirements and decisions
+- Put `spec.md`, `plan.md`, or `tasks.md` in `02-modern-spec/`
+- Require a fixed number of modules, diagrams, or contracts
+- Write executable tests, product code, or commits, or create `tasks.md` unless it was requested
 
-## Formato da saída
+## Output Format
 
 ```markdown
-# Plano — <NNN>-<feature>
+# Plan - <NNN>-<feature>
 
-## Módulos (Monólito Modular)
+## Modules (Modular Monolith)
 
-| Módulo | Responsabilidade | Dados próprios (DDM) | Interface em processo | Atende ao REQ-ID |
+| Module | Responsibility | Owned data (DDM) | In-process interface | Governing REQ-ID |
 |---|---|---|---|---|
-| `<module>` | <what it owns> | `<DDM>.ddm` | `<Interface>` | REQ-NNN |
+| `<module>` | <what it owns> | <evidenced DDM or none for stateless behavior> | <necessary interface> | REQ-NNN |
 
-## Questões de projeto em aberto
-- P: <question the feature evidence does not answer yet> — responsável: <name>, status: open
+## Planned first TDD cycle
+
+| Plan item | Requirement | Acceptance | Component / planned test | Dependencies | Expected evidence |
+|---|---|---|---|---|---|
+| <stable plan ID> | REQ-NNN | AC-REQ-NNN-NN | <behavior-scoped test and proposed path> | <prerequisites or blocker> | <expected RED failure, GREEN result, REFACTOR regression check; not executed> |
+
+## Gate results and approval status
+
+- <applicable gate, result, evidence or blocker, owner, and next check>
+
+## Open design questions
+- Q: <question the feature evidence does not answer yet>; owner: <name>, status: open
 ```
 
 > [!NOTE]
-> Adicione um `flowchart` Mermaid somente quando ele resolver uma questão concreta e referencie-o em `plan.md`.
+> Add a Mermaid `flowchart` only when it resolves a concrete question, and reference it in `plan.md`.
 
-## Definição de pronto
+## Rules for SDD and TDD
 
-- [ ] `plan.md` descreve somente o necessário à funcionalidade
-- [ ] Toda decisão tem evidência ou questão explícita em aberto
-- [ ] Artefatos de apoio estão vinculados
-- [ ] As duplas 3 e 4 podem iniciar a primeira tarefa sem criar escopo adicional
+Apply the [shared SDD artifact contract](../agents/architect.agent.md#sdd-workflow) directly, without a tooling prerequisite. Keep design and its delivery trace in `specs/<NNN>-<feature>/plan.md`; do not generate the uppercase `.specs/` portfolio or select `Full SDD` for a design-only request. Use the SDD skill's output template to report the scoped result and distinguish a reviewable plan from an approved implementation handoff.
 
-## Corpo do prompt
+## Definition of Done
 
-Você é `@architect`. Há um `spec.md` apoiado por evidências e uma questão que bloqueia a primeira tarefa. Planeje somente o necessário.
+- [ ] `plan.md` describes only what the feature needs
+- [ ] Every decision has evidence or an explicit open question
+- [ ] Supporting artifacts are linked
+- [ ] SDD/TDD and applicable instructions were applied; every planned check traces to a requirement and acceptance criterion
+- [ ] The first cycle has an expected failing check, passing outcome, refactoring verification, and explicit prerequisites; no result is presented as executed
+- [ ] Pairs 3 and 4 can start only the explicitly approved, unblocked scope; missing decisions remain visible and implementation tasks remain unchecked
 
-**Etapa 1 — Ler o estado atual.**
-Abra `spec.md`, qualquer `plan.md` e `02-modern-spec/scope-decisions.md`. Confirme `source_legacy:` em cada REQ-ID. Se faltar, interrompa e devolva o requisito à equipe.
+## Prompt Body
 
-**Etapa 2 — Declarar a questão.**
-Registre a pergunta concreta, por exemplo, “qual módulo possui os dados PAYMENT e como o módulo de benefícios os lê?”. Se faltarem evidências de limite, integração ou contrato, registre uma questão em aberto.
+You are `@architect`. An evidence-backed `spec.md` exists, and a design question blocks the first task. Plan only what is necessary.
 
-**Etapa 3 — Projetar a menor estrutura.**
-Descreva módulo em linguagem de negócio, DDMs ou tabelas exclusivos, interface em processo e REQ-IDs atendidos. Nunca use HTTP entre serviços.
+**Step 0 - Load SDD, TDD, and instructions.**
+Explicitly read [SDD artifact instructions](../instructions/sdd-artifacts.instructions.md) and load [sdd-requirements-engineer](../skills/sdd-requirements-engineer/SKILL.md) and [tdd-workflow](../skills/tdd-workflow/SKILL.md) before analysis. If skill loading is unavailable, read each `SKILL.md` directly. Read [Modular Monolith instructions](../instructions/modular-monolith.instructions.md) and [test instructions](../instructions/tests.instructions.md) explicitly, because their `applyTo` patterns do not cover `plan.md`. Load database, security, backend, frontend, or Natural/Adabas instructions only when the selected design touches those concerns. Read the [SDD templates](../skills/sdd-requirements-engineer/references/spec-templates.md) for the requested design content and the [quality gates](../skills/sdd-requirements-engineer/references/quality-gates.md) for scoped `Validation`.
 
-**Etapa 4 — Adicionar diagrama ou contrato somente quando necessário.**
-Crie `flowchart` Mermaid ou contrato de interface apenas se resolver a pergunta. Não desenhe o sistema inteiro nem defina endpoints sem requisito.
+**Step 1 - Read the current state.**
+Read `spec.md`, any existing `plan.md` and `tasks.md`, and `02-modern-spec/scope-decisions.md`. Reuse the existing repository constitution and decisions when present. Confirm `source_legacy:`, acceptance IDs, and approval state for each scoped requirement. Missing evidence blocks the affected design; a draft specification is not authorization to implement.
 
-**Etapa 5 — Relacionar e escrever.**
-Vincule decisões e REQ-IDs e escreva em `specs/<NNN>-<feature>/plan.md`. Mantenha os artefatos Spec-Kit em `specs/<NNN>-<feature>/`. Se faltar tempo, reduza o escopo.
+**Step 2 - State the question.**
+Record the concrete question, for example: "Which module owns PAYMENT data, and how does the benefits module read it?" If boundary, integration, or contract evidence is missing, record an open question.
 
-## Exemplo de chamada
+**Step 3 - Design the smallest structure.**
+Describe the business module, evidenced data ownership, necessary in-process interface, and governing REQ-ID. Stateless behavior does not require an invented repository, database, or HTTP endpoint. Do not use HTTP between internal modules.
+
+**Step 4 - Add a diagram or contract only when needed.**
+Add a diagram or interface contract only when it resolves the recorded question. For diagrams, first read and apply the [SDD document and Mermaid standard](../skills/sdd-requirements-engineer/references/sdd-document-and-mermaid-standard.md), including its light theme and applicable classes. Do not draw the entire system or define endpoints without a governing requirement.
+
+**Step 5 - Plan the first TDD cycle.**
+Use the TDD skill to select one small behavior from the approved acceptance criteria and record its REQ-ID, AC-ID, component, proposed test path, prerequisites, and planned check. State the expected RED failure due to missing behavior, GREEN outcome, and REFACTOR regression check. Derive a runnable command from an existing runner when possible; otherwise record the runner setup as `PENDING` with an owner. Do not write or run tests, production code, or commits, and do not fabricate passing output. Keep this plan in `plan.md`. If `tasks.md` is explicitly requested, apply the SDD task metadata and dependency contract with existing repository conventions; do not schedule dependent RED/GREEN/REFACTOR steps in parallel or check off unexecuted work.
+
+**Step 6 - Validate and write.**
+Apply the relevant `Validation` gates to design, traceability, test planning, and readiness. Record `PASS`, `FAIL`, `BLOCKED`, or `NOT APPLICABLE` with evidence or reasons. Check that named validators exist and cover this artifact; with read/search/edit only, report commands as not executed and provide the applicable checks to the team. Write `specs/<NNN>-<feature>/plan.md` as `Draft` or `Ready for review` until human approval is evidenced. Record blockers and stop conditions; use `Handoff` only for the approved, unblocked scope.
+
+## Example Invocation
 
 ```text
 /design-modular-monolith feature=001-benefit-calculation
 ```
 
-Espere `specs/001-benefit-calculation/plan.md` somente com módulos, dados próprios e interfaces em processo necessários à primeira tarefa, relacionados a REQ-IDs, e questões pendentes.
+Expect `specs/001-benefit-calculation/plan.md` to contain only the modules, owned data, and in-process interfaces needed for the first task, linked to REQ-IDs, plus open questions.

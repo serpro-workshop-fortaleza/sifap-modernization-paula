@@ -221,7 +221,8 @@ class Reporter:
         print("Resumo da validação das primitivas do Copilot")
         print("=" * 72)
         if not self.findings:
-            print("Nenhum problema encontrado. Todas as primitivas e políticas do Copilot foram aprovadas.")
+            print(
+                "Nenhum problema encontrado. Todas as primitivas e políticas do Copilot foram aprovadas.")
             return
         by_check: dict[str, dict[str, int]] = {}
         for finding in self.findings:
@@ -750,45 +751,56 @@ ATX_CLOSING_RE = re.compile(r"[ \t]+#+[ \t]*$")
 # definição de pronto antes de "Prompts disponíveis", enquanto os agentes de
 # persona a colocam depois; por isso, a ordem das seções não é imposta.
 AGENT_REQUIRED_SECTIONS = [
-    ("Missão", {"Missão"}),
-    ("Personas líderes", {"Personas líderes"}),
-    ("Princípios operacionais", {"Princípios operacionais"}),
-    ("O que este agente sabe", {"O que este agente sabe"}),
-    ("O que este agente NÃO sabe", {"O que este agente NÃO sabe"}),
-    ("Prompts disponíveis", {"Prompts disponíveis"}),
-    ("Antipadrões que este agente rejeita", {"Antipadrões que este agente rejeita"}),
+    ("Missão", {"Missão", "Mission"}),
+    ("Personas líderes", {"Personas líderes", "Leading Personas"}),
+    ("Princípios operacionais", {
+     "Princípios operacionais", "Operating Principles"}),
+    ("O que este agente sabe", {
+     "O que este agente sabe", "What This Agent Knows"}),
+    ("O que este agente NÃO sabe", {
+     "O que este agente NÃO sabe", "What This Agent Does NOT Know"}),
+    ("Prompts disponíveis", {"Prompts disponíveis", "Available Prompts"}),
+    ("Antipadrões que este agente rejeita", {
+        "Antipadrões que este agente rejeita",
+        "Anti-Patterns This Agent Rejects"}),
 ]
 # O archaeologist usa "Definição de pronto do Estágio 1"; agentes de persona
 # usam apenas "Definição de pronto".
-AGENT_DOD_TITLES = {"Definição de pronto"}
+AGENT_DOD_TITLES = {"Definição de pronto", "Definition of Done"}
 AGENT_DOD_PT_BR_PREFIX = "Definição de pronto do Estágio "
 # É comum, mas não universal; portanto, a ausência gera aviso, não erro.
 AGENT_RECOMMENDED_SECTIONS = [
-    ("Integração com o Spec-Kit", {"Integração com o Spec-Kit"})
+    ("SDD Workflow", {"SDD Workflow", "Integração com o Spec-Kit"})
 ]
 
 # Prompts: presença E ordem relativa canônica. Seções extras (por exemplo, um
 # bloco "## Regras de <arquivo>" entre "Formato da saída" e "Definição de pronto")
 # são permitidas e simplesmente ignoradas pela verificação de ordem.
 PROMPT_REQUIRED_SECTIONS = [
-    ("Objetivo", {"Objetivo"}),
-    ("Quando usar", {"Quando invocar", "Quando usar"}),
-    ("Pré-condições", {"Pré-condições"}),
-    ("Entradas que a equipe deve fornecer", {"Entradas que a equipe deve fornecer"}),
-    ("O que farei", {"O que farei"}),
-    ("O que não farei", {"O que NÃO farei", "O que não farei"}),
-    ("Formato da saída", {"Formato da saída"}),
-    ("Definição de pronto", {"Definição de pronto"}),
-    ("Corpo do prompt", {"Corpo do prompt"}),
-    ("Exemplo de chamada", {"Exemplo de invocação", "Exemplo de chamada"}),
+    ("Objetivo", {"Objetivo", "Objective"}),
+    ("Quando usar", {
+     "Quando invocar", "Quando usar", "When to Invoke", "When to Use"}),
+    ("Pré-condições", {"Pré-condições", "Preconditions"}),
+    ("Entradas que a equipe deve fornecer", {
+     "Entradas que a equipe deve fornecer", "Inputs the Team Must Provide"}),
+    ("O que farei", {"O que farei", "What I Will Do"}),
+    ("O que não farei", {
+     "O que NÃO farei", "O que não farei", "What I Will NOT Do"}),
+    ("Formato da saída", {"Formato da saída", "Output Format"}),
+    ("Definição de pronto", {"Definição de pronto", "Definition of Done"}),
+    ("Corpo do prompt", {"Corpo do prompt", "Prompt Body"}),
+    ("Exemplo de chamada", {
+     "Exemplo de invocação", "Exemplo de chamada", "Example Invocation"}),
 ]
 
 # Habilidades: comparação sem diferenciar maiúsculas de minúsculas, pois habilidades
 # nativas usam caixa de frase, enquanto algumas importações usam caixa de título.
 SKILL_REQUIRED_SECTIONS = [
-    ("Quando usar", {"Quando usar", "Quando invocar", "When to Use", "When to Invoke"}),
+    ("Quando usar", {"Quando usar", "Quando invocar",
+     "When to Use", "When to Invoke"}),
     ("Modelo de saída", {"Modelo de saída", "Output Template"}),
-    ("Critérios de qualidade", {"Critério de qualidade", "Critérios de qualidade", "Quality Gate"}),
+    ("Critérios de qualidade", {
+     "Critério de qualidade", "Critérios de qualidade", "Quality Gate"}),
 ]
 
 # Instruções: somente presença, com correspondência exata do título.
@@ -911,10 +923,13 @@ def check_skill_structure(rel: str, reporter: Reporter) -> None:
     # Uma habilidade em conformidade coloca pelo menos uma seção de procedimento entre
     # seu gatilho ("Quando usar") e seu "Modelo de saída". Uma distância de um
     # significa que os dois títulos são adjacentes (sem procedimento); isso gera aviso.
-    trigger_aliases = {alias.lower() for alias in SKILL_REQUIRED_SECTIONS[0][1]}
+    trigger_aliases = {alias.lower()
+                       for alias in SKILL_REQUIRED_SECTIONS[0][1]}
     output_aliases = {alias.lower() for alias in SKILL_REQUIRED_SECTIONS[1][1]}
-    first = next((i for i, title in enumerate(lower_titles) if title in trigger_aliases), None)
-    last = next((i for i, title in enumerate(lower_titles) if title in output_aliases), None)
+    first = next((i for i, title in enumerate(lower_titles)
+                 if title in trigger_aliases), None)
+    last = next((i for i, title in enumerate(lower_titles)
+                if title in output_aliases), None)
     if first is not None and last is not None:
         if last - first < 2:
             reporter.warning(
@@ -1028,7 +1043,8 @@ def check_competing_tools(markdown_files: list[str], reporter: Reporter) -> None
 
 def _scan_competing_line(rel: str, lineno: int, line: str, reporter: Reporter) -> None:
     for match in TOOL_RE.finditer(line):
-        clause, tool_start = _recommendation_clause(line, match.start(), match.end())
+        clause, tool_start = _recommendation_clause(
+            line, match.start(), match.end())
         window = clause[max(0, tool_start - RECOMMEND_WINDOW):tool_start]
         if not RECOMMEND_VERB_RE.search(window):
             continue
